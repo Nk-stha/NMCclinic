@@ -144,7 +144,7 @@
         <a class="link-cta inline" href="#appointment">Book a consultation <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></a>
       </div>
     </div>
-    <div class="grid grid-300 gap-20">
+    <div class="grid grid-300 gap-20" data-cms-home-specialty-list>
         <article class="card card-hover svc-card">
           <span class="icon-badge"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v6a6 6 0 0 0 12 0V2"></path><path d="M8 15v1a6 6 0 0 0 6 6 6 6 0 0 0 6-6v-4"></path><circle cx="20" cy="10" r="2"></circle></svg></span>
           <h3>Specialist Consultation</h3>
@@ -261,14 +261,14 @@
       <h2 class="section-title">Meet the Doctors Behind Your Care</h2>
       <p class="section-lead">View specialties, consultation schedules, and choose the doctor who best matches your needs.</p>
     </div>
-    <div class="tabs center-tabs" data-filter-group="home-doctors" aria-label="Filter doctors by specialty">
+    <div class="tabs center-tabs" data-filter-group="home-doctors" data-cms-home-doctor-tabs aria-label="Filter doctors by specialty">
         <button type="button" class="tab is-active" data-filter="All" aria-pressed="true">All</button>
         <button type="button" class="tab" data-filter="General Medicine" aria-pressed="false">General Medicine</button>
         <button type="button" class="tab" data-filter="Obstetrics &amp; Gynecology" aria-pressed="false">Obstetrics &amp; Gynecology</button>
         <button type="button" class="tab" data-filter="Nephrology" aria-pressed="false">Nephrology</button>
         <button type="button" class="tab" data-filter="Physiotherapy" aria-pressed="false">Physiotherapy</button>
     </div>
-    <div class="grid grid-260 gap-22" data-filter-target="home-doctors">
+    <div class="grid grid-260 gap-22" data-filter-target="home-doctors" data-cms-home-doctor-list>
         <article class="doc-card is-home" data-category="General Medicine">
           <div class="doc-photo"><span class="ph-label">doctor photo</span></div>
           <div class="doc-body">
@@ -327,7 +327,7 @@
         </article>
     </div>
     <p class="listing-note" data-filter-empty="home-doctors" hidden>No doctors match this specialty yet.</p>
-    <p class="listing-note">Specialist names and profiles will be added as details are confirmed.</p>
+    <p class="listing-note" data-cms-home-doctor-fallback-note>Specialist names and profiles will be added as details are confirmed.</p>
   </section>
 
   <!-- ============ WHY CHOOSE US ============ -->
@@ -498,7 +498,7 @@
         <p class="section-lead">Practical articles reviewed by healthcare professionals to help you understand common conditions, tests, and treatments.</p>
       </div>
     </div>
-    <div class="grid grid-280 gap-22">
+    <div class="grid grid-280 gap-22" data-cms-home-blog-list>
         <a class="post-card" href="blog-detail.html">
           <div class="post-photo">
             <span class="ph-label">article image</span>
@@ -541,7 +541,7 @@
     </div>
     <div class="section-foot">
       <a class="btn btn-primary" href="blog.html">View All Health Guides <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></a>
-      <span class="note">Sample topics shown — real articles from our team will be published here.</span>
+      <span class="note" data-cms-home-blog-fallback-note>Sample topics shown — real articles from our team will be published here.</span>
     </div>
   </section>
 

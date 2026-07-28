@@ -164,9 +164,279 @@
     el.textContent = String(new Date().getFullYear());
   });
 
+  function endpointUrl(file) {
+    var script = document.querySelector('script[src$="assets/script.js"]');
+    if (!script) return file;
+
+    var src = script.getAttribute('src') || '';
+    var index = src.indexOf('assets/script.js');
+    if (index === -1) return file;
+
+    return src.slice(0, index) + file;
+  }
+
+  function cmsText(value) {
+    return value == null ? '' : String(value);
+  }
+
+  function blogReadTime(minutes) {
+    return minutes ? minutes + ' min read' : 'Health guide';
+  }
+
+  function blogByline(post) {
+    var reviewer = cmsText(post.reviewer_name) || 'NMC medical team';
+    var reviewed = cmsText(post.reviewed_at || post.published_at);
+    return 'Reviewed by ' + reviewer + (reviewed ? ' · Reviewed ' + reviewed : '');
+  }
+
+  function arrowSvg() {
+    return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
+  }
+
+  function addBlogImage(container, post, fallback) {
+    if (post.image_path) {
+      var img = document.createElement('img');
+      img.src = post.image_path;
+      img.alt = cmsText(post.image_alt || post.title);
+      img.loading = 'lazy';
+      container.appendChild(img);
+      return;
+    }
+
+    var label = document.createElement('span');
+    label.className = 'ph-label';
+    label.textContent = fallback;
+    container.appendChild(label);
+  }
+
+  function createBlogPostCard(post, featured) {
+    var card = document.createElement('a');
+    card.className = featured ? 'featured' : 'post-card';
+    card.href = post.url || ('blog/' + encodeURIComponent(cmsText(post.slug)));
+    card.setAttribute('data-category', cmsText(post.category));
+
+    var photo = document.createElement('div');
+    photo.className = featured ? 'featured-photo' : 'post-photo';
+    addBlogImage(photo, post, featured ? 'featured article image' : 'article image');
+    var tag = document.createElement('span');
+    tag.className = 'doc-tag';
+    tag.textContent = (featured ? 'Featured · ' : '') + cmsText(post.category);
+    photo.appendChild(tag);
+
+    var body = document.createElement('div');
+    body.className = featured ? 'featured-body' : 'post-body';
+
+    var meta = document.createElement('div');
+    meta.className = 'post-meta';
+    meta.textContent = blogReadTime(post.reading_time_minutes);
+    var title = document.createElement(featured ? 'h2' : 'h3');
+    title.textContent = cmsText(post.title);
+    var excerpt = document.createElement('p');
+    excerpt.textContent = cmsText(post.excerpt);
+    var review = document.createElement('div');
+    review.className = 'post-byline';
+    review.textContent = blogByline(post);
+    var link = document.createElement('span');
+    link.className = 'link-cta inline';
+    link.innerHTML = 'Read article ' + arrowSvg();
+
+    body.appendChild(meta);
+    body.appendChild(title);
+    body.appendChild(excerpt);
+    body.appendChild(review);
+    body.appendChild(link);
+    card.appendChild(photo);
+    card.appendChild(body);
+
+    return card;
+  }
+
+  function calendarSvg() {
+    return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#287772" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>';
+  }
+
+  function scheduleText(schedules) {
+    if (!Array.isArray(schedules) || schedules.length === 0) return 'Schedule to be confirmed';
+    return schedules.map(function (schedule) {
+      var time = schedule.start_time && schedule.end_time ? ' ' + schedule.start_time + '-' + schedule.end_time : '';
+      var location = schedule.location ? ' · ' + schedule.location : '';
+      return schedule.day + time + location;
+    }).join(', ');
+  }
+
+  function createDoctorCard(doctor, home) {
+    var card = document.createElement('article');
+    card.className = 'doc-card' + (home ? ' is-home' : '');
+    card.setAttribute('data-category', cmsText(doctor.specialty));
+
+    var photo = document.createElement('div');
+    photo.className = 'doc-photo';
+    if (doctor.photo_path) {
+      var img = document.createElement('img');
+      img.src = doctor.photo_path;
+      img.alt = cmsText(doctor.photo_alt || doctor.full_name);
+      img.loading = 'lazy';
+      photo.appendChild(img);
+    } else {
+      var placeholder = document.createElement('span');
+      placeholder.className = 'ph-label';
+      placeholder.textContent = 'doctor photo';
+      photo.appendChild(placeholder);
+    }
+
+    var body = document.createElement('div');
+    body.className = 'doc-body';
+    if (home) {
+      var chip = document.createElement('span');
+      chip.className = 'doc-chip';
+      chip.textContent = cmsText(doctor.specialty);
+      body.appendChild(chip);
+    } else {
+      var tag = document.createElement('span');
+      tag.className = 'doc-tag';
+      tag.textContent = cmsText(doctor.specialty);
+      photo.appendChild(tag);
+    }
+
+    var name = document.createElement('h3');
+    name.textContent = cmsText(doctor.full_name);
+    var qual = document.createElement('p');
+    qual.className = 'doc-qual';
+    qual.textContent = Array.isArray(doctor.qualifications) && doctor.qualifications.length > 0 ? doctor.qualifications.join(', ') : 'Qualification to be confirmed';
+    var reg = document.createElement('p');
+    reg.className = 'doc-reg';
+    reg.textContent = doctor.registration_number ? 'NMC Reg. No. ' + doctor.registration_number : 'NMC Reg. No. to be confirmed';
+    var hours = document.createElement('div');
+    hours.className = 'doc-hours';
+    hours.innerHTML = calendarSvg() + ' ';
+    hours.appendChild(document.createTextNode(scheduleText(doctor.schedules)));
+    var actions = document.createElement('div');
+    actions.className = 'doc-actions';
+    actions.innerHTML = home
+      ? '<a class="doc-view" href="doctors.html">View Profile</a><a class="doc-book" href="#appointment">Book Appointment</a>'
+      : '<a class="doc-view-solid" href="doctors.html">View Profile</a><a class="doc-book" href="index.html#appointment">Book Appointment</a>';
+
+    body.appendChild(name);
+    body.appendChild(qual);
+    body.appendChild(reg);
+    body.appendChild(hours);
+    body.appendChild(actions);
+    card.appendChild(photo);
+    card.appendChild(body);
+
+    return card;
+  }
+
+  function createHomeSpecialtyCard(specialty) {
+    var card = document.createElement('article');
+    card.className = 'card card-hover svc-card';
+    card.innerHTML = '<span class="icon-badge"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"></path><path d="M5 12h14"></path><circle cx="12" cy="12" r="8"></circle></svg></span>';
+
+    var title = document.createElement('h3');
+    title.textContent = cmsText(specialty.title);
+    var description = document.createElement('p');
+    description.textContent = cmsText(specialty.short_description);
+    var link = document.createElement('a');
+    link.className = 'link-cta inline';
+    link.href = 'specialties.html#' + encodeURIComponent(cmsText(specialty.slug));
+    link.innerHTML = 'Learn More ' + arrowSvg();
+
+    card.appendChild(title);
+    card.appendChild(description);
+    card.appendChild(link);
+
+    return card;
+  }
+
+  function setAnchor(anchor, href, label) {
+    if (!anchor || !href) return;
+    anchor.href = href;
+    if (label) {
+      Array.prototype.forEach.call(anchor.childNodes, function (node) {
+        if (node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== '') {
+          node.textContent = ' ' + label;
+        }
+      });
+      if (anchor.textContent.trim() === '') anchor.textContent = label;
+    }
+  }
+
+  function replaceFooterContact(settings, hours) {
+    document.querySelectorAll('.footer-contact').forEach(function (list) {
+      var items = list.children;
+      if (items.length > 0 && settings.address) items[0].textContent = settings.address;
+      if (items.length > 1 && settings.email) {
+        items[1].textContent = settings.email;
+        if (items[1].tagName === 'A') items[1].href = settings.email_href;
+      }
+      if (items.length > 2 && hours.length > 0) {
+        items[2].textContent = hours[0].day + ': ' + (hours[0].is_closed ? 'Closed' : (hours[0].label || hours[0].opens_at + '-' + hours[0].closes_at));
+      }
+      if (items.length > 3 && hours.length > 1) {
+        var last = hours[hours.length - 1];
+        items[3].textContent = last.day + ': ' + (last.is_closed ? 'Closed' : (last.label || last.opens_at + '-' + last.closes_at));
+      }
+    });
+  }
+
+  function applySiteSettings(data) {
+    if (!data || !data.ok || !data.settings) return;
+
+    var settings = data.settings;
+    var hours = Array.isArray(data.hours) ? data.hours : [];
+
+    document.querySelectorAll('.topbar-em').forEach(function (anchor) {
+      setAnchor(anchor, settings.primary_phone_href, settings.primary_phone);
+    });
+    document.querySelectorAll('.header-phone, .footer-phone').forEach(function (anchor) {
+      setAnchor(anchor, settings.primary_phone_href, settings.primary_phone);
+    });
+    document.querySelectorAll('.topbar-mail').forEach(function (anchor) {
+      setAnchor(anchor, settings.email_href, settings.email);
+    });
+    document.querySelectorAll('.topbar-hours').forEach(function (item) {
+      if (data.hours_summary) item.textContent = data.hours_summary;
+    });
+    document.querySelectorAll('.wa-float').forEach(function (anchor) {
+      if (settings.whatsapp_url) anchor.href = settings.whatsapp_url;
+    });
+    document.querySelectorAll('iframe[title*="location"]').forEach(function (iframe) {
+      if (settings.map_embed_url) iframe.src = settings.map_embed_url;
+    });
+
+    replaceFooterContact(settings, hours);
+
+    document.querySelectorAll('.footer-legal a').forEach(function (anchor) {
+      var text = anchor.textContent.trim().toLowerCase();
+      if (text.indexOf('privacy') !== -1 && settings.privacy_url) anchor.href = settings.privacy_url;
+      if ((text.indexOf('terms') !== -1 || text.indexOf('conditions') !== -1) && settings.terms_url) anchor.href = settings.terms_url;
+      if (text.indexOf('accessibility') !== -1 && settings.accessibility_url) anchor.href = settings.accessibility_url;
+    });
+
+    if (Array.isArray(data.socials)) {
+      data.socials.forEach(function (social) {
+        document.querySelectorAll('.topbar-social a[aria-label="' + social.label + '"], .topbar-social a[aria-label="' + social.platform + '"]').forEach(function (anchor) {
+          anchor.href = social.url;
+        });
+      });
+    }
+  }
+
+  /* ---------- CMS-backed site settings ---------------------------------- */
+  if (window.fetch) {
+    fetch(endpointUrl('site-settings-data.php'), { headers: { 'Accept': 'application/json' } })
+      .then(function (response) {
+        return response.json();
+      })
+      .then(applySiteSettings)
+      .catch(function () {
+        // Keep static contact details when CMS settings are unavailable.
+      });
+  }
+
   /* ---------- CMS-backed form options ----------------------------------- */
   if (window.fetch) {
-    fetch('form-options.php', { headers: { 'Accept': 'application/json' } })
+    fetch(endpointUrl('form-options.php'), { headers: { 'Accept': 'application/json' } })
       .then(function (response) {
         return response.json();
       })
@@ -196,11 +466,31 @@
       });
   }
 
+  /* ---------- CMS-backed homepage specialties --------------------------- */
+  var homeSpecialtyList = document.querySelector('[data-cms-home-specialty-list]');
+  if (window.fetch && homeSpecialtyList) {
+    fetch(endpointUrl('specialties-data.php'), { headers: { 'Accept': 'application/json' } })
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (data) {
+        if (!data || !data.ok || !Array.isArray(data.specialties) || data.specialties.length === 0) return;
+
+        homeSpecialtyList.innerHTML = '';
+        data.specialties.slice(0, 6).forEach(function (specialty) {
+          homeSpecialtyList.appendChild(createHomeSpecialtyCard(specialty));
+        });
+      })
+      .catch(function () {
+        // Keep hardcoded homepage specialty cards when CMS data is unavailable.
+      });
+  }
+
   /* ---------- CMS-backed specialties listing ---------------------------- */
   var specialtyNav = document.querySelector('[data-cms-specialty-nav]');
   var specialtyList = document.querySelector('[data-cms-specialty-list]');
   if (window.fetch && specialtyNav && specialtyList) {
-    fetch('specialties-data.php', { headers: { 'Accept': 'application/json' } })
+    fetch(endpointUrl('specialties-data.php'), { headers: { 'Accept': 'application/json' } })
       .then(function (response) {
         return response.json();
       })
@@ -302,33 +592,72 @@
   }
 
   /* ---------- CMS-backed doctors listing -------------------------------- */
-  var doctorTabs = document.querySelector('[data-cms-doctor-tabs]');
-  var doctorList = document.querySelector('[data-cms-doctor-list]');
-  var doctorEmpty = document.querySelector('[data-filter-empty="doctors"]');
-  if (window.fetch && doctorTabs && doctorList) {
-    fetch('doctors-data.php', { headers: { 'Accept': 'application/json' } })
+  var homeDoctorTabs = document.querySelector('[data-cms-home-doctor-tabs]');
+  var homeDoctorList = document.querySelector('[data-cms-home-doctor-list]');
+  var homeDoctorEmpty = document.querySelector('[data-filter-empty="home-doctors"]');
+  var homeDoctorFallbackNote = document.querySelector('[data-cms-home-doctor-fallback-note]');
+  if (window.fetch && homeDoctorTabs && homeDoctorList) {
+    fetch(endpointUrl('doctors-data.php'), { headers: { 'Accept': 'application/json' } })
       .then(function (response) {
         return response.json();
       })
       .then(function (data) {
         if (!data || !data.ok || !Array.isArray(data.doctors) || data.doctors.length === 0) return;
 
-        function text(value) {
-          return value == null ? '' : String(value);
+        function applyHomeDoctorFilter(value) {
+          var cards = homeDoctorList.querySelectorAll('[data-category]');
+          var shown = 0;
+          cards.forEach(function (card) {
+            var match = value === 'All' || card.getAttribute('data-category') === value;
+            card.hidden = !match;
+            if (match) shown++;
+          });
+          if (homeDoctorEmpty) homeDoctorEmpty.hidden = shown !== 0;
         }
 
-        function calendarSvg() {
-          return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#287772" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>';
-        }
+        homeDoctorTabs.innerHTML = '';
+        homeDoctorList.innerHTML = '';
 
-        function scheduleText(schedules) {
-          if (!Array.isArray(schedules) || schedules.length === 0) return 'Schedule to be confirmed';
-          return schedules.map(function (schedule) {
-            var time = schedule.start_time && schedule.end_time ? ' ' + schedule.start_time + '-' + schedule.end_time : '';
-            var location = schedule.location ? ' · ' + schedule.location : '';
-            return schedule.day + time + location;
-          }).join(', ');
-        }
+        ['All'].concat(data.specialties || []).forEach(function (specialty, index) {
+          var tab = document.createElement('button');
+          tab.type = 'button';
+          tab.className = 'tab' + (index === 0 ? ' is-active' : '');
+          tab.setAttribute('data-filter', specialty);
+          tab.setAttribute('aria-pressed', index === 0 ? 'true' : 'false');
+          tab.textContent = specialty;
+          tab.addEventListener('click', function () {
+            homeDoctorTabs.querySelectorAll('[data-filter]').forEach(function (item) {
+              var active = item === tab;
+              item.classList.toggle('is-active', active);
+              item.setAttribute('aria-pressed', active ? 'true' : 'false');
+            });
+            applyHomeDoctorFilter(specialty);
+          });
+          homeDoctorTabs.appendChild(tab);
+        });
+
+        data.doctors.slice(0, 4).forEach(function (doctor) {
+          homeDoctorList.appendChild(createDoctorCard(doctor, true));
+        });
+
+        applyHomeDoctorFilter('All');
+        if (homeDoctorFallbackNote) homeDoctorFallbackNote.hidden = true;
+      })
+      .catch(function () {
+        // Keep hardcoded homepage doctor cards when CMS data is unavailable.
+      });
+  }
+
+  var doctorTabs = document.querySelector('[data-cms-doctor-tabs]');
+  var doctorList = document.querySelector('[data-cms-doctor-list]');
+  var doctorEmpty = document.querySelector('[data-filter-empty="doctors"]');
+  if (window.fetch && doctorTabs && doctorList) {
+    fetch(endpointUrl('doctors-data.php'), { headers: { 'Accept': 'application/json' } })
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (data) {
+        if (!data || !data.ok || !Array.isArray(data.doctors) || data.doctors.length === 0) return;
 
         function applyDoctorFilter(value) {
           var cards = doctorList.querySelectorAll('[data-category]');
@@ -363,55 +692,7 @@
         });
 
         data.doctors.forEach(function (doctor) {
-          var card = document.createElement('article');
-          card.className = 'doc-card';
-          card.setAttribute('data-category', text(doctor.specialty));
-
-          var photo = document.createElement('div');
-          photo.className = 'doc-photo';
-          if (doctor.photo_path) {
-            var img = document.createElement('img');
-            img.src = doctor.photo_path;
-            img.alt = text(doctor.photo_alt || doctor.full_name);
-            img.loading = 'lazy';
-            photo.appendChild(img);
-          } else {
-            var placeholder = document.createElement('span');
-            placeholder.className = 'ph-label';
-            placeholder.textContent = 'doctor photo';
-            photo.appendChild(placeholder);
-          }
-          var tag = document.createElement('span');
-          tag.className = 'doc-tag';
-          tag.textContent = text(doctor.specialty);
-          photo.appendChild(tag);
-
-          var body = document.createElement('div');
-          body.className = 'doc-body';
-          var name = document.createElement('h3');
-          name.textContent = text(doctor.full_name);
-          var qual = document.createElement('p');
-          qual.className = 'doc-qual';
-          qual.textContent = Array.isArray(doctor.qualifications) && doctor.qualifications.length > 0 ? doctor.qualifications.join(', ') : 'Qualification to be confirmed';
-          var reg = document.createElement('p');
-          reg.className = 'doc-reg';
-          reg.textContent = doctor.registration_number ? 'NMC Reg. No. ' + doctor.registration_number : 'NMC Reg. No. to be confirmed';
-          var hours = document.createElement('div');
-          hours.className = 'doc-hours';
-          hours.innerHTML = calendarSvg() + ' ';
-          hours.appendChild(document.createTextNode(scheduleText(doctor.schedules)));
-          var actions = document.createElement('div');
-          actions.className = 'doc-actions';
-          actions.innerHTML = '<a class="doc-view-solid" href="doctors.html">View Profile</a><a class="doc-book" href="index.html#appointment">Book Appointment</a>';
-
-          body.appendChild(name);
-          body.appendChild(qual);
-          body.appendChild(reg);
-          body.appendChild(hours);
-          body.appendChild(actions);
-          card.appendChild(photo);
-          card.appendChild(body);
-          doctorList.appendChild(card);
+          doctorList.appendChild(createDoctorCard(doctor, false));
         });
 
         applyDoctorFilter('All');
@@ -422,94 +703,39 @@
   }
 
   /* ---------- CMS-backed blog listing ----------------------------------- */
-  var featuredBlog = document.querySelector('[data-cms-featured-blog]');
-  var blogTabs = document.querySelector('[data-cms-blog-tabs]');
-  var blogList = document.querySelector('[data-cms-blog-list]');
-  var blogEmpty = document.querySelector('[data-filter-empty="posts"]');
-  var blogFallbackNote = document.querySelector('[data-cms-blog-fallback-note]');
-  if (window.fetch && featuredBlog && blogTabs && blogList) {
-    fetch('blog-data.php', { headers: { 'Accept': 'application/json' } })
+  var homeBlogList = document.querySelector('[data-cms-home-blog-list]');
+  var homeBlogFallbackNote = document.querySelector('[data-cms-home-blog-fallback-note]');
+  if (window.fetch && homeBlogList) {
+    fetch(endpointUrl('blog-data.php'), { headers: { 'Accept': 'application/json' } })
       .then(function (response) {
         return response.json();
       })
       .then(function (data) {
         if (!data || !data.ok || !Array.isArray(data.posts) || data.posts.length === 0) return;
 
-        function text(value) {
-          return value == null ? '' : String(value);
-        }
+        homeBlogList.innerHTML = '';
+        data.posts.slice(0, 3).forEach(function (post) {
+          homeBlogList.appendChild(createBlogPostCard(post, false));
+        });
+        if (homeBlogFallbackNote) homeBlogFallbackNote.hidden = true;
+      })
+      .catch(function () {
+        // Keep hardcoded homepage blog cards when CMS data is unavailable.
+      });
+  }
 
-        function readTime(minutes) {
-          return minutes ? minutes + ' min read' : 'Health guide';
-        }
-
-        function byline(post) {
-          var reviewer = text(post.reviewer_name) || 'NMC medical team';
-          var reviewed = text(post.reviewed_at || post.published_at);
-          return 'Reviewed by ' + reviewer + (reviewed ? ' · Reviewed ' + reviewed : '');
-        }
-
-        function arrowSvg() {
-          return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
-        }
-
-        function addImage(container, post, fallback) {
-          if (post.image_path) {
-            var img = document.createElement('img');
-            img.src = post.image_path;
-            img.alt = text(post.image_alt || post.title);
-            img.loading = 'lazy';
-            container.appendChild(img);
-            return;
-          }
-
-          var label = document.createElement('span');
-          label.className = 'ph-label';
-          label.textContent = fallback;
-          container.appendChild(label);
-        }
-
-        function createPostCard(post, featured) {
-          var card = document.createElement('a');
-          card.className = featured ? 'featured' : 'post-card';
-          card.href = post.url || ('blog/' + encodeURIComponent(text(post.slug)));
-          card.setAttribute('data-category', text(post.category));
-
-          var photo = document.createElement('div');
-          photo.className = featured ? 'featured-photo' : 'post-photo';
-          addImage(photo, post, featured ? 'featured article image' : 'article image');
-          var tag = document.createElement('span');
-          tag.className = 'doc-tag';
-          tag.textContent = (featured ? 'Featured · ' : '') + text(post.category);
-          photo.appendChild(tag);
-
-          var body = document.createElement('div');
-          body.className = featured ? 'featured-body' : 'post-body';
-
-          var meta = document.createElement('div');
-          meta.className = 'post-meta';
-          meta.textContent = readTime(post.reading_time_minutes);
-          var title = document.createElement(featured ? 'h2' : 'h3');
-          title.textContent = text(post.title);
-          var excerpt = document.createElement('p');
-          excerpt.textContent = text(post.excerpt);
-          var review = document.createElement('div');
-          review.className = 'post-byline';
-          review.textContent = byline(post);
-          var link = document.createElement('span');
-          link.className = 'link-cta inline';
-          link.innerHTML = 'Read article ' + arrowSvg();
-
-          body.appendChild(meta);
-          body.appendChild(title);
-          body.appendChild(excerpt);
-          body.appendChild(review);
-          body.appendChild(link);
-          card.appendChild(photo);
-          card.appendChild(body);
-
-          return card;
-        }
+  var featuredBlog = document.querySelector('[data-cms-featured-blog]');
+  var blogTabs = document.querySelector('[data-cms-blog-tabs]');
+  var blogList = document.querySelector('[data-cms-blog-list]');
+  var blogEmpty = document.querySelector('[data-filter-empty="posts"]');
+  var blogFallbackNote = document.querySelector('[data-cms-blog-fallback-note]');
+  if (window.fetch && featuredBlog && blogTabs && blogList) {
+    fetch(endpointUrl('blog-data.php'), { headers: { 'Accept': 'application/json' } })
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (data) {
+        if (!data || !data.ok || !Array.isArray(data.posts) || data.posts.length === 0) return;
 
         function applyBlogFilter(value) {
           var cards = blogList.querySelectorAll('[data-category]');
@@ -548,10 +774,10 @@
         }) || data.posts[0];
 
         featuredBlog.innerHTML = '';
-        featuredBlog.appendChild(createPostCard(featuredPost, true));
+        featuredBlog.appendChild(createBlogPostCard(featuredPost, true));
 
         data.posts.forEach(function (post) {
-          blogList.appendChild(createPostCard(post, false));
+          blogList.appendChild(createBlogPostCard(post, false));
         });
 
         applyBlogFilter('All');
