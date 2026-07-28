@@ -1,0 +1,230 @@
+Below is the Specialties-page-only architecture plan based on current Specialties.dc.html. No implementation code.
+
+  Source Truth
+  Current Specialties page sections:
+
+   Order    Section                    Source    Dynamic?                    Reason
+  ━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   1        Header/nav/contact bar      30-94    Sitewide dynamic            Shared layout and contact data.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   2        Hero/banner                97-109    Dynamic                     H1, intro, breadcrumb, background, SEO metadata.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   3        Specialty quick links     114-123    Dynamic repeater            Generated from specialty list; order/visibility should be CMS-managed.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   4        Specialty detail list     126-156    Dynamic repeater            Main page content: services, descriptions, images, CTAs.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   5        CTA band                  159-168    Dynamic                     Copy, CTA labels, CTA links, phone number.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   6        Footer                    171-227    Sitewide dynamic            Global footer and contact settings.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   7        WhatsApp float            230-234    Sitewide dynamic            Global communication setting.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   8        Runtime specialty data    264-306    Dynamic source candidate    Currently hardcoded service objects.
+
+  Current specialty records are hardcoded in raw: consultation, diagnostics, laboratory, physiotherapy, women, kidney.
+
+  Dynamic Fields
+  Make these editable:
+
+   Field                         CMS Input        Validation
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Page slug                     text             required, unique, default specialties
+  ────────────────────────────  ───────────────  ───────────────────────────────────────
+   Hero breadcrumb label         text             required, 10-30 chars
+  ────────────────────────────  ───────────────  ───────────────────────────────────────
+   Hero eyebrow                  text             optional, max 40 chars
+  ────────────────────────────  ───────────────  ───────────────────────────────────────
+   H1                            text             required, 35-90 chars
+  ────────────────────────────  ───────────────  ───────────────────────────────────────
+   Hero intro                    textarea         required, 120-220 chars
+  ────────────────────────────  ───────────────  ───────────────────────────────────────
+   Hero background image         media picker     required, alt/title metadata
+  ────────────────────────────  ───────────────  ───────────────────────────────────────
+   Specialty title               text             required, 20-80 chars
+  ────────────────────────────  ───────────────  ───────────────────────────────────────
+   Specialty slug/anchor         slug             required, unique per page
+  ────────────────────────────  ───────────────  ───────────────────────────────────────
+   Specialty tag                 text             required, max 40 chars
+  ────────────────────────────  ───────────────  ───────────────────────────────────────
+   Specialty summary             textarea         required, 120-280 chars
+  ────────────────────────────  ───────────────  ───────────────────────────────────────
+   Specialty image               media picker     recommended required
+  ────────────────────────────  ───────────────  ───────────────────────────────────────
+   Specialty image alt           text             required if image exists
+  ────────────────────────────  ───────────────  ───────────────────────────────────────
+   Specialty icon                icon select      required, approved icon keys only
+  ────────────────────────────  ───────────────  ───────────────────────────────────────
+   Specialty bullet points       repeater text    2-5 items, max 100 chars each
+  ────────────────────────────  ───────────────  ───────────────────────────────────────
+   Specialty CTA labels/links    link picker      optional but validated together
+  ────────────────────────────  ───────────────  ───────────────────────────────────────
+   Sort order                    number/drag      required
+  ────────────────────────────  ───────────────  ───────────────────────────────────────
+   Visibility                    toggle           default visible
+  ────────────────────────────  ───────────────  ───────────────────────────────────────
+   CTA band heading/body         text/textarea    required if section visible
+  ────────────────────────────  ───────────────  ───────────────────────────────────────
+   SEO metadata                  SEO group        required before publish
+
+  Static Fields
+  Keep static unless redesigning: layout direction logic, grid/flex structure, color tokens, spacing scale, typography, responsive breakpoint, hover styling,
+  section component types, icon rendering mechanism. Do not store raw CSS/HTML in the CMS.
+
+  Recommended Database Design
+  Use shared page/section/media tables, plus a reusable service/specialty entity because specialties may also power homepage service cards, doctor filters,
+  appointment service options, sitemap URLs, and internal links.
+
+  pages
+  - id
+  - slug unique
+  - page_type enum: specialties
+  - locale
+  - status enum: draft, published, archived
+  - published_at
+  - created_at, updated_at, deleted_at
+
+  seo_metadata
+  - id
+  - page_id
+  - meta_title
+  - meta_description
+  - canonical_url
+  - robots_index
+  - robots_follow
+  - og_title
+  - og_description
+  - og_image_id
+  - twitter_card
+  - schema_json_override nullable
+
+  media_assets
+  - id
+  - url/path
+  - mime_type
+  - width
+  - height
+  - file_size
+  - alt_text
+  - title_text
+  - caption
+  - focal_point_x/y
+  - created_at, updated_at, deleted_at
+
+  specialties
+  - id
+  - slug unique
+  - title
+  - tag
+  - short_summary
+  - long_description
+  - icon_key
+  - primary_media_id
+  - status enum: draft, published, archived
+  - sort_order
+  - is_visible
+  - created_at, updated_at, deleted_at
+
+  specialty_points
+  - id
+  - specialty_id
+  - body
+  - sort_order
+  - is_visible
+
+  page_sections
+  - id
+  - page_id
+  - section_key
+  - section_type enum: hero, specialty_nav, specialty_list, cta
+  - eyebrow
+  - heading
+  - body
+  - primary_media_id
+  - primary_cta_label
+  - primary_cta_url
+  - secondary_cta_label
+  - secondary_cta_url
+  - sort_order
+  - is_visible
+  - settings_json
+
+  Indexes: pages(slug, locale), specialties(slug), specialties(sort_order, is_visible, status), specialty_points(specialty_id, sort_order),
+  page_sections(page_id, sort_order).
+
+  ERD Recommendation
+  Core relationship:
+
+  pages 1--1 seo_metadata
+  pages 1--many page_sections
+  media_assets 1--many page_sections
+  media_assets 1--many specialties
+  specialties 1--many specialty_points
+
+  Optional future relationship:
+
+  doctors many--many specialties
+  appointments many--1 specialties
+  blog_posts many--many specialties
+
+  SEO Architecture
+  Recommended final URL: /specialties, not Specialties.dc.html.
+
+  Use one indexable overview page plus optional future detail pages:
+
+   Strategy                  Recommendation
+  ━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Current stage             Keep all specialties on /specialties with anchor links.
+  ────────────────────────  ──────────────────────────────────────────────────────────────────────────────────────
+   Future stage              Add /specialties/{slug} only when each service has enough unique content.
+  ────────────────────────  ──────────────────────────────────────────────────────────────────────────────────────
+   Canonical                 /specialties for overview page.
+  ────────────────────────  ──────────────────────────────────────────────────────────────────────────────────────
+   Breadcrumb                Home > Specialties.
+  ────────────────────────  ──────────────────────────────────────────────────────────────────────────────────────
+   Structured data           MedicalBusiness/MedicalClinic, BreadcrumbList, and service-style schema where valid.
+  ────────────────────────  ──────────────────────────────────────────────────────────────────────────────────────
+   Headings                  One H1, each specialty as H2, bullet points below each H2.
+  ────────────────────────  ──────────────────────────────────────────────────────────────────────────────────────
+   Internal links            Link each specialty to doctors, appointment, and related blog posts.
+  ────────────────────────  ──────────────────────────────────────────────────────────────────────────────────────
+   Sitemap                   Include /specialties; include detail pages only if created as real URLs.
+  ────────────────────────  ──────────────────────────────────────────────────────────────────────────────────────
+   Multilingual readiness    Add locale, translation group, and future hreflang mapping.
+
+  Google guidance used: create useful crawlable pages, use descriptive titles/descriptions, add structured data when it helps search engines understand
+  content, keep metadata consistent on mobile, and optimize Core Web Vitals for real user experience.
+
+  Media Plan
+  Current specialty media are placeholders like consultation room photo, not real images. Each specialty should have a real image with:
+
+  - Alt text: specific, not keyword-stuffed.
+  - Width/height stored to prevent layout shift.
+  - WebP/AVIF generated variants.
+  - Responsive sizes.
+  - Lazy loading for specialty detail images below the hero.
+  - Hero background should be optimized carefully because it may affect LCP.
+
+  Performance
+  Best fit: SSG or ISR if moving to Next.js. This page is mostly editorial and changes rarely.
+
+  Recommended public query shape: fetch published page, SEO, visible sections, visible specialties, specialty points, and media in one optimized call. Cache
+  by slug + locale. Use CDN caching for images. Keep payload structured and avoid shipping unpublished/version data to public pages.
+
+  Security
+  Sanitize specialty descriptions, CTA labels, CTA URLs, image metadata, and any rich text. Restrict icons to approved keys; do not allow raw SVG/HTML from
+  CMS users. Validate uploads by MIME, extension, dimensions, and size. Require CMS permissions for specialty create/edit/publish/delete.
+
+  Potential Issues
+  Current source has no <title> or meta description. Specialty images are placeholders. Social/legal footer links still use href="#". Contact numbers are
+  placeholders. The current icons are raw SVG path strings; in a CMS version, use trusted icon keys instead of storing raw SVG.
+
+  Best Practice
+  Use a dedicated specialties table because this content is reusable across pages and workflows. Avoid making every visual section a separate custom table.
+  Use reusable page_sections for page composition, and use specialties for actual medical service entities.
+
+  Sources:
+  https://developers.google.com/search/docs/fundamentals/seo-starter-guide
+  https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data
+  https://developers.google.com/search/docs/appearance/core-web-vitals
+  https://developers.google.com/search/docs/crawling-indexing/mobile/mobile-sites-mobile-first-indexing
+

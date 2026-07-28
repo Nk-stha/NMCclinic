@@ -1,0 +1,288 @@
+  Source Truth
+  Current Blog page sections:
+
+   Order    Section                    Source    Dynamic?                    Reason
+  ━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   1        Header/nav/contact bar      30-94    Sitewide dynamic            Shared global content.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ───────────────────────────────────────────────────────
+   2        Hero/banner                97-109    Dynamic                     H1, intro, breadcrumb, background, SEO-critical text.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ───────────────────────────────────────────────────────
+   3        Featured post             114-126    Dynamic                     Should come from real article data, not hardcoded.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ───────────────────────────────────────────────────────
+   4        Category filter           131-147    Dynamic                     Should come from blog categories/tags.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ───────────────────────────────────────────────────────
+   5        Post grid                 150-167    Dynamic                     Core blog listing data.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ───────────────────────────────────────────────────────
+   6        Newsletter CTA            171-183    Dynamic + integration       Currently local preview only.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ───────────────────────────────────────────────────────
+   7        Footer                    187-244    Sitewide dynamic            Shared footer/legal/contact data.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ───────────────────────────────────────────────────────
+   8        WhatsApp float            247-251    Sitewide dynamic            Global setting.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ───────────────────────────────────────────────────────
+   9        Runtime post data         276-282    Dynamic source candidate    Currently hardcoded sample posts.
+
+  Current blog cards use href="#", placeholder image labels, and placeholder review dates like Reviewed [Month Year].
+
+  Dynamic Fields
+  Make these editable:
+
+   Field                      CMS Input                   Validation
+  ━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Blog page slug             slug                        required, unique, default blog
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Hero eyebrow               text                        optional, max 40 chars
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   H1                         text                        required, 35-90 chars
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Hero intro                 textarea                    required, 100-220 chars
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Hero background image      media picker                required
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Featured post              relation picker             optional, must be published
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Category name              text                        required, unique
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Category slug              slug                        required, unique
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Post title                 text                        required, 40-90 chars recommended
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Post slug                  slug                        required, unique
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Post summary/excerpt       textarea                    required, 120-180 chars
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Post body                  rich text/block editor      required
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Featured image             media picker                required before publish
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Image alt text             text                        required
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Author/reviewer            relation picker             required for medical content
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Medical reviewer           relation picker             strongly recommended
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Reviewed date              date                        required before publish
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Published date             date                        required before publish
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Reading time               computed/manual override    computed preferred
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Featured flag              toggle                      optional
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Category assignment        relation picker             required
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Tags                       relation picker/repeater    optional
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Newsletter heading/body    text/textarea               dynamic
+  ─────────────────────────  ──────────────────────────  ───────────────────────────────────
+   Newsletter integration     provider config             required if enabled
+
+  Static Fields
+  Keep static unless redesigning: card layout, grid behavior, filter component, color tokens, typography, spacing, button styling, responsive breakpoint, and
+  hover states. Do not store raw HTML/CSS in the CMS.
+
+  Recommended Database Design
+  Blog needs first-class normalized entities because posts will require detail pages, authors, categories, SEO, media, status, and review workflow.
+
+  pages
+  - id
+  - slug unique
+  - page_type enum: blog_index
+  - locale
+  - status enum: draft, published, archived
+  - published_at
+  - created_at, updated_at, deleted_at
+
+  blog_posts
+  - id
+  - slug unique
+  - title
+  - excerpt
+  - body_json
+  - body_html_sanitized
+  - featured_image_id
+  - author_id
+  - reviewer_id nullable
+  - reviewed_at nullable
+  - published_at
+  - status enum: draft, review, published, archived
+  - is_featured
+  - reading_time_minutes
+  - canonical_url nullable
+  - created_at, updated_at, deleted_at
+
+  blog_categories
+  - id
+  - name
+  - slug unique
+  - description nullable
+  - sort_order
+  - is_visible
+  - created_at, updated_at, deleted_at
+
+  blog_post_categories
+  - blog_post_id
+  - category_id
+  - is_primary
+
+  blog_tags
+  - id
+  - name
+  - slug unique
+
+  blog_post_tags
+  - blog_post_id
+  - tag_id
+
+  authors
+  - id
+  - name
+  - role
+  - bio
+  - photo_id nullable
+  - credentials nullable
+  - is_medical_reviewer boolean
+  - created_at, updated_at, deleted_at
+
+  seo_metadata
+  - id
+  - page_id nullable
+  - blog_post_id nullable
+  - meta_title
+  - meta_description
+  - canonical_url
+  - robots_index
+  - robots_follow
+  - og_title
+  - og_description
+  - og_image_id
+  - twitter_card
+  - schema_json_override nullable
+
+  media_assets
+  - id
+  - url/path
+  - mime_type
+  - width
+  - height
+  - file_size
+  - alt_text
+  - title_text
+  - caption
+  - focal_point_x/y
+  - created_at, updated_at, deleted_at
+
+  Indexes: blog_posts(slug), blog_posts(status, published_at), blog_posts(is_featured, status), blog_categories(slug), blog_post_categories(category_id,
+  blog_post_id), seo_metadata(blog_post_id), seo_metadata(page_id).
+
+  ERD Recommendation
+  Core relationship:
+
+  pages 1--1 seo_metadata
+  blog_posts many--many blog_categories
+  blog_posts many--many blog_tags
+  blog_posts many--1 authors as author
+  blog_posts many--1 authors as reviewer
+  blog_posts many--1 media_assets
+  blog_posts 1--1 seo_metadata
+
+  Future relationship:
+
+  blog_posts many--many doctors
+  blog_posts many--many specialties
+  newsletter_subscribers 1--many newsletter_events
+
+  SEO Architecture
+  Recommended final URLs:
+
+   Type             URL
+  ━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Blog index       /blog
+  ───────────────  ─────────────────────────────────────────────────────
+   Blog category    /blog/category/{category-slug} only if index-worthy
+  ───────────────  ─────────────────────────────────────────────────────
+   Blog detail      /blog/{post-slug}
+
+  Do not index filter states created only by client-side tabs. If category pages are created, they need crawlable server-rendered content and unique titles/
+  descriptions.
+
+  Structured data:
+
+  - Blog index: BreadcrumbList.
+  - Blog detail: Article or MedicalWebPage/health content schema where valid.
+  - Include author, reviewer, published date, modified date, reviewed date, image, and publisher.
+  - Keep the medical disclaimer visible, as current footer already does.
+
+  Heading strategy:
+
+  - Blog index: one H1.
+  - Featured post title as H2.
+  - Card titles as H3.
+  - Detail page: H1 is article title; H2/H3 used inside article body.
+
+  CMS Structure
+  Recommended CMS modules:
+
+   Module               Purpose
+  ━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Blog Posts           Draft, review, publish articles.
+  ───────────────────  ────────────────────────────────────────────────
+   Categories           Manage category filters and category pages.
+  ───────────────────  ────────────────────────────────────────────────
+   Tags                 Optional content grouping.
+  ───────────────────  ────────────────────────────────────────────────
+   Authors/Reviewers    Medical credibility and byline data.
+  ───────────────────  ────────────────────────────────────────────────
+   Media Library        Article images and OG images.
+  ───────────────────  ────────────────────────────────────────────────
+   Blog Index Page      Hero, featured post, newsletter CTA, page SEO.
+  ───────────────────  ────────────────────────────────────────────────
+   Newsletter           Subscriber/provider integration.
+
+  Publish rule: health articles should not publish without title, slug, excerpt, body, category, featured image alt, author, reviewer/review status, reviewed
+  date, meta title, and meta description.
+
+  Newsletter
+  Current form only calls preventDefault() and sets local subscribed: true; it does not save or send data. Future architecture needs:
+
+  newsletter_subscribers
+  - id
+  - email unique
+  - status enum: pending, active, unsubscribed
+  - consent_source
+  - subscribed_at
+  - unsubscribed_at nullable
+
+  newsletter_events
+  - id
+  - subscriber_id
+  - event_type
+  - metadata_json
+  - created_at
+
+  Add double opt-in if required by target compliance needs. At minimum, store consent and unsubscribe capability.
+
+  Media Management
+  Article images should be real media records. Store alt text, dimensions, caption, title, file size, MIME type, focal point, and responsive variants. Use
+  WebP/AVIF variants. Lazy-load grid images. Do not lazy-load above-the-fold featured image if it becomes LCP.
+
+  Performance
+  Best fit: SSG/ISR for blog index and article pages if using Next.js. Query only published posts, visible categories, featured post, and necessary media.
+  Paginate once posts grow beyond 9-12. Cache index by locale and category. Use CDN image optimization.
+
+  Security
+  Sanitize article rich text, excerpts, captions, author bios, CTA URLs, newsletter email input, and SEO fields. Restrict script/embed blocks in rich text.
+  Use role-based publishing: writer, reviewer, publisher, admin. Medical content should have audit logs for review changes.
+
+  Current Risks
+  The current page is not production-ready for SEO because posts link to #, review dates are placeholders, article images are placeholders, and there is no
+  <title>, meta description, canonical, Open Graph, or article schema. The newsletter does not persist subscriptions.
+
+  Best Practice
+  Model blog posts as first-class entities, not generic page section items. Use page_sections only for the Blog index layout. Connect posts to categories,
+  authors/reviewers, media, specialties, and doctors so the blog can power related content across the clinic site.
+
+  Sources:
+  https://developers.google.com/search/docs/fundamentals/seo-starter-guide
+  https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data
+  https://developers.google.com/search/docs/appearance/core-web-vitals
+  https://developers.google.com/search/docs/crawling-indexing/mobile/mobile-sites-mobile-first-indexing

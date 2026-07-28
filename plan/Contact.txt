@@ -1,0 +1,328 @@
+Contact Page Analysis
+
+  Scope: Contact.dc.html only. No code changes.
+
+  Source Of Truth
+  The Contact page currently contains:
+
+  - Hero section: Find Us and Plan Your Visit
+  - Contact info cards:
+      - Address: {{ clinicAddress }}
+      - Phone: {{ phonePrimary }}
+      - Email: {{ email }}
+      - Opening hours
+
+  - Contact form:
+      - Name
+      - Phone
+      - Email
+      - Subject
+      - Message
+      - Consent checkbox
+
+  - Map section using OpenStreetMap iframe
+  - “Prefer to talk?” phone/WhatsApp CTA
+  - Emergency note
+  - Footer and floating WhatsApp button
+
+  Current data values are defined inside page props:
+
+  - phonePrimary: +977 71-000000
+  - phoneSecondary: +977 98-0000000
+  - email: info@nmcbutwal.com.np
+  - clinicAddress: Traffic Chowk, Butwal, Rupandehi, Nepal
+
+  The form currently only runs preventDefault() and sets submitted: true. It does not submit to a backend, send email, store leads, or notify staff.
+
+  ———
+
+  Dynamic Content
+
+  These should be database/CMS-driven:
+
+   Field                             Dynamic?    Reason
+  ━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Hero title                             Yes    Page messaging may change for campaigns or SEO
+  ────────────────────────  ──────────────────  ─────────────────────────────────────────────────────────────
+   Hero description                       Yes    Useful for contact intent and local SEO updates
+  ────────────────────────  ──────────────────  ─────────────────────────────────────────────────────────────
+   Address                                Yes    Business-critical and may change
+  ────────────────────────  ──────────────────  ─────────────────────────────────────────────────────────────
+   Primary phone                          Yes    Must be editable without code
+  ────────────────────────  ──────────────────  ─────────────────────────────────────────────────────────────
+   Secondary phone                        Yes    Same as above
+  ────────────────────────  ──────────────────  ─────────────────────────────────────────────────────────────
+   WhatsApp number                        Yes    Used in multiple CTAs
+  ────────────────────────  ──────────────────  ─────────────────────────────────────────────────────────────
+   Email address                          Yes    Operational contact detail
+  ────────────────────────  ──────────────────  ─────────────────────────────────────────────────────────────
+   Opening hours                          Yes    Seasonal/holiday/service changes
+  ────────────────────────  ──────────────────  ─────────────────────────────────────────────────────────────
+   Map latitude/longitude                 Yes    Needed for accurate directions
+  ────────────────────────  ──────────────────  ─────────────────────────────────────────────────────────────
+   Map embed URL                    Generated    Should be generated from stored coordinates
+  ────────────────────────  ──────────────────  ─────────────────────────────────────────────────────────────
+   Contact form subjects                  Yes    Departments/services can change
+  ────────────────────────  ──────────────────  ─────────────────────────────────────────────────────────────
+   Response-time note                     Yes    Operational policy
+  ────────────────────────  ──────────────────  ─────────────────────────────────────────────────────────────
+   Emergency notice                       Yes    Compliance/safety wording may change
+  ────────────────────────  ──────────────────  ─────────────────────────────────────────────────────────────
+   CTA labels                Optional dynamic    Useful, but can remain static unless CMS wants full control
+  ────────────────────────  ──────────────────  ─────────────────────────────────────────────────────────────
+   Footer contact data       Reusable dynamic    Should reuse global site settings, not duplicate page data
+
+  Can remain static:
+
+   Item                                   Reason
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Contact form layout                    Structural UI, not content
+  ─────────────────────────────────────  ─────────────────────────────────────────────────
+   Field names like Name, Phone, Email    Stable UX labels
+  ─────────────────────────────────────  ─────────────────────────────────────────────────
+   Consent checkbox existence             Required behavior, not marketing content
+  ─────────────────────────────────────  ─────────────────────────────────────────────────
+   Submit button behavior                 Application logic
+  ─────────────────────────────────────  ─────────────────────────────────────────────────
+   Page route /contact                    Stable URL unless full routing strategy changes
+
+  ———
+
+  Recommended Database Design
+
+  Keep this normalized, but not overengineered.
+
+  Core page table:
+
+  pages
+  - id
+  - slug
+  - title
+  - status
+  - published_at
+  - created_at
+  - updated_at
+  - deleted_at
+
+  Contact page content:
+
+  contact_page
+  - id
+  - page_id
+  - hero_title
+  - hero_description
+  - response_time_note
+  - emergency_title
+  - emergency_description
+  - emergency_phone_label
+  - emergency_phone_number
+  - is_visible
+  - created_at
+  - updated_at
+
+  Business contact settings:
+
+  business_contact_settings
+  - id
+  - address_line
+  - city
+  - district
+  - country
+  - primary_phone
+  - secondary_phone
+  - whatsapp_number
+  - email
+  - latitude
+  - longitude
+  - map_zoom
+  - created_at
+  - updated_at
+
+  Opening hours:
+
+  opening_hours
+  - id
+  - day_of_week
+  - opens_at
+  - closes_at
+  - label
+  - is_closed
+  - sort_order
+
+  Contact form subjects:
+
+  contact_subjects
+  - id
+  - label
+  - value
+  - recipient_email
+  - sort_order
+  - is_active
+
+  Submitted inquiries:
+
+  contact_inquiries
+  - id
+  - name
+  - phone
+  - email
+  - subject_id
+  - message
+  - consent_accepted
+  - status
+  - source_page
+  - ip_hash
+  - user_agent
+  - created_at
+  - responded_at
+  - deleted_at
+
+  SEO metadata:
+
+  seo_metadata
+  - id
+  - page_id
+  - meta_title
+  - meta_description
+  - canonical_url
+  - robots_directive
+  - og_title
+  - og_description
+  - og_image_id
+  - twitter_title
+  - twitter_description
+  - twitter_image_id
+  - structured_data_json
+  - created_at
+  - updated_at
+
+  Media:
+
+  media_assets
+  - id
+  - file_url
+  - file_type
+  - alt_text
+  - title
+  - width
+  - height
+  - mime_type
+  - size_bytes
+  - created_at
+  - updated_at
+
+  ———
+
+  CMS Fields
+
+   Field                    Input       Required    Validation
+  ━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━  ━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Hero title               Text             Yes    20-80 chars
+  ───────────────────────  ──────────  ──────────  ─────────────────────────────────────────
+   Hero description         Textarea         Yes    80-220 chars
+  ───────────────────────  ──────────  ──────────  ─────────────────────────────────────────
+   Address                  Textarea         Yes    20-250 chars
+  ───────────────────────  ──────────  ──────────  ─────────────────────────────────────────
+   Primary phone            Text             Yes    Valid phone format
+  ───────────────────────  ──────────  ──────────  ─────────────────────────────────────────
+   Secondary phone          Text        Optional    Valid phone format
+  ───────────────────────  ──────────  ──────────  ─────────────────────────────────────────
+   WhatsApp number          Text        Optional    Valid international number
+  ───────────────────────  ──────────  ──────────  ─────────────────────────────────────────
+   Email                    Email            Yes    Valid email
+  ───────────────────────  ──────────  ──────────  ─────────────────────────────────────────
+   Opening hours            Repeater         Yes    Day, open time, close time, closed flag
+  ───────────────────────  ──────────  ──────────  ─────────────────────────────────────────
+   Map latitude             Decimal          Yes    -90 to 90
+  ───────────────────────  ──────────  ──────────  ─────────────────────────────────────────
+   Map longitude            Decimal          Yes    -180 to 180
+  ───────────────────────  ──────────  ──────────  ─────────────────────────────────────────
+   Form subjects            Repeater         Yes    Label/value required
+  ───────────────────────  ──────────  ──────────  ─────────────────────────────────────────
+   Response note            Text        Optional    Max 160 chars
+  ───────────────────────  ──────────  ──────────  ─────────────────────────────────────────
+   Emergency title          Text             Yes    Max 80 chars
+  ───────────────────────  ──────────  ──────────  ─────────────────────────────────────────
+   Emergency description    Textarea         Yes    Max 250 chars
+  ───────────────────────  ──────────  ──────────  ─────────────────────────────────────────
+   Meta title               Text             Yes    50-60 chars recommended
+  ───────────────────────  ──────────  ──────────  ─────────────────────────────────────────
+   Meta description         Textarea         Yes    140-160 chars recommended
+  ───────────────────────  ──────────  ──────────  ─────────────────────────────────────────
+   Canonical URL            URL              Yes    Absolute URL
+  ───────────────────────  ──────────  ──────────  ─────────────────────────────────────────
+   OG image                 Image       Optional    With alt, width, height
+
+  ———
+
+  SEO Architecture
+
+  Recommended SEO target: local clinic contact/search intent.
+
+  Suggested metadata pattern:
+
+  - Meta title: Contact NMC Clinic Butwal | Address, Phone & Opening Hours
+  - Meta description: Include clinic location, phone, opening hours, and appointment/contact intent.
+  - Canonical URL: /contact
+  - Robots: index, follow
+  - H1: keep one clear H1, currently acceptable.
+  - Structured data:
+      - MedicalClinic
+      - PostalAddress
+      - GeoCoordinates
+      - OpeningHoursSpecification
+      - ContactPoint
+      - BreadcrumbList
+
+  Important: map coordinates and placeholder phone numbers should not be treated as real business data until verified.
+
+  ———
+
+  Performance
+
+  Recommended:
+
+  - Generate the OpenStreetMap iframe only from saved coordinates.
+  - Lazy-load the map iframe.
+  - Keep contact page mostly static if contact details do not change often.
+  - Cache page content and business settings.
+  - Do not cache submitted form requests.
+  - Minimize JS needed for the form.
+
+  For a future Next.js setup:
+
+  - SSG/ISR is suitable for page content.
+  - Server action/API route is needed for form submission.
+  - Revalidate contact page when CMS content changes.
+
+  ———
+
+  Security
+
+  Required before making the form real:
+
+  - Sanitize name, phone, email, subject, and message.
+  - Validate phone/email server-side.
+  - Add rate limiting.
+  - Add spam protection.
+  - Store consent timestamp.
+  - Do not expose recipient emails directly in frontend data.
+  - Validate uploaded SEO/social images if CMS supports media.
+  - Add CMS permissions for editing contact settings.
+  - Add audit logs for changes to phone, address, email, and hours.
+
+  ———
+
+  Risks
+
+  - Current form does not actually send or store messages.
+  - Phone numbers look like placeholders.
+  - Map coordinates may not be verified.
+  - Consent checkbox references agreement but footer privacy links currently point to #.
+  - No SEO metadata exists in the static page.
+  - Emergency message exists, but emergency routing is still just a phone link.
+
+  Sources used for SEO principles:
+  Google Search Central SEO starter guide: https://developers.google.com/search/docs/fundamentals/seo-starter-guide
+  Structured data: https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data
+  Core Web Vitals: https://developers.google.com/search/docs/appearance/core-web-vitals

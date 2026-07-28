@@ -1,0 +1,202 @@
+ Source Truth
+  The current About page contains these content sections:
+
+   Order    Section                   Current Source    Dynamic?            Reason
+  ━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   1        Header/nav/contact bar       lines 30-94    Sitewide dynamic    Shared across pages; not About-specific.
+  ───────  ────────────────────────  ────────────────  ──────────────────  ────────────────────────────────────────────────────────────────────────────
+   2        Hero/banner                 lines 97-109    Dynamic             Page headline, breadcrumb label, intro, background image, SEO-critical H1.
+  ───────  ────────────────────────  ────────────────  ──────────────────  ────────────────────────────────────────────────────────────────────────────
+   3        Intro/about block          lines 114-134    Dynamic             Main brand story, image, statistic, bullet points, CTA.
+  ───────  ────────────────────────  ────────────────  ──────────────────  ────────────────────────────────────────────────────────────────────────────
+   4        Mission and vision         lines 139-150    Dynamic             Core institutional content likely changes over time.
+  ───────  ────────────────────────  ────────────────  ──────────────────  ────────────────────────────────────────────────────────────────────────────
+   5        Core values                lines 155-181    Dynamic repeater    Values can be edited, reordered, hidden, expanded.
+  ───────  ────────────────────────  ────────────────  ──────────────────  ────────────────────────────────────────────────────────────────────────────
+   6        Story/timeline             lines 186-221    Dynamic repeater    Timeline naturally evolves.
+  ───────  ────────────────────────  ────────────────  ──────────────────  ────────────────────────────────────────────────────────────────────────────
+   7        Why choose NMC             lines 227-254    Dynamic repeater    Marketing/service differentiators need CMS control.
+  ───────  ────────────────────────  ────────────────  ──────────────────  ────────────────────────────────────────────────────────────────────────────
+   8        Team teaser                lines 259-269    Dynamic             Links to team/doctors; should use real media and editable copy.
+  ───────  ────────────────────────  ────────────────  ──────────────────  ────────────────────────────────────────────────────────────────────────────
+   9        CTA band                   lines 273-280    Dynamic             CTA text/link/phone should be editable.
+  ───────  ────────────────────────  ────────────────  ──────────────────  ────────────────────────────────────────────────────────────────────────────
+   10       Footer                     lines 284-338    Sitewide dynamic    Global footer, not About-page-specific.
+  ───────  ────────────────────────  ────────────────  ──────────────────  ────────────────────────────────────────────────────────────────────────────
+   11       WhatsApp float             lines 344-347    Sitewide dynamic    Global communication setting.
+
+  Recommended Content Model
+  Use a hybrid CMS model: normalized page/SEO/media/section tables, with typed repeatable section items. This avoids one table per visual section while still
+  keeping content structured.
+
+  Core entities:
+
+  pages
+  - id
+  - slug unique
+  - page_type enum: about, home, doctors, blog, contact
+  - title
+  - status enum: draft, published, archived
+  - locale default 'en'
+  - canonical_page_id nullable
+  - published_at
+  - created_at, updated_at, deleted_at
+
+  page_revisions
+  - id
+  - page_id
+  - version_number
+  - snapshot_json
+  - created_by
+  - created_at
+
+  seo_metadata
+  - id
+  - page_id
+  - meta_title
+  - meta_description
+  - canonical_url
+  - robots_index boolean
+  - robots_follow boolean
+  - og_title
+  - og_description
+  - og_image_id
+  - twitter_card enum
+  - jsonld_override nullable
+  - hreflang_group_id nullable
+
+  media_assets
+  - id
+  - file_path/url
+  - mime_type
+  - width
+  - height
+  - file_size
+  - alt_text
+  - title_text
+  - caption
+  - focal_point_x/y nullable
+  - is_public
+  - created_at, updated_at, deleted_at
+
+  page_sections
+  - id
+  - page_id
+  - section_key unique per page
+  - section_type enum: hero, intro, mission_vision, values, timeline, feature_grid, team_teaser, cta
+  - eyebrow
+  - heading
+  - subheading
+  - body
+  - primary_media_id nullable
+  - primary_cta_label
+  - primary_cta_url
+  - secondary_cta_label
+  - secondary_cta_url
+  - sort_order
+  - is_visible
+  - status enum: draft, published
+  - settings_json for layout-only options
+  - created_at, updated_at, deleted_at
+
+  section_items
+  - id
+  - section_id
+  - item_type enum: value, timeline_step, feature, statistic, bullet, card
+  - label
+  - title
+  - subtitle
+  - body
+  - value_text
+  - icon_key
+  - media_id nullable
+  - link_label
+  - link_url
+  - sort_order
+  - is_visible
+  - created_at, updated_at, deleted_at
+
+  Indexes: pages(slug, locale), page_sections(page_id, sort_order, is_visible), section_items(section_id, sort_order, is_visible), seo_metadata(page_id),
+  media_assets(mime_type). Add unique constraints on pages(slug, locale) and page_sections(page_id, section_key).
+
+  Dynamic Fields
+  Dynamic fields should include: hero eyebrow, breadcrumb label, H1, hero paragraph, hero background image, intro image, intro heading/body, statistic value/
+  label, bullet list, CTA label/link, mission title/body, vision title/body, values list, timeline steps, why-choose cards, team teaser text/link/images,
+  final CTA copy/link, phone, email, address, hours, WhatsApp number, logo, footer copy, social URLs, privacy/terms/accessibility URLs.
+
+  Static Fields
+  Keep these static unless redesigning: section layout type, color tokens, spacing scale, typography system, icon library keys, header behavior, responsive
+  breakpoints, component structure, animation/hover rules. Store only small layout flags in settings_json, not raw HTML/CSS.
+
+  CMS Fields
+  Use these input patterns:
+
+   Field               Input                      Validation
+  ━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Heading/H1          text                       required, 20-80 chars
+  ──────────────────  ─────────────────────────  ───────────────────────────────────────────
+   Meta title          text                       required, 40-60 chars recommended
+  ──────────────────  ─────────────────────────  ───────────────────────────────────────────
+   Meta description    textarea                   required, 120-160 chars recommended
+  ──────────────────  ─────────────────────────  ───────────────────────────────────────────
+   Body copy           textarea/rich text lite    required where content section is visible
+  ──────────────────  ─────────────────────────  ───────────────────────────────────────────
+   Repeater items      repeater                   min/max per section, sortable
+  ──────────────────  ─────────────────────────  ───────────────────────────────────────────
+   CTA URL             internal link picker       required if CTA label exists
+  ──────────────────  ─────────────────────────  ───────────────────────────────────────────
+   Images              media picker               require alt text, width, height
+  ──────────────────  ─────────────────────────  ───────────────────────────────────────────
+   Icon                icon select                restrict to approved icon keys
+  ──────────────────  ─────────────────────────  ───────────────────────────────────────────
+   Visibility          toggle                     default visible
+  ──────────────────  ─────────────────────────  ───────────────────────────────────────────
+   Publish status      select                     draft/published
+
+  For medical content, avoid free unrestricted rich text where possible. Prefer paragraphs, bullets, and approved link fields.
+
+  SEO Architecture
+  Add page-level SEO for About: title, description, canonical, robots, OG, Twitter Card, image metadata, and JSON-LD. Google Search Central recommends useful
+  page titles/descriptions, crawlable internal links, and structured data when it helps Google understand content. Core Web Vitals should be treated as real
+  user-experience metrics for loading, interactivity, and visual stability.
+
+  Recommended structured data:
+
+  - MedicalBusiness or LocalBusiness/MedicalClinic equivalent if valid for the clinic.
+  - BreadcrumbList for Home > About.
+  - Organization/clinic identity if sitewide schema is not already present.
+
+  Heading strategy:
+
+  - One H1 only: current hero H1.
+  - H2 for major sections: intro, values, timeline, why choose, team, CTA.
+  - H3 for cards/items: mission, vision, value cards, timeline steps.
+
+  URL strategy: keep /about long term. If current static file remains, map clean URL to it at server level later. Do not expose About.dc.html as the final SEO
+  URL if this becomes production-grade.
+
+  Media
+  Current About page uses placeholders for clinic/reception and doctor photos. These should become real CMS-managed media records with alt_text, title_text,
+  width, height, file size, format, responsive variants, and focal point. Use WebP/AVIF variants, preserve original, lazy-load below-the-fold images, and do
+  not lazy-load the hero background if it becomes the LCP image.
+
+  Performance
+  Best fit for this page: SSG or ISR if using Next.js, because About content changes rarely. Cache published page payload by slug + locale. Cache media
+  transforms/CDN assets aggressively. Query in one page fetch: page + seo + visible sections + visible items + media. Avoid sending draft/version data to
+  public users.
+
+  Security
+  Sanitize all rich text, CTA URLs, image metadata, captions, and JSON-LD overrides. File uploads need MIME validation, extension validation, size limits,
+  image dimension limits, malware scanning if available, and permission checks. CMS permissions should separate: editor, publisher, media manager, admin.
+
+  Risks
+  Biggest current risks: no SEO metadata in the page head, placeholder images/text, href="#" legal links, and global contact values mixed into page files. For
+  the database refactor, the main risk is over-modeling every visual section as its own table. Use reusable page_sections + section_items, and create
+  dedicated tables only for truly reusable entities like doctors, awards, certifications, partners, and testimonials.
+
+  Sources used for SEO guidance: Google Search Central SEO Starter Guide, Structured Data intro, Core Web Vitals, and mobile-first indexing docs:
+  https://developers.google.com/search/docs/fundamentals/seo-starter-guide
+  https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data
+  https://developers.google.com/search/docs/appearance/core-web-vitals
+  https://developers.google.com/search/docs/crawling-indexing/mobile/mobile-sites-mobile-first-indexing
+

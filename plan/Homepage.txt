@@ -1,0 +1,335 @@
+Below is the Homepage-only architecture plan based on current NMC Homepage.dc.html. No implementation code.
+
+  Source Truth
+  Current Homepage sections:
+
+   Order    Section                    Source    Dynamic?                    Reason
+  ━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   1        Header/nav/contact bar      30-94    Sitewide dynamic            Shared across pages; not Homepage-specific.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   2        Hero                       96-135    Dynamic                     H1, intro, two CTAs, three highlight items, background, foreground image.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   3        Quick actions             137-159    Dynamic repeater            Three shortcut cards; labels, links, phone must be editable.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   4        Services                  161-211    Dynamic repeater            Six service cards; same six services as the Specialties page.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   5        About teaser              213-250    Dynamic                     Brand story, image, CTA to About page.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   6        Diagnostics               252-284    Dynamic                     Service messaging; likely to change with equipment.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   7        Doctors teaser + filter   286-322    Dynamic                     Filter tabs and doctor cards; must come from real doctor records.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   8        Why choose us             324-354    Dynamic repeater            Four differentiator cards; marketing copy needs CMS control.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   9        Appointment form          356-426    Dynamic + integration       Core conversion point; currently local preview only.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   10       Patient information       428-464    Dynamic repeater            Four cards including opening hours; operational content.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   11       Testimonial               466-479    Dynamic                     Currently an empty placeholder; no real testimonial exists.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   12       Health articles           481-535    Dynamic                     Three article cards; should come from real blog posts.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   13       Location and contact      537-592    Sitewide dynamic            Map, address, phone, email, hours; same data as Contact page.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   14       Footer                    594-677    Sitewide dynamic            Global footer, not Homepage-specific.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   15       WhatsApp float            679-684    Sitewide dynamic            Global communication setting.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   16       Runtime doctor data      710-715     Dynamic source candidate    Four hardcoded placeholder doctors.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ────────────────────────────────────────────────────────────────────────
+   17       Runtime blogPosts data   717-724     Dead code                   Six posts are built and returned but never used in the template.
+
+  Notes on current state:
+
+  - The page has four placeholder doctor records at NMC Homepage.dc.html:710, using Dr. [Name], Qualification to be
+    confirmed, and NMC Reg. No. to be confirmed. The Doctors page has six of the same placeholders.
+  - blogPosts at NMC Homepage.dc.html:717 builds six posts and returns them from renderVals(), but no template tag
+    reads it. The health articles section instead hardcodes three different card titles directly in the markup at
+    lines 481-535. Two sources of blog content exist on one page and they do not match.
+  - The appointment form at line 372 only calls preventDefault() and sets submitted: true at line 767. It does not
+    submit to a backend, send email, store a request, or notify staff.
+  - The testimonial section contains no testimonial. It reads: Verified patient experiences will be published here
+    with permission.
+  - The location section embeds the same OpenStreetMap coordinates as the Contact page (27.700, 83.448).
+  - Opening hours appear twice on this page as hardcoded text: once in the header contact bar and once in the
+    patient information section. They are not a prop.
+  - The footer on this page carries an extra contact strip (emergency hotline, email, address) that the other six
+    pages do not have. Homepage footer is 84 lines (594-677); every other footer is 58.
+
+  Dynamic Fields
+  Make these editable:
+
+   Field                         CMS Input          Validation
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Page slug                     text/slug          required, unique, default home
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   Hero eyebrow                  text               optional, max 40 chars
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   H1                            text               required, 35-90 chars
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   Hero intro                    textarea           required, 100-220 chars
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   Hero CTA labels/links         link picker        both CTAs validated together
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   Hero highlight items          repeater           exactly 3, title max 40 chars, subtitle max 60 chars
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   Hero background image         media picker       required, alt/title metadata
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   Hero foreground image         media picker       optional, alt text required if set
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   Quick action cards            repeater           2-4 items, label/description/link required per item
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   Services shown                relation picker    select from specialties, min 3
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   Section heading/body          text/textarea      required per visible section
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   About teaser image            media picker       alt text required
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   Doctors shown                 relation picker    select from doctors, or auto by is_featured
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   Why-choose cards              repeater           2-6 items, title and body required
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   Appointment services list     relation picker    source from specialties, do not retype
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   Appointment time slots        repeater           1-6 slots, label max 40 chars
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   Consent checkbox text         textarea           required, must link to a real privacy page
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   Patient info cards            repeater           2-6 items; hours card should read from opening_hours
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   Testimonials                  relation picker    optional; hide section when empty
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   Articles shown                relation picker    select published blog posts, or auto by newest
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   Map coordinates               decimal            reuse global settings, do not store per page
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   Section visibility            toggle             default visible
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   Section sort order            number/drag        required
+  ────────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────
+   SEO metadata                  SEO group          required before publish
+
+  Static Fields
+  Keep these static unless redesigning: section order logic, grid and flex structure, card layout, filter tab
+  behavior, sticky header behavior, hero overlay gradient, color tokens, spacing scale, typography, responsive
+  breakpoint at 1180px, hover states, and icon rendering.
+
+  Do not store raw card HTML or raw inline CSS in the CMS.
+
+  Recommended Database Design
+  The Homepage is a composition page. It should own almost no content of its own. Nearly every section on it shows
+  data that already belongs to another entity: services come from specialties, doctors from doctors, articles from
+  blog_posts, contact and map from global settings.
+
+  Reuse these tables as already defined in the other plans. Do not redefine them here:
+
+  - pages, seo_metadata, media_assets, page_sections, section_items  (aboutpage.txt)
+  - specialties, specialty_points                                     (Specialties.txt)
+  - doctors, doctor_specialties, doctor_schedules                     (Doctors.txt)
+  - blog_posts, blog_categories, authors                              (Blogs.txt)
+  - business_contact_settings, opening_hours                          (Contact.txt)
+
+  Note: those five plans define pages, seo_metadata and media_assets with different column names. That conflict
+  must be settled once before any of this is built. This plan does not add a sixth version.
+
+  Homepage-specific rows:
+
+  pages
+  - one row with page_type home, slug home
+
+  page_sections
+  - one row per visible section listed in Source Truth
+  - section_type enum for this page: hero, quick_actions, service_grid, about_teaser, diagnostics,
+    doctor_teaser, feature_grid, appointment, patient_info, testimonials, article_teaser, location
+  - selection rules for which services/doctors/articles to show go in settings_json, not raw HTML
+
+  section_items
+  - hero highlight items, quick action cards, why-choose cards, patient info cards
+  - these are presentation copy that exists only on the Homepage, so section_items is the right home for them
+
+  One new table is needed. Nothing in the existing five plans stores an appointment request:
+
+  appointment_requests
+  - id
+  - full_name
+  - phone
+  - specialty_id nullable
+  - preferred_date nullable
+  - preferred_time_slot nullable
+  - message nullable
+  - consent_accepted boolean
+  - consent_at
+  - status enum: new, contacted, scheduled, closed
+  - source_page
+  - ip_hash
+  - user_agent
+  - created_at
+  - responded_at
+  - deleted_at
+
+  Indexes: appointment_requests(status, created_at), appointment_requests(specialty_id),
+  page_sections(page_id, sort_order, is_visible), section_items(section_id, sort_order, is_visible).
+
+  Two tables are deliberately NOT added:
+
+  - appointment_services. The form's six service options are the same six specialties. Read from specialties.
+  - testimonials. The section is an empty placeholder today. Add the table when the clinic has real, consented
+    testimonials to publish. Until then, keep the section hidden.
+
+  ERD Recommendation
+  Core relationship:
+
+  pages 1--1 seo_metadata
+  pages 1--many page_sections
+  page_sections 1--many section_items
+  media_assets 1--many page_sections
+  specialties 1--many appointment_requests
+  page_sections many--many specialties       via settings_json selection
+  page_sections many--many doctors           via settings_json selection
+  page_sections many--many blog_posts        via settings_json selection
+
+  Future relationship:
+
+  appointment_requests many--1 doctors
+  testimonials many--1 doctors
+  testimonials many--1 specialties
+
+  SEO Architecture
+  Recommended final URL: / , not NMC%20Homepage.dc.html. The current filename contains an encoded space, which is
+  poor as a public URL and is linked from every other page.
+
+  This is the most SEO-important page on the site. It should carry the clinic's primary identity.
+
+  Recommended structured data:
+
+  - MedicalClinic or MedicalBusiness with name, address, phone, geo coordinates, and opening hours.
+  - Organization identity if it is not already declared sitewide.
+  - WebSite for the site name.
+  - Do not add BreadcrumbList; this is the root page.
+  - Do not repeat the full clinic schema on every page. Declare it here and reference it elsewhere.
+
+  Heading strategy:
+
+  - One H1: the hero headline. Current page already has exactly one H1.
+  - H2 for each major section. Current page has 10.
+  - H3 for cards, service names, doctor names, and article titles. Current page has 18.
+
+  Internal links: the Homepage already links to all six other pages from the header and footer. Keep the service
+  cards linking to /specialties anchors, doctor cards to /doctors, and article cards to /blog/{post-slug}. Today
+  the article cards link to # and the service cards link to the Specialties page anchors.
+
+  CMS Structure
+  Recommended CMS modules:
+
+   Module              Purpose
+  ━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Homepage            Section order, visibility, headings, teaser copy, SEO.
+  ──────────────────  ────────────────────────────────────────────────────────
+   Appointments        Read and manage incoming appointment requests.
+  ──────────────────  ────────────────────────────────────────────────────────
+   Media Library       Hero background, hero foreground, teaser images.
+  ──────────────────  ────────────────────────────────────────────────────────
+   Global Settings     Header, footer, contact, hours, map, WhatsApp.
+
+  The Homepage module should pick and order existing records. It should not let an editor retype a doctor name, a
+  service name, or an article title. Every one of those is a relation picker.
+
+  Publish rule: the Homepage should not publish while any visible section still contains placeholder text such as
+  Dr. [Name], Qualification to be confirmed, or NMC Reg. No. to be confirmed.
+
+  Appointment Form
+  The form has these fields today, at NMC Homepage.dc.html:357-426:
+
+   Field             Input       Required    Current source
+  ━━━━━━━━━━━━━━━━  ━━━━━━━━━━  ━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Full name         text             Yes    free text
+  ────────────────  ──────────  ──────────  ──────────────────────────────────────
+   Phone number      tel              Yes    free text
+  ────────────────  ──────────  ──────────  ──────────────────────────────────────
+   Service           select            No    six hardcoded options
+  ────────────────  ──────────  ──────────  ──────────────────────────────────────
+   Preferred date    date              No    free date
+  ────────────────  ──────────  ──────────  ──────────────────────────────────────
+   Preferred time    select            No    three hardcoded slots
+  ────────────────  ──────────  ──────────  ──────────────────────────────────────
+   Message           textarea          No    free text
+  ────────────────  ──────────  ──────────  ──────────────────────────────────────
+   Consent           checkbox         Yes    required attribute present
+
+  Required before this form is made real:
+
+  - A server endpoint that writes to appointment_requests.
+  - Server-side validation of name, phone, date, and time slot. Client validation is not enough.
+  - Rate limiting and spam protection.
+  - Store the consent timestamp, not just the boolean.
+  - Staff notification, and a visible response-time promise the clinic can meet.
+  - Reject dates in the past and outside opening_hours.
+  - The consent text must link to a real privacy page. It currently sits next to footer legal links that are href="#".
+
+  This form collects a name, a phone number, and a health-related service. Treat the stored rows as personal health
+  information: restrict who can read them, set a retention period, and log access.
+
+  Media Management
+  The page uses four images: uploads/backgound.webp as the hero background, uploads/doctor-cutout.png as the hero
+  foreground, uploads/team-BJF-74gA.jpg in the about teaser, and uploads/logo.jpeg in the header and footer. Every
+  other visual block on the page is a styled placeholder, not a photo.
+
+  The hero background is almost certainly the LCP element. Do not lazy-load it. Preload it. The hero foreground
+  image is also above the fold and should not be lazy-loaded either.
+
+  Everything below the hero should be lazy-loaded. Store width and height for every image to stop layout shift.
+  Generate WebP/AVIF variants and responsive sizes.
+
+  Note: uploads/ currently holds 18 files but only 4 are referenced. Three pairs are exact duplicates
+  (backgound.png, doctor-herosec.png, doctor-herosec.webp). Clean this up during the media migration.
+
+  Performance
+  Best fit: SSG or ISR if using Next.js. Homepage content changes occasionally, not per request.
+
+  This page needs the most careful query design on the site because it pulls from five entities at once. Fetch in
+  one call: page + SEO + visible sections + section items + selected specialties + selected doctors + selected
+  posts + global contact settings + opening hours + media. Do not run one query per section.
+
+  Cache the published payload by locale. Revalidate when any referenced entity changes, not only when the Homepage
+  itself is edited, because a doctor or article edit changes what this page shows.
+
+  Keep the specialty filter client-side. It only filters records already loaded.
+
+  Lazy-load the OpenStreetMap iframe. It is at the bottom of the page and blocks nothing above it.
+
+  Security
+  Sanitize all teaser copy, CTA URLs, image metadata, and SEO fields. Restrict icons to approved keys; do not allow
+  raw SVG from CMS users. The current page stores icons as raw SVG path strings.
+
+  Appointment submissions need the strictest handling on the site: server-side validation, rate limiting, spam
+  protection, consent storage, restricted read access, retention policy, and audit logs.
+
+  Do not expose staff notification email addresses in frontend data.
+
+  Current Risks
+  The Homepage is the site's most important page and is currently the least production-ready:
+
+  - The appointment form silently discards every submission. A patient sees a success state and no one is contacted.
+    This is the single highest-priority defect on the site.
+  - Doctor names, qualifications, and NMC registration numbers are placeholders.
+  - The testimonial section promises patient experiences and shows none.
+  - Two conflicting sources of blog content exist on one page; one of them is dead code.
+  - Seven links point to href="#".
+  - There is no <title>, meta description, canonical, Open Graph, or structured data.
+  - Opening hours are hardcoded in two places on this page and in the header of all seven pages.
+  - The public URL contains an encoded space.
+  - The footer differs from the other six pages, so the site's global footer is not actually global.
+
+  Best Practice
+  Treat the Homepage as a composition layer, not a content owner. Its job is to select, order, and introduce
+  records that live in specialties, doctors, and blog_posts. The only content it should truly own is its own
+  headings, teaser copy, and the small repeaters in section_items.
+
+  Every time a value on this page is also shown elsewhere, read it from one source. Opening hours, phone, email,
+  address, and map coordinates belong to global settings, not to this page.
+
+  Sources:
+  https://developers.google.com/search/docs/fundamentals/seo-starter-guide
+  https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data
+  https://developers.google.com/search/docs/appearance/core-web-vitals
+  https://developers.google.com/search/docs/crawling-indexing/mobile/mobile-sites-mobile-first-indexing

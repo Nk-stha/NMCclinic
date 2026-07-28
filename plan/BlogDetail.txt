@@ -1,0 +1,238 @@
+Below is the Blog Detail-page-only architecture plan based on current Blog Detail.dc.html. No implementation code.
+
+  This plan is a companion to Blogs.txt. That plan already models blog_posts, blog_categories, blog_tags, authors,
+  seo_metadata and media_assets, and it defines the /blog/{post-slug} URL. This plan covers what that plan left
+  out: the article template itself.
+
+  Source Truth
+  Current Blog Detail page sections:
+
+   Order    Section                    Source    Dynamic?                    Reason
+  ━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   1        Article body CSS           26-32     Static                      Typography rules for .article-body; layout, not content.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ─────────────────────────────────────────────────────────────────
+   2        Header/nav/contact bar     37-101    Sitewide dynamic            Shared across pages.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ─────────────────────────────────────────────────────────────────
+   3        Article header            103-122    Dynamic                     Breadcrumb, category, H1, byline, review date, reading time.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ─────────────────────────────────────────────────────────────────
+   4        Featured image            124-129    Dynamic                     Currently a placeholder block, not a real image.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ─────────────────────────────────────────────────────────────────
+   5        Article body              131-166    Dynamic                     The article itself; five H2 sections of prose and lists.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ─────────────────────────────────────────────────────────────────
+   6        Medical disclaimer        167-171    Sitewide dynamic            Same wording should apply to every health article.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ─────────────────────────────────────────────────────────────────
+   7        Share row                 173-182    Static behavior             Targets should be generated from the canonical URL.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ─────────────────────────────────────────────────────────────────
+   8        Sidebar                   184-202    Dynamic                     Reviewed-for-accuracy box and appointment CTA.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ─────────────────────────────────────────────────────────────────
+   9        Related articles          204-228    Dynamic                     Should be derived from category, not hand-picked strings.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ─────────────────────────────────────────────────────────────────
+   10       Footer                    230-287    Sitewide dynamic            Global footer.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ─────────────────────────────────────────────────────────────────
+   11       WhatsApp float            289-293    Sitewide dynamic            Global communication setting.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ─────────────────────────────────────────────────────────────────
+   12       Runtime related data      319-323    Dynamic source candidate    Three hardcoded related-post objects.
+
+  Notes on current state:
+
+  - The whole page is one hardcoded article: Kidney Health: Early Signs You Should Not Ignore. There is no routing,
+    no slug, and no way to render a second article. This file is a template shown with sample content, not a
+    working detail page.
+  - The byline reads Reviewed by NMC medical team, Reviewed [Month Year], 5 min read. The review date is a
+    placeholder. Blog.dc.html carries the same [Month Year] placeholder at lines 124, 277 and 278.
+  - The featured image at lines 124-129 is a striped placeholder block with the caption text article image, not an
+    <img>. The page's only real images are uploads/backgound.webp in the header and uploads/logo.jpeg.
+  - The article body has five H2 headings and uses the .article-body CSS class defined at lines 26-32. This is the
+    only page on the site with its own CSS rules; every other page is fully inline-styled.
+  - The three share links at lines 173-182 all point to href="#".
+  - The three related-article records at line 319 are hardcoded and none of them match a post in Blog.dc.html's
+    posts array. The site now has three separate, disagreeing lists of blog content: Blog.dc.html:276,
+    NMC Homepage.dc.html:717, and here.
+  - Nine links on this page point to href="#", the most of any page on the site.
+
+  Dynamic Fields
+  Almost every field on this page belongs to a blog_posts record, not to a page. Blogs.txt already defines these
+  inputs and their validation. This plan does not restate them.
+
+  Fields this template needs that Blogs.txt does not already cover:
+
+   Field                     CMS Input                Validation
+  ━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Breadcrumb category       derived                  from the post's primary category; not typed by hand
+  ────────────────────────  ───────────────────────  ───────────────────────────────────────────────────────
+   Featured image caption    text                     optional, max 160 chars
+  ────────────────────────  ───────────────────────  ───────────────────────────────────────────────────────
+   Reviewer display line     derived                  from authors.name and authors.credentials
+  ────────────────────────  ───────────────────────  ───────────────────────────────────────────────────────
+   Medical disclaimer        textarea                 sitewide setting, not per post; required on all posts
+  ────────────────────────  ───────────────────────  ───────────────────────────────────────────────────────
+   Sidebar CTA heading/body  text/textarea            sitewide default, optional per-post override
+  ────────────────────────  ───────────────────────  ───────────────────────────────────────────────────────
+   Sidebar CTA link          internal link picker     required if CTA is visible
+  ────────────────────────  ───────────────────────  ───────────────────────────────────────────────────────
+   Related posts rule        select                   same category / same specialty / manual
+  ────────────────────────  ───────────────────────  ───────────────────────────────────────────────────────
+   Related posts manual      relation picker          only when rule is manual; 2-4 published posts
+  ────────────────────────  ───────────────────────  ───────────────────────────────────────────────────────
+   Share channels            multi-select             approved channels only; URLs generated, never typed
+
+  Static Fields
+  Keep these static unless redesigning: the .article-body typography rules, article max-width, sidebar position and
+  stacking behavior, card layout for related posts, disclaimer box styling, share button styling, color tokens,
+  spacing scale, responsive breakpoint at 1180px, and hover states.
+
+  Do not store raw HTML or CSS in the CMS. The article body is the one place editors write structured content, and
+  it must go through the sanitized pipeline described below.
+
+  Recommended Database Design
+  No new tables are needed for this page. That is the correct outcome, not an omission.
+
+  Reuse exactly as defined in Blogs.txt:
+
+  - blog_posts          title, slug, excerpt, body_json, body_html_sanitized, featured_image_id, author_id,
+                        reviewer_id, reviewed_at, published_at, status, reading_time_minutes, canonical_url
+  - blog_categories     breadcrumb label and the related-posts rule
+  - blog_post_categories
+  - blog_tags, blog_post_tags
+  - authors             byline and the reviewed-for-accuracy box
+  - seo_metadata        per-post row via seo_metadata.blog_post_id
+  - media_assets        featured image, with alt text, width, height, caption
+
+  Reuse from other plans:
+
+  - business_contact_settings, opening_hours   (Contact.txt)  for header, footer and WhatsApp
+  - specialties                                (Specialties.txt)  if posts are linked to services
+
+  Three things this page shows are sitewide, not per-post, and nothing currently owns them:
+
+  - The medical disclaimer wording.
+  - The sidebar appointment CTA default heading, body and link.
+  - The approved share channel list.
+
+  Put all three in the same global settings store that already needs to own the header, footer, WhatsApp number and
+  opening hours. That store is still missing from every plan in this folder, including this one. It should be
+  settled once rather than invented separately per page.
+
+  Article body storage:
+
+  - Store structured blocks in body_json. That is the editing source of truth.
+  - Render to body_html_sanitized on save, never on read.
+  - Allow only: paragraph, H2, H3, unordered list, ordered list, bold, internal link, external link, image, and
+    callout. The current article uses paragraph, H2, H3, unordered list and bold.
+  - Block script tags, iframes, raw HTML, and inline styles. For medical content the block set should be closed,
+    not open.
+
+  Reading time should be computed from body_json on save and stored in reading_time_minutes, with a manual
+  override. The current 5 min read is typed by hand.
+
+  ERD Recommendation
+  Core relationship:
+
+  blog_posts many--1 blog_categories        via blog_post_categories, is_primary drives the breadcrumb
+  blog_posts many--1 authors                as author
+  blog_posts many--1 authors                as reviewer
+  blog_posts many--1 media_assets           featured image
+  blog_posts 1--1 seo_metadata
+  blog_posts many--many blog_posts          related, only when the rule is manual
+
+  Derived, no table needed:
+
+  related posts    = published posts sharing the primary category, excluding self, newest first, limit 3
+  breadcrumb       = Home > Blog > primary category > post title
+  share URLs       = built from canonical_url at render time
+
+  Future relationship:
+
+  blog_posts many--many doctors            reviewer or subject-matter link
+  blog_posts many--many specialties        link an article to a service
+
+  SEO Architecture
+  Recommended final URL: /blog/{post-slug}. This matches Blogs.txt. The current file has no slug at all.
+
+  This page type carries the most SEO value per record on the site, because each article is a separate indexable
+  URL competing on health queries.
+
+  Recommended structured data:
+
+  - Article, or MedicalWebPage where the content is genuinely medical guidance.
+  - Include headline, image, datePublished, dateModified, author, reviewedBy, publisher, and mainEntityOfPage.
+  - BreadcrumbList for Home > Blog > Category > Post.
+  - Do not claim a reviewer or a review date in schema unless a real person reviewed it on a real date. The current
+    page would emit Reviewed [Month Year], which must never reach production schema.
+
+  Heading strategy:
+
+  - One H1: the article title. Current page already has exactly one.
+  - H2 for article sections. Current page has five in the body.
+  - H3 for subsections and for the sidebar and related-card titles.
+  - Editors must not be able to insert a second H1 through the block editor.
+
+  Canonical: self-referencing for each post. Use blog_posts.canonical_url only when an article is republished from
+  elsewhere.
+
+  Internal links: every article should link to at least one specialty and one doctor or the appointment page. The
+  sidebar CTA already does part of this job.
+
+  Media Management
+  The featured image must become a real media_assets record with alt text, width, height, MIME type, file size,
+  caption and focal point. It is currently a styled placeholder.
+
+  The featured image sits directly below the article header and is very likely the LCP element on this page. Do not
+  lazy-load it. Preload it. Lazy-load in-body images and the related-post cards.
+
+  Alt text should describe the image, not repeat the article title.
+
+  Every article needs an Open Graph image. Fall back to the featured image, then to a sitewide default.
+
+  Performance
+  Best fit: SSG or ISR if using Next.js. Articles are written once and edited rarely, which is the ideal case for
+  static generation.
+
+  Recommended query: fetch the post by slug with its author, reviewer, primary category, featured image and SEO in
+  one call, then fetch related posts in a second small query. Do not fetch the full body of related posts; the
+  cards only need title, category, summary and image.
+
+  Cache by slug and locale. Revalidate on publish and on edit. Revalidate the blog index and the Homepage article
+  teasers at the same time, because both show post data.
+
+  Return 404 for unpublished slugs. Do not render drafts to the public, and do not include draft or revision data
+  in the public payload.
+
+  Security
+  Sanitize the article body on save with a strict allowlist. This is the only place on the site where an editor
+  writes long-form markup, so it is the main injection surface.
+
+  Sanitize excerpts, captions, author bios, alt text, CTA URLs and SEO fields. Validate that internal links resolve
+  and that external links are http or https only.
+
+  Use role-based publishing: writer, reviewer, publisher, admin. A writer must not be able to set reviewed_at or
+  reviewer_id on their own article.
+
+  Keep audit logs for review status changes. For medical content, who approved an article and when is the record
+  that matters most.
+
+  Current Risks
+  - The page cannot render a second article. It is a single hardcoded sample, so there is no working detail page
+    today despite Blogs.txt planning /blog/{post-slug}.
+  - Reviewed [Month Year] is a placeholder on a medical-review line. Publishing that wording, or emitting it in
+    schema, would misrepresent clinical review.
+  - The featured image is a placeholder block.
+  - Nine links point to href="#", including all three share buttons.
+  - The related-articles list is hardcoded and disagrees with both other blog lists on the site.
+  - There is no <title>, meta description, canonical, Open Graph, or Article schema.
+  - The disclaimer is correct and well-placed, but it is copied into the page rather than owned by a setting, so it
+    can drift between articles.
+
+  Best Practice
+  This page is a template, not a page. It should hold no content of its own. Everything visible except layout comes
+  from one blog_posts record plus sitewide settings.
+
+  The rule that matters most here is the review workflow. A clinic publishing health guidance needs a real named
+  reviewer, a real review date, and a record of who approved it. Model that as data with enforced publish rules,
+  not as text an editor types into a byline.
+
+  Sources:
+  https://developers.google.com/search/docs/fundamentals/seo-starter-guide
+  https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data
+  https://developers.google.com/search/docs/appearance/core-web-vitals
+  https://developers.google.com/search/docs/crawling-indexing/mobile/mobile-sites-mobile-first-indexing

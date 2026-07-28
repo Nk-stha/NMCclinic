@@ -1,0 +1,288 @@
+Below is the Doctors-page-only architecture plan based on current Doctors.dc.html. No implementation code.
+
+  Source Truth
+  Current Doctors page sections:
+
+   Order    Section                    Source    Dynamic?                    Reason
+  ━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   1        Header/nav/contact bar      30-94    Sitewide dynamic            Shared across pages.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ───────────────────────────────────────────────────────────────────────
+   2        Hero/banner                97-109    Dynamic                     H1, intro, breadcrumb, background, SEO-critical content.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ───────────────────────────────────────────────────────────────────────
+   3        Specialty filter          114-130    Dynamic                     Filter options must come from real specialties.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ───────────────────────────────────────────────────────────────────────
+   4        Doctor grid               133-156    Dynamic                     Core content: doctors, photos, credentials, schedules, profile links.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ───────────────────────────────────────────────────────────────────────
+   5        CTA band                  160-168    Dynamic                     Appointment copy, CTA links, phone.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ───────────────────────────────────────────────────────────────────────
+   6        Footer                    171-228    Sitewide dynamic            Shared footer/contact/legal content.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ───────────────────────────────────────────────────────────────────────
+   7        WhatsApp float            231-235    Sitewide dynamic            Global communication setting.
+  ───────  ────────────────────────  ─────────  ──────────────────────────  ───────────────────────────────────────────────────────────────────────
+   8        Runtime doctor data       260-266    Dynamic source candidate    Currently hardcoded placeholders.
+
+  The page currently has six placeholder doctor records: Dr. [Name], Qualification to be confirmed, and NMC Reg. No. to be confirmed at Doctors.dc.html:260.
+
+  Dynamic Fields
+  Make these editable:
+
+   Field                      CMS Input          Validation
+  ━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Page slug                  text/slug          required, unique, default doctors
+  ─────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────────────────
+   Hero breadcrumb            text               required, max 30 chars
+  ─────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────────────────
+   Hero eyebrow               text               optional, max 40 chars
+  ─────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────────────────
+   H1                         text               required, 35-90 chars
+  ─────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────────────────
+   Hero intro                 textarea           required, 100-220 chars
+  ─────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────────────────
+   Hero background image      media picker       required, with alt/title metadata
+  ─────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────────────────
+   Doctor name                text               required, 3-100 chars
+  ─────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────────────────
+   Doctor slug                slug               required, unique
+  ─────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────────────────
+   Specialty                  relation picker    required, links to specialties
+  ─────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────────────────
+   Qualifications             repeater/text      required before publish
+  ─────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────────────────
+   NMC registration number    text               required before publish if doctor is shown publicly
+  ─────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────────────────
+   Profile photo              media picker       strongly recommended
+  ─────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────────────────
+   Photo alt text             text               required if photo exists
+  ─────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────────────────
+   Consultation hours         schedule editor    required if doctor is accepting appointments
+  ─────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────────────────
+   Short bio                  textarea           optional on listing, required on detail page
+  ─────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────────────────
+   Languages                  repeater           optional
+  ─────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────────────────
+   Availability status        select             accepting appointments / unavailable / hidden
+  ─────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────────────────
+   Sort order                 number/drag        required
+  ─────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────────────────
+   Visibility                 toggle             default visible
+  ─────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────────────────
+   CTA labels/links           link picker        optional but validated together
+  ─────────────────────────  ─────────────────  ─────────────────────────────────────────────────────────────────────
+   SEO metadata               SEO group          required for page; optional per doctor detail if detail pages exist
+
+  Static Fields
+  Keep these static unless redesigning: grid layout, tab/select behavior, visual card structure, color tokens, spacing, typography, active tab styling,
+  responsive breakpoint, and hover states.
+
+  Do not store raw card HTML or raw inline CSS in the CMS.
+
+  Recommended Database Design
+  Doctors should be a real reusable entity, not just section items, because they connect to specialties, schedules, appointments, SEO, and possibly profile
+  pages.
+
+  pages
+  - id
+  - slug unique
+  - page_type enum: doctors
+  - locale
+  - status enum: draft, published, archived
+  - published_at
+  - created_at, updated_at, deleted_at
+
+  seo_metadata
+  - id
+  - page_id nullable
+  - doctor_id nullable
+  - meta_title
+  - meta_description
+  - canonical_url
+  - robots_index
+  - robots_follow
+  - og_title
+  - og_description
+  - og_image_id
+  - twitter_card
+  - schema_json_override nullable
+
+  media_assets
+  - id
+  - url/path
+  - mime_type
+  - width
+  - height
+  - file_size
+  - alt_text
+  - title_text
+  - caption
+  - focal_point_x/y
+  - created_at, updated_at, deleted_at
+
+  specialties
+  - id
+  - slug unique
+  - title
+  - status
+  - sort_order
+  - is_visible
+
+  doctors
+  - id
+  - slug unique
+  - full_name
+  - display_name
+  - primary_specialty_id
+  - photo_id nullable
+  - short_bio
+  - full_bio
+  - nmc_registration_number
+  - status enum: draft, published, archived
+  - availability_status enum: accepting, unavailable, hidden
+  - sort_order
+  - is_featured
+  - created_at, updated_at, deleted_at
+
+  doctor_specialties
+  - doctor_id
+  - specialty_id
+  - is_primary
+  - sort_order
+
+  doctor_qualifications
+  - id
+  - doctor_id
+  - qualification
+  - institution nullable
+  - year nullable
+  - sort_order
+
+  doctor_schedules
+  - id
+  - doctor_id
+  - day_of_week
+  - start_time
+  - end_time
+  - location_label nullable
+  - appointment_required boolean
+  - is_visible
+
+  page_sections
+  - id
+  - page_id
+  - section_key
+  - section_type enum: hero, doctor_filter_grid, cta
+  - eyebrow
+  - heading
+  - body
+  - primary_media_id
+  - primary_cta_label
+  - primary_cta_url
+  - secondary_cta_label
+  - secondary_cta_url
+  - sort_order
+  - is_visible
+  - settings_json
+
+  Indexes: doctors(slug), doctors(status, is_visible, sort_order), doctor_specialties(specialty_id, doctor_id), doctor_schedules(doctor_id, day_of_week),
+  specialties(slug), pages(slug, locale).
+
+  ERD Recommendation
+  Core relationship:
+
+  pages 1--1 seo_metadata
+  pages 1--many page_sections
+  media_assets 1--many doctors
+  specialties 1--many doctors via primary_specialty_id
+  doctors many--many specialties via doctor_specialties
+  doctors 1--many doctor_qualifications
+  doctors 1--many doctor_schedules
+  doctors 1--1 seo_metadata optional
+
+  Future relationship:
+
+  appointments many--1 doctors
+  appointments many--1 specialties
+  blog_posts many--many doctors
+  testimonials many--1 doctors optional
+
+  SEO Architecture
+  Recommended final URL: /doctors.
+
+  If each doctor has enough real content, add profile pages:
+
+   Page Type                     URL
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Doctors listing               /doctors
+  ────────────────────────────  ──────────────────────────────────────────────────────────────────────
+   Doctor profile                /doctors/{doctor-slug}
+  ────────────────────────────  ──────────────────────────────────────────────────────────────────────
+   Specialty filtered listing    /doctors?specialty=nephrology or static landing only if index-worthy
+
+  Do not index every filter state unless it has unique, crawlable content. For SEO, a doctor profile should include unique bio, specialty, qualifications,
+  schedule, clinic location, profile image, and appointment CTA.
+
+  Structured data:
+
+  - Listing page: MedicalBusiness or clinic-level structured data, plus BreadcrumbList.
+  - Doctor detail page: physician/person-style structured data where valid, connected to clinic organization.
+  - Avoid schema claims that are not source-backed.
+
+  Heading hierarchy:
+
+  - One H1: current hero headline.
+  - H2: doctor grid/CTA section headings if added.
+  - H3: doctor names inside cards are acceptable.
+  - Doctor detail pages should have H1 as doctor name.
+
+  CMS Structure
+  Recommended CMS modules:
+
+   Module             Purpose
+  ━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Doctors            Create/edit doctor profiles.
+  ─────────────────  ─────────────────────────────────────────────
+   Specialties        Source of filter tabs and specialty labels.
+  ─────────────────  ─────────────────────────────────────────────
+   Schedules          Manage doctor consultation hours.
+  ─────────────────  ─────────────────────────────────────────────
+   Media Library      Doctor photos and hero image.
+  ─────────────────  ─────────────────────────────────────────────
+   Doctors Page       Hero, CTA, page SEO, listing behavior.
+  ─────────────────  ─────────────────────────────────────────────
+   Global Settings    Header/footer/contact/social/WhatsApp.
+
+  Publish rule: a doctor should not be publicly visible unless name, primary specialty, qualification, registration number, schedule/availability, and photo
+  alt text are complete.
+
+  Media Management
+  Doctor photos should be stored in media_assets, not embedded in page content. Store width, height, MIME type, file size, alt text, title, caption, and focal
+  point. Generate WebP/AVIF responsive variants. Lazy-load doctor grid photos. Do not lazy-load the hero/LCP image if it becomes a foreground image.
+
+  Alt text pattern: Dr. Full Name, Specialty at NMC Clinic Butwal.
+
+  Performance
+  Best fit: SSG/ISR for listing and doctor profiles if using Next.js. Doctors and schedules change occasionally, not every request.
+
+  Recommended query: fetch page SEO + visible specialties + published visible doctors + primary specialty + qualifications + schedule summary + photo in one
+  optimized endpoint. Cache public payload by locale. Use CDN caching for doctor images. Keep filter client-side only for already-loaded data unless the
+  doctor count grows large.
+
+  Security
+  Sanitize doctor bios, qualifications, schedule labels, CTA URLs, image metadata, and SEO fields. CMS uploads need MIME/extension/size/dimension validation.
+  Restrict doctor publish permission because this is medical credibility content. Keep audit logs for doctor profile and schedule changes.
+
+  Current Risks
+  The current page is not production-ready as a doctor listing because it renders placeholder names, qualifications, registration numbers, and photos. There
+  is also no page <title>, meta description, canonical, Open Graph, or structured data. The View Profile links currently point back to the homepage doctors
+  section, not individual doctor profiles.
+
+  Best Practice
+  Model doctors as first-class entities. Do not bury them in a generic JSON page section. Use page_sections for the Doctors page layout, specialties for
+  filtering, and doctors for real medical staff data. This keeps the listing page, homepage teasers, appointment form, and future doctor profile pages
+  consistent.
+
+  Sources:
+  https://developers.google.com/search/docs/fundamentals/seo-starter-guide
+  https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data
+  https://developers.google.com/search/docs/appearance/core-web-vitals
+  https://developers.google.com/search/docs/crawling-indexing/mobile/mobile-sites-mobile-first-indexing
+
