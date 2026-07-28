@@ -4,7 +4,7 @@
 --
 -- Target: MySQL 8.x / MariaDB-compatible InnoDB schema for a PHP/LAMPP stack.
 -- Note: the exact database engine/version is not confirmed in the current source.
--- This file creates schema only. It does not insert production content.
+-- This file creates schema definitions and inserts initial seed data (6 core pages, SEO metadata, admin account).
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
@@ -474,4 +474,54 @@ CREATE TABLE seo_metadata (
     ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ---------------------------------------------------------------------------
+-- 08. Initial Seed Data
+-- ---------------------------------------------------------------------------
+
+-- Seed Admin User (Email: admin@nmcclinic.com | Password: admin123)
+INSERT INTO cms_admin_users (full_name, email, password_hash, status)
+VALUES (
+  'System Administrator',
+  'admin@nmcclinic.com',
+  '$2y$10$0YIC6Rc6Bikl6zttpdT1X.7ZIFDzxVGwyovHFGogaElgvFc8EPrEO',
+  'active'
+) ON DUPLICATE KEY UPDATE password_hash = '$2y$10$0YIC6Rc6Bikl6zttpdT1X.7ZIFDzxVGwyovHFGogaElgvFc8EPrEO', status = 'active';
+
+-- Seed 6 Core System Pages
+INSERT INTO pages (slug, page_type, locale, status, published_at) VALUES
+('home', 'home', 'en', 'published', NOW()),
+('about', 'about', 'en', 'published', NOW()),
+('specialties', 'specialties', 'en', 'published', NOW()),
+('doctors', 'doctors', 'en', 'published', NOW()),
+('blog', 'blog_index', 'en', 'published', NOW()),
+('contact', 'contact', 'en', 'published', NOW())
+ON DUPLICATE KEY UPDATE status = 'published';
+
+-- Seed Default SEO Metadata for the 6 Core Pages
+INSERT INTO seo_metadata (page_id, meta_title, meta_description, canonical_url, robots_index, robots_follow, twitter_card)
+SELECT 
+  id AS page_id,
+  CASE page_type
+    WHEN 'home' THEN 'NMC Clinic Butwal | Specialist Care, Diagnostics & Physiotherapy'
+    WHEN 'about' THEN 'About NMC Clinic Butwal | Our Mission, Values and Story'
+    WHEN 'specialties' THEN 'Specialties at NMC Clinic Butwal | Consultation, Diagnostics & More'
+    WHEN 'doctors' THEN 'Our Doctors | NMC Clinic Butwal Medical Team'
+    WHEN 'blog_index' THEN 'Health Blog | NMC Clinic Butwal'
+    WHEN 'contact' THEN 'Contact NMC Clinic Butwal | Address, Phone & Opening Hours'
+  END AS meta_title,
+  CASE page_type
+    WHEN 'home' THEN 'Specialist consultations, in-house diagnostics, laboratory services, physiotherapy, women\'s healthcare and kidney care at NMC Clinic, Traffic Chowk, Butwal.'
+    WHEN 'about' THEN 'NMC is a community clinic in Butwal bringing specialist consultation, diagnostics, physiotherapy, women\'s health and kidney care together under one roof.'
+    WHEN 'specialties' THEN 'Specialist consultation, advanced diagnostics, laboratory services, physiotherapy, obstetrics & gynecology and kidney care at NMC Clinic, Butwal.'
+    WHEN 'doctors' THEN 'Meet the doctors at NMC Clinic Butwal. View specialties, qualifications and consultation schedules across general medicine, gynecology, nephrology and physiotherapy.'
+    WHEN 'blog_index' THEN 'Practical health articles from the NMC Clinic team in Butwal, covering diagnostics, women\'s health, physiotherapy, kidney care and everyday wellness.'
+    WHEN 'contact' THEN 'Find NMC Clinic at Traffic Chowk, Butwal. Phone, email, opening hours, map directions, and a message form for appointments and enquiries.'
+  END AS meta_description,
+  CONCAT('http://localhost/NMCclinic/', CASE page_type WHEN 'home' THEN 'index.html' WHEN 'blog_index' THEN 'blog.html' ELSE CONCAT(page_type, '.html') END) AS canonical_url,
+  1, 1, 'summary_large_image'
+FROM pages
+WHERE page_type IN ('home', 'about', 'specialties', 'doctors', 'blog_index', 'contact')
+ON DUPLICATE KEY UPDATE updated_at = NOW();
+
 SET FOREIGN_KEY_CHECKS = 1;
+
