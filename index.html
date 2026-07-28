@@ -379,7 +379,7 @@
       </div>
 
       <div class="appointment-form-col">
-        <form class="form-card is-home" data-success="appointment-ok">
+        <form class="form-card is-home" data-success="appointment-ok" action="submit-appointment.php" method="post">
           <div class="grid grid-200 form-grid">
             <div class="field">
               <label for="f-name">Full name</label>
@@ -420,7 +420,7 @@
             <textarea class="textarea" id="f-msg" name="message" rows="3" placeholder="Anything you'd like us to know"></textarea>
           </div>
           <label class="consent">
-            <input type="checkbox" required>
+            <input type="checkbox" name="consent_accepted" value="1" required>
             <span>I agree to be contacted by NMC about this appointment request.</span>
           </label>
           <button class="btn btn-primary btn-block" type="submit">Request an Appointment</button>

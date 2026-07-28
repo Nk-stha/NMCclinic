@@ -98,7 +98,7 @@
   </section>
 
   <!-- ============ FEATURED POST ============ -->
-  <section class="wrap featured-wrap">
+  <section class="wrap featured-wrap" data-cms-featured-blog>
     <a class="featured" href="blog-detail.html">
       <div class="featured-photo">
         <span class="ph-label">featured article image</span>
@@ -116,7 +116,7 @@
 
   <!-- ============ FILTER + POST GRID ============ -->
   <section class="wrap listing tight">
-    <div class="tabs" data-filter-group="posts" aria-label="Filter articles by category">
+    <div class="tabs" data-filter-group="posts" data-cms-blog-tabs aria-label="Filter articles by category">
         <button type="button" class="tab lg is-active" data-filter="All" aria-pressed="true">All</button>
         <button type="button" class="tab lg" data-filter="Diagnostics" aria-pressed="false">Diagnostics</button>
         <button type="button" class="tab lg" data-filter="Women's Health" aria-pressed="false">Women's Health</button>
@@ -125,7 +125,7 @@
         <button type="button" class="tab lg" data-filter="Wellness" aria-pressed="false">Wellness</button>
     </div>
 
-    <div class="grid grid-300 fill-300" data-filter-target="posts">
+    <div class="grid grid-300 fill-300" data-filter-target="posts" data-cms-blog-list>
       <a class="post-card" href="blog-detail.html" data-category="Diagnostics">
         <div class="post-photo">
           <span class="ph-label">article image</span>
@@ -206,7 +206,7 @@
       </a>
     </div>
     <p class="listing-note" data-filter-empty="posts" hidden>No articles in this category yet.</p>
-    <p class="listing-note">Sample topics shown &mdash; articles written and reviewed by our team will be published here.</p>
+    <p class="listing-note" data-cms-blog-fallback-note>Sample topics shown &mdash; articles written and reviewed by our team will be published here.</p>
   </section>
 
   <!-- ============ NEWSLETTER ============ -->
