@@ -313,8 +313,8 @@
     var actions = document.createElement('div');
     actions.className = 'doc-actions';
     actions.innerHTML = home
-      ? '<a class="doc-view" href="doctors.html">View Profile</a><a class="doc-book" href="#appointment">Book Appointment</a>'
-      : '<a class="doc-view-solid" href="doctors.html">View Profile</a><a class="doc-book" href="index.html#appointment">Book Appointment</a>';
+      ? '<a class="doc-view" href="doctors">View Profile</a><a class="doc-book" href="#appointment">Book Appointment</a>'
+      : '<a class="doc-view-solid" href="doctors">View Profile</a><a class="doc-book" href="home#appointment">Book Appointment</a>';
 
     body.appendChild(name);
     body.appendChild(qual);
@@ -338,7 +338,7 @@
     description.textContent = cmsText(specialty.short_description);
     var link = document.createElement('a');
     link.className = 'link-cta inline';
-    link.href = 'specialties.html#' + encodeURIComponent(cmsText(specialty.slug));
+    link.href = 'specialties#' + encodeURIComponent(cmsText(specialty.slug));
     link.innerHTML = 'Learn More ' + arrowSvg();
 
     card.appendChild(title);
@@ -578,7 +578,7 @@
 
           var actions = document.createElement('div');
           actions.className = 'btn-row';
-          actions.innerHTML = '<a class="btn btn-primary btn-sm" href="index.html#appointment">Book an Appointment</a><a class="link-cta" href="doctors.html">Find a specialist</a>';
+          actions.innerHTML = '<a class="btn btn-primary btn-sm" href="home#appointment">Book an Appointment</a><a class="link-cta" href="doctors">Find a specialist</a>';
           body.appendChild(actions);
 
           row.appendChild(media);

@@ -30,16 +30,32 @@ function public_base_url(): string
 function public_page_file_map(): array
 {
     return [
-        'home' => 'index.html',
-        'about' => 'about.html',
-        'specialties' => 'specialties.html',
-        'doctors' => 'doctors.html',
-        'blog_index' => 'blog.html',
-        'contact' => 'contact.html',
-        'privacy' => 'privacy.html',
-        'terms' => 'terms.html',
-        'accessibility' => 'accessibility.html',
+        'home' => ['file' => 'index.html', 'route' => 'home'],
+        'about' => ['file' => 'about.html', 'route' => 'about'],
+        'specialties' => ['file' => 'specialties.html', 'route' => 'specialties'],
+        'doctors' => ['file' => 'doctors.html', 'route' => 'doctors'],
+        'blog_index' => ['file' => 'blog.html', 'route' => 'blog'],
+        'contact' => ['file' => 'contact.html', 'route' => 'contact'],
+        'privacy' => ['file' => 'privacy.html', 'route' => 'privacy'],
+        'terms' => ['file' => 'terms.html', 'route' => 'terms'],
+        'accessibility' => ['file' => 'accessibility.html', 'route' => 'accessibility'],
     ];
+}
+
+function public_route_for_page_type(string $pageType): string
+{
+    $map = public_page_file_map();
+    $row = $map[$pageType] ?? $map['home'];
+
+    return $row['route'];
+}
+
+function public_file_for_page_type(string $pageType): string
+{
+    $map = public_page_file_map();
+    $row = $map[$pageType] ?? $map['home'];
+
+    return $row['file'];
 }
 
 function public_static_seo_defaults(string $pageType): array
@@ -80,9 +96,7 @@ function public_static_seo_defaults(string $pageType): array
 function public_seo_for_page_type(string $pageType): array
 {
     $default = public_static_seo_defaults($pageType);
-    $map = public_page_file_map();
-    $file = $map[$pageType] ?? 'index.html';
-    $canonical = public_base_url() . '/' . $file;
+    $canonical = public_base_url() . '/' . public_route_for_page_type($pageType);
 
     try {
         $stmt = db()->prepare(
@@ -157,10 +171,12 @@ function public_sitemap_urls(): array
     $baseUrl = public_base_url();
     $urls = [];
 
-    foreach (public_page_file_map() as $pageType => $file) {
+    foreach (public_page_file_map() as $pageType => $page) {
+        $file = $page['file'];
+        $route = $page['route'];
         if (is_file(dirname(__DIR__) . '/' . $file)) {
-            $urls[$file] = [
-                'loc' => $baseUrl . '/' . $file,
+            $urls[$route] = [
+                'loc' => $baseUrl . '/' . $route,
                 'lastmod' => date('Y-m-d', filemtime(dirname(__DIR__) . '/' . $file)),
                 'priority' => $pageType === 'home' ? '1.0' : '0.8',
             ];
@@ -174,9 +190,9 @@ function public_sitemap_urls(): array
              WHERE deleted_at IS NULL AND status = "published"'
         );
         foreach ($stmt->fetchAll() as $row) {
-            $file = public_page_file_map()[(string) $row['page_type']] ?? null;
-            if ($file !== null && isset($urls[$file])) {
-                $urls[$file]['lastmod'] = substr((string) $row['updated_at'], 0, 10);
+            $route = public_route_for_page_type((string) $row['page_type']);
+            if (isset($urls[$route])) {
+                $urls[$route]['lastmod'] = substr((string) $row['updated_at'], 0, 10);
             }
         }
     } catch (Throwable $exception) {

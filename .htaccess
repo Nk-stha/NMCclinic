@@ -1,2 +1,20 @@
+Options -MultiViews
 RewriteEngine On
-RewriteRule ^blog/([a-z0-9-]+)/?$ blog-detail.php?slug=$1 [L,QSA]
+
+RewriteRule ^index\.html$ home [R=301,END]
+RewriteRule ^about\.html$ about [R=301,END]
+RewriteRule ^specialties\.html$ specialties [R=301,END]
+RewriteRule ^doctors\.html$ doctors [R=301,END]
+RewriteRule ^blog\.html$ blog [R=301,END]
+RewriteRule ^contact\.html$ contact [R=301,END]
+
+RewriteRule ^$ index.html [END]
+RewriteRule ^home/?$ index.html [END]
+RewriteRule ^about/?$ about.html [END]
+RewriteRule ^specialties/?$ specialties.html [END]
+RewriteRule ^doctors/?$ doctors.html [END]
+RewriteRule ^blog/?$ blog.html [END]
+RewriteRule ^contact/?$ contact.html [END]
+
+RewriteRule ^blog/([A-Za-z0-9-]+)/?$ blog-detail.php?slug=$1 [END,QSA]
+RewriteRule ^blog/.+$ blog-detail.php [END,QSA]

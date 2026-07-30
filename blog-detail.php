@@ -8,7 +8,12 @@ if (!preg_match('/^[a-z0-9-]+$/', $slug)) {
     public_blog_not_found();
 }
 
-$post = public_blog_find_post($slug);
+$post = null;
+try {
+    $post = public_blog_find_post($slug);
+} catch (Throwable $exception) {
+    public_blog_unavailable();
+}
 if ($post === null) {
     public_blog_not_found();
 }
@@ -86,38 +91,38 @@ $schema = public_blog_schema($post, $canonical, $imageUrl);
     </div>
 
     <div class="header-bar">
-      <a class="brand" href="<?= public_e($baseUrl) ?>/index.html">
+      <a class="brand" href="<?= public_e($baseUrl) ?>/home">
         <img src="<?= public_e($baseUrl) ?>/uploads/logo.jpeg" alt="NMC clinic logo" width="48" height="48">
         <span class="brand-text"><span class="brand-name">NMC</span><span class="brand-sub">Clinic ·&nbsp;</span></span>
       </a>
       <nav class="nav-main" aria-label="Primary">
-        <a href="<?= public_e($baseUrl) ?>/index.html">Home</a>
-        <a href="<?= public_e($baseUrl) ?>/about.html">About</a>
-        <a href="<?= public_e($baseUrl) ?>/specialties.html">Specialties</a>
-        <a href="<?= public_e($baseUrl) ?>/doctors.html">Doctors</a>
-        <a href="<?= public_e($baseUrl) ?>/blog.html" aria-current="page">Blog</a>
-        <a href="<?= public_e($baseUrl) ?>/contact.html">Contact</a>
+        <a href="<?= public_e($baseUrl) ?>/home">Home</a>
+        <a href="<?= public_e($baseUrl) ?>/about">About</a>
+        <a href="<?= public_e($baseUrl) ?>/specialties">Specialties</a>
+        <a href="<?= public_e($baseUrl) ?>/doctors">Doctors</a>
+        <a href="<?= public_e($baseUrl) ?>/blog" aria-current="page">Blog</a>
+        <a href="<?= public_e($baseUrl) ?>/contact">Contact</a>
       </nav>
       <div class="header-actions">
         <a class="header-phone" href="tel:+97771000000">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#287772" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
           +977 71-000000
         </a>
-        <a class="btn btn-primary" href="<?= public_e($baseUrl) ?>/index.html#appointment">Book Appointment</a>
+        <a class="btn btn-primary" href="<?= public_e($baseUrl) ?>/home#appointment">Book Appointment</a>
       </div>
       <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
       </button>
     </div>
     <div class="nav-mobile">
-      <a href="<?= public_e($baseUrl) ?>/index.html">Home</a>
-      <a href="<?= public_e($baseUrl) ?>/about.html">About</a>
-      <a href="<?= public_e($baseUrl) ?>/specialties.html">Specialties</a>
-      <a href="<?= public_e($baseUrl) ?>/doctors.html">Doctors</a>
-      <a href="<?= public_e($baseUrl) ?>/blog.html" aria-current="page">Blog</a>
-      <a href="<?= public_e($baseUrl) ?>/contact.html">Contact</a>
+      <a href="<?= public_e($baseUrl) ?>/home">Home</a>
+      <a href="<?= public_e($baseUrl) ?>/about">About</a>
+      <a href="<?= public_e($baseUrl) ?>/specialties">Specialties</a>
+      <a href="<?= public_e($baseUrl) ?>/doctors">Doctors</a>
+      <a href="<?= public_e($baseUrl) ?>/blog" aria-current="page">Blog</a>
+      <a href="<?= public_e($baseUrl) ?>/contact">Contact</a>
       <div class="nav-mobile-cta">
-        <a class="m-book" href="<?= public_e($baseUrl) ?>/index.html#appointment">Book Appointment</a>
+        <a class="m-book" href="<?= public_e($baseUrl) ?>/home#appointment">Book Appointment</a>
         <a class="m-call" href="tel:+97771000000">Call +977 71-000000</a>
       </div>
     </div>
@@ -127,9 +132,9 @@ $schema = public_blog_schema($post, $canonical, $imageUrl);
     <div class="banner-veil is-strong"></div>
     <div class="banner-in narrow">
       <div class="crumb">
-        <a href="<?= public_e($baseUrl) ?>/index.html">Home</a>
+        <a href="<?= public_e($baseUrl) ?>/home">Home</a>
         <span class="sep">/</span>
-        <a href="<?= public_e($baseUrl) ?>/blog.html">Blog</a>
+        <a href="<?= public_e($baseUrl) ?>/blog">Blog</a>
         <span class="sep">/</span>
         <span class="here"><?= public_e($category) ?></span>
       </div>
@@ -177,7 +182,7 @@ $schema = public_blog_schema($post, $canonical, $imageUrl);
       <div class="side-card">
         <h3>Have a concern?</h3>
         <p>Book a consultation and talk it through with one of our doctors.</p>
-        <a class="btn btn-primary btn-block" href="<?= public_e($baseUrl) ?>/index.html#appointment">Book an Appointment</a>
+        <a class="btn btn-primary btn-block" href="<?= public_e($baseUrl) ?>/home#appointment">Book an Appointment</a>
       </div>
     </aside>
   </section>
@@ -226,21 +231,21 @@ $schema = public_blog_schema($post, $canonical, $imageUrl);
         <div>
           <h4>Quick Links</h4>
           <div class="footer-list">
-            <a href="<?= public_e($baseUrl) ?>/index.html">Home</a>
-            <a href="<?= public_e($baseUrl) ?>/about.html">About</a>
-            <a href="<?= public_e($baseUrl) ?>/specialties.html">Specialties</a>
-            <a href="<?= public_e($baseUrl) ?>/doctors.html">Doctors</a>
-            <a href="<?= public_e($baseUrl) ?>/blog.html">Blog</a>
+            <a href="<?= public_e($baseUrl) ?>/home">Home</a>
+            <a href="<?= public_e($baseUrl) ?>/about">About</a>
+            <a href="<?= public_e($baseUrl) ?>/specialties">Specialties</a>
+            <a href="<?= public_e($baseUrl) ?>/doctors">Doctors</a>
+            <a href="<?= public_e($baseUrl) ?>/blog">Blog</a>
           </div>
         </div>
         <div>
           <h4>Services</h4>
           <div class="footer-list">
-            <a href="<?= public_e($baseUrl) ?>/specialties.html#consultation">Specialist Consultation</a>
-            <a href="<?= public_e($baseUrl) ?>/specialties.html#diagnostics">Advanced Diagnostics</a>
-            <a href="<?= public_e($baseUrl) ?>/specialties.html#laboratory">Laboratory Services</a>
-            <a href="<?= public_e($baseUrl) ?>/specialties.html#physiotherapy">Physiotherapy</a>
-            <a href="<?= public_e($baseUrl) ?>/specialties.html#kidney">Kidney Care</a>
+            <a href="<?= public_e($baseUrl) ?>/specialties#consultation">Specialist Consultation</a>
+            <a href="<?= public_e($baseUrl) ?>/specialties#diagnostics">Advanced Diagnostics</a>
+            <a href="<?= public_e($baseUrl) ?>/specialties#laboratory">Laboratory Services</a>
+            <a href="<?= public_e($baseUrl) ?>/specialties#physiotherapy">Physiotherapy</a>
+            <a href="<?= public_e($baseUrl) ?>/specialties#kidney">Kidney Care</a>
           </div>
         </div>
         <div>
@@ -430,5 +435,12 @@ function public_blog_not_found(): void
 {
     http_response_code(404);
     echo 'Blog post not found.';
+    exit;
+}
+
+function public_blog_unavailable(): void
+{
+    http_response_code(503);
+    echo 'Blog post is temporarily unavailable.';
     exit;
 }
