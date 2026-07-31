@@ -70,7 +70,7 @@ h1{margin:0 0 8px;font-size:32px;line-height:1.2;letter-spacing:0}.subtitle{marg
 <body>
 <header class="login-header">
   <div class="inner">
-    <a class="brand" href="../index.html" aria-label="NMC Clinic home">
+    <a class="brand" href="../index.php" aria-label="NMC Clinic home">
       <img src="../uploads/logo.jpeg" alt="NMC Clinic logo">
       <span>NMC Clinic<small>CMS</small></span>
     </a>

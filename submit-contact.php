@@ -54,7 +54,7 @@ try {
         ':email' => $email !== '' ? $email : null,
         ':subject_id' => $subjectId,
         ':message' => $storedMessage,
-        ':source_page' => 'contact.html',
+        ':source_page' => 'contact.php',
         ':ip_hash' => form_ip_hash(),
         ':user_agent' => form_user_agent(),
     ]);

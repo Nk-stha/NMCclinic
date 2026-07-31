@@ -1,20 +1,21 @@
 Options -MultiViews
 RewriteEngine On
 
-RewriteRule ^index\.html$ home [R=301,END]
-RewriteRule ^about\.html$ about [R=301,END]
-RewriteRule ^specialties\.html$ specialties [R=301,END]
-RewriteRule ^doctors\.html$ doctors [R=301,END]
-RewriteRule ^blog\.html$ blog [R=301,END]
-RewriteRule ^contact\.html$ contact [R=301,END]
+RewriteRule ^index\.(html|php)$ home [R=301,END]
+RewriteRule ^about\.(html|php)$ about [R=301,END]
+RewriteRule ^specialties\.(html|php)$ specialties [R=301,END]
+RewriteRule ^doctors\.(html|php)$ doctors [R=301,END]
+RewriteRule ^blog\.(html|php)$ blog [R=301,END]
+RewriteRule ^contact\.(html|php)$ contact [R=301,END]
 
-RewriteRule ^$ index.html [END]
-RewriteRule ^home/?$ index.html [END]
-RewriteRule ^about/?$ about.html [END]
-RewriteRule ^specialties/?$ specialties.html [END]
-RewriteRule ^doctors/?$ doctors.html [END]
-RewriteRule ^blog/?$ blog.html [END]
-RewriteRule ^contact/?$ contact.html [END]
+RewriteRule ^$ index.php [END]
+RewriteRule ^home/?$ index.php [END]
+RewriteRule ^about/?$ about.php [END]
+RewriteRule ^specialties/?$ specialties.php [END]
+RewriteRule ^doctors/?$ doctors.php [END]
+RewriteRule ^blog/?$ blog.php [END]
+RewriteRule ^contact/?$ contact.php [END]
 
 RewriteRule ^blog/([A-Za-z0-9-]+)/?$ blog-detail.php?slug=$1 [END,QSA]
 RewriteRule ^blog/.+$ blog-detail.php [END,QSA]
+
