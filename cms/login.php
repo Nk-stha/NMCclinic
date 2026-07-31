@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $error = 'Invalid email or password.';
         } catch (Throwable $exception) {
-            $error = 'Login is not available. Please check the database configuration.';
+            $error = 'Login is not available. Please check the database configuration: ' . $exception->getMessage();
         }
     }
 }

@@ -9,13 +9,23 @@ function start_cms_session(): void
         return;
     }
 
+    $scriptDir = str_replace('\\', '/', dirname((string) ($_SERVER['SCRIPT_NAME'] ?? '')));
+    if (preg_match('#^(.*?/cms)(?:/|$)#i', $scriptDir, $matches)) {
+        $cmsPath = $matches[1];
+    } else {
+        $cmsPath = ($scriptDir === '/' || $scriptDir === '.' || $scriptDir === '') ? '/' : rtrim($scriptDir, '/');
+    }
+
+    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string) $_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
+
     session_name('nmc_cms');
     session_set_cookie_params([
         'lifetime' => 0,
-        'path' => '/NMCclinic/cms',
+        'path' => $cmsPath,
         'httponly' => true,
         'samesite' => 'Lax',
-        'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+        'secure' => $isHttps,
     ]);
     session_start();
 }
