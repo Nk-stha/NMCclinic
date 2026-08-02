@@ -212,8 +212,9 @@ h1, h2 { font-family: var(--font-display); letter-spacing: -.01em; }
   position: relative; min-height: 600px;
 }
 .hero-in { display: flex; flex-wrap: wrap; gap: 52px; align-items: flex-end; }
+.banner-in { display: flex; flex-direction: column; align-items: flex-start; }
 
-.crumb { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--foot-soft); margin-bottom: 18px; }
+.crumb { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 14px; color: var(--foot-soft); margin-bottom: 22px; }
 .crumb a { color: var(--foot-soft); }
 .crumb a:hover { color: var(--yellow); }
 .crumb .sep { color: var(--teal-300); }
@@ -229,7 +230,7 @@ h1, h2 { font-family: var(--font-display); letter-spacing: -.01em; }
 
 .banner h1, .hero h1 {
   font-weight: 800; font-size: clamp(36px, 5.6vw, 54px); line-height: 1.08;
-  color: var(--white); margin: 20px 0 0; max-width: 760px; text-wrap: balance;
+  color: var(--white); margin: 18px 0 0; max-width: 760px; text-wrap: balance;
 }
 .hero h1 { font-size: clamp(38px, 6vw, 56px); line-height: 1.07; letter-spacing: -.03em; }
 .accent { color: var(--teal-300); }
