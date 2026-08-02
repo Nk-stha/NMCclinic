@@ -98,115 +98,14 @@
   </section>
 
   <!-- ============ FEATURED POST ============ -->
-  <section class="wrap featured-wrap" data-cms-featured-blog>
-    <a class="featured" href="blog/kidney-health-early-signs-you-should-not-ignore">
-      <div class="featured-photo">
-        <span class="ph-label">featured article image</span>
-        <span class="doc-tag">Featured &middot; Kidney Care</span>
-      </div>
-      <div class="featured-body">
-        <div class="post-meta">5 min read</div>
-        <h2>Kidney Health: Early Signs You Should Not Ignore</h2>
-        <p>Kidney problems often develop quietly. Learn the everyday signs worth mentioning to a doctor, and the simple habits that support kidney health.</p>
-        <div class="post-byline">Reviewed by NMC medical team &middot; Reviewed [Month Year]</div>
-        <span class="link-cta inline">Read article <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
-      </div>
-    </a>
-  </section>
+  <section class="wrap featured-wrap" data-cms-featured-blog></section>
 
   <!-- ============ FILTER + POST GRID ============ -->
   <section class="wrap listing tight">
-    <div class="tabs" data-filter-group="posts" data-cms-blog-tabs aria-label="Filter articles by category">
-        <button type="button" class="tab lg is-active" data-filter="All" aria-pressed="true">All</button>
-        <button type="button" class="tab lg" data-filter="Diagnostics" aria-pressed="false">Diagnostics</button>
-        <button type="button" class="tab lg" data-filter="Women's Health" aria-pressed="false">Women's Health</button>
-        <button type="button" class="tab lg" data-filter="Physiotherapy" aria-pressed="false">Physiotherapy</button>
-        <button type="button" class="tab lg" data-filter="Kidney Care" aria-pressed="false">Kidney Care</button>
-        <button type="button" class="tab lg" data-filter="Wellness" aria-pressed="false">Wellness</button>
-    </div>
+    <div class="tabs" data-filter-group="posts" data-cms-blog-tabs aria-label="Filter articles by category"></div>
 
-    <div class="grid grid-300 fill-300" data-filter-target="posts" data-cms-blog-list>
-      <a class="post-card" href="blog/preparing-for-a-diagnostic-test" data-category="Diagnostics">
-        <div class="post-photo">
-          <span class="ph-label">article image</span>
-          <span class="doc-tag">Diagnostics</span>
-        </div>
-        <div class="post-body">
-          <div class="post-meta">6 min read</div>
-          <h3>Preparing for a Diagnostic Test</h3>
-          <p>Simple steps like fasting or timing that help your test run smoothly.</p>
-          <div class="post-byline">Reviewed by NMC medical team &middot; Reviewed [Month Year]</div>
-          <span class="link-cta inline">Read article <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
-        </div>
-      </a>
-      <a class="post-card" href="blog/everyday-habits-that-support-womens-health" data-category="Women's Health">
-        <div class="post-photo">
-          <span class="ph-label">article image</span>
-          <span class="doc-tag">Women's Health</span>
-        </div>
-        <div class="post-body">
-          <div class="post-meta">4 min read</div>
-          <h3>Everyday Habits That Support Women's Health</h3>
-          <p>Small, practical routines that support well-being at every stage of life.</p>
-          <div class="post-byline">Reviewed by NMC medical team &middot; Reviewed [Month Year]</div>
-          <span class="link-cta inline">Read article <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
-        </div>
-      </a>
-      <a class="post-card" href="blog/easing-back-pain-gentle-habits-that-help" data-category="Physiotherapy">
-        <div class="post-photo">
-          <span class="ph-label">article image</span>
-          <span class="doc-tag">Physiotherapy</span>
-        </div>
-        <div class="post-body">
-          <div class="post-meta">5 min read</div>
-          <h3>Easing Back Pain: Gentle Habits That Help</h3>
-          <p>Practical, everyday tips our physiotherapists share with patients.</p>
-          <div class="post-byline">Reviewed by NMC medical team &middot; Reviewed [Month Year]</div>
-          <span class="link-cta inline">Read article <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
-        </div>
-      </a>
-      <a class="post-card" href="blog/staying-hydrated-what-it-means-for-your-kidneys" data-category="Kidney Care">
-        <div class="post-photo">
-          <span class="ph-label">article image</span>
-          <span class="doc-tag">Kidney Care</span>
-        </div>
-        <div class="post-body">
-          <div class="post-meta">4 min read</div>
-          <h3>Staying Hydrated: What It Means for Your Kidneys</h3>
-          <p>How everyday habits support kidney health, and myths worth ignoring.</p>
-          <div class="post-byline">Reviewed by NMC medical team &middot; Reviewed [Month Year]</div>
-          <span class="link-cta inline">Read article <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
-        </div>
-      </a>
-      <a class="post-card" href="blog/simple-ways-to-support-your-immunity" data-category="Wellness">
-        <div class="post-photo">
-          <span class="ph-label">article image</span>
-          <span class="doc-tag">Wellness</span>
-        </div>
-        <div class="post-body">
-          <div class="post-meta">5 min read</div>
-          <h3>Simple Ways to Support Your Immunity</h3>
-          <p>Sensible, evidence-based habits for staying well through the year.</p>
-          <div class="post-byline">Reviewed by NMC medical team &middot; Reviewed [Month Year]</div>
-          <span class="link-cta inline">Read article <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
-        </div>
-      </a>
-      <a class="post-card" href="blog/simple-guide-regular-checkups-pregnancy" data-category="Women's Health">
-        <div class="post-photo">
-          <span class="ph-label">article image</span>
-          <span class="doc-tag">Women's Health</span>
-        </div>
-        <div class="post-body">
-          <div class="post-meta">6 min read</div>
-          <h3>A Simple Guide to Regular Check-ups in Pregnancy</h3>
-          <p>What to expect at each stage, and when to reach out to your care team.</p>
-          <div class="post-byline">Reviewed by NMC medical team &middot; Reviewed [Month Year]</div>
-          <span class="link-cta inline">Read article <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
-        </div>
-      </a>
-    </div>
+    <div class="grid grid-300 fill-300" data-filter-target="posts" data-cms-blog-list></div>
     <p class="listing-note" data-filter-empty="posts" hidden>No articles in this category yet.</p>
-    <p class="listing-note" data-cms-blog-fallback-note>Sample topics shown &mdash; articles written and reviewed by our team will be published here.</p>
   </section>
 
   <!-- ============ NEWSLETTER ============ -->

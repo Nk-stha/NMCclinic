@@ -498,50 +498,9 @@
         <p class="section-lead">Practical articles reviewed by healthcare professionals to help you understand common conditions, tests, and treatments.</p>
       </div>
     </div>
-    <div class="grid grid-280 gap-22" data-cms-home-blog-list>
-        <a class="post-card" href="blog/kidney-health-early-signs-you-should-not-ignore">
-          <div class="post-photo">
-            <span class="ph-label">article image</span>
-            <span class="doc-tag">Kidney Care</span>
-          </div>
-          <div class="post-body">
-            <div class="post-meta">5 min read</div>
-            <h3>Kidney Health: Early Signs You Should Not Ignore</h3>
-            <p>Small changes can be easy to miss. Here's what's worth checking with a doctor.</p>
-            <div class="post-byline">Reviewed by NMC medical team &middot; Reviewed [Month Year]</div>
-            <span class="link-cta inline">Read article <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
-          </div>
-        </a>
-        <a class="post-card" href="blog/preparing-for-a-diagnostic-test">
-          <div class="post-photo">
-            <span class="ph-label">article image</span>
-            <span class="doc-tag">Diagnostics</span>
-          </div>
-          <div class="post-body">
-            <div class="post-meta">6 min read</div>
-            <h3>Preparing for a Diagnostic Test</h3>
-            <p>Simple steps like fasting or timing that help your test run smoothly.</p>
-            <div class="post-byline">Reviewed by NMC medical team &middot; Reviewed [Month Year]</div>
-            <span class="link-cta inline">Read article <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
-          </div>
-        </a>
-        <a class="post-card" href="blog/everyday-habits-that-support-womens-health">
-          <div class="post-photo">
-            <span class="ph-label">article image</span>
-            <span class="doc-tag">Women's Health</span>
-          </div>
-          <div class="post-body">
-            <div class="post-meta">4 min read</div>
-            <h3>Everyday Habits That Support Women's Health</h3>
-            <p>Small, practical routines that support well-being at every stage of life.</p>
-            <div class="post-byline">Reviewed by NMC medical team &middot; Reviewed [Month Year]</div>
-            <span class="link-cta inline">Read article <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
-          </div>
-        </a>
-    </div>
+    <div class="grid grid-280 gap-22" data-cms-home-blog-list></div>
     <div class="section-foot">
       <a class="btn btn-primary" href="blog">View All Health Guides <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></a>
-      <span class="note" data-cms-home-blog-fallback-note>Sample topics shown — real articles from our team will be published here.</span>
     </div>
   </section>
 

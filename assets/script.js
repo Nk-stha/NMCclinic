@@ -706,12 +706,20 @@
   var homeBlogList = document.querySelector('[data-cms-home-blog-list]');
   var homeBlogFallbackNote = document.querySelector('[data-cms-home-blog-fallback-note]');
   if (window.fetch && homeBlogList) {
+    function clearHomeBlogs() {
+      homeBlogList.innerHTML = '';
+      if (homeBlogFallbackNote) homeBlogFallbackNote.hidden = true;
+    }
+
     fetch(endpointUrl('blog-data.php'), { headers: { 'Accept': 'application/json' } })
       .then(function (response) {
         return response.json();
       })
       .then(function (data) {
-        if (!data || !data.ok || !Array.isArray(data.posts) || data.posts.length === 0) return;
+        if (!data || !data.ok || !Array.isArray(data.posts) || data.posts.length === 0) {
+          clearHomeBlogs();
+          return;
+        }
 
         homeBlogList.innerHTML = '';
         data.posts.slice(0, 3).forEach(function (post) {
@@ -720,7 +728,7 @@
         if (homeBlogFallbackNote) homeBlogFallbackNote.hidden = true;
       })
       .catch(function () {
-        // Keep hardcoded homepage blog cards when CMS data is unavailable.
+        clearHomeBlogs();
       });
   }
 
@@ -730,12 +738,23 @@
   var blogEmpty = document.querySelector('[data-filter-empty="posts"]');
   var blogFallbackNote = document.querySelector('[data-cms-blog-fallback-note]');
   if (window.fetch && featuredBlog && blogTabs && blogList) {
+    function clearBlogPage() {
+      featuredBlog.innerHTML = '';
+      blogTabs.innerHTML = '';
+      blogList.innerHTML = '';
+      if (blogEmpty) blogEmpty.hidden = false;
+      if (blogFallbackNote) blogFallbackNote.hidden = true;
+    }
+
     fetch(endpointUrl('blog-data.php'), { headers: { 'Accept': 'application/json' } })
       .then(function (response) {
         return response.json();
       })
       .then(function (data) {
-        if (!data || !data.ok || !Array.isArray(data.posts) || data.posts.length === 0) return;
+        if (!data || !data.ok || !Array.isArray(data.posts) || data.posts.length === 0) {
+          clearBlogPage();
+          return;
+        }
 
         function applyBlogFilter(value) {
           var cards = blogList.querySelectorAll('[data-category]');
@@ -784,7 +803,7 @@
         if (blogFallbackNote) blogFallbackNote.hidden = true;
       })
       .catch(function () {
-        // Keep hardcoded blog content when CMS data is unavailable.
+        clearBlogPage();
       });
   }
 })();
