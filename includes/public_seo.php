@@ -30,15 +30,15 @@ function public_base_url(): string
 function public_page_file_map(): array
 {
     return [
-        'home' => ['file' => 'index.html', 'route' => 'home'],
-        'about' => ['file' => 'about.html', 'route' => 'about'],
-        'specialties' => ['file' => 'specialties.html', 'route' => 'specialties'],
-        'doctors' => ['file' => 'doctors.html', 'route' => 'doctors'],
-        'blog_index' => ['file' => 'blog.html', 'route' => 'blog'],
-        'contact' => ['file' => 'contact.html', 'route' => 'contact'],
-        'privacy' => ['file' => 'privacy.html', 'route' => 'privacy'],
-        'terms' => ['file' => 'terms.html', 'route' => 'terms'],
-        'accessibility' => ['file' => 'accessibility.html', 'route' => 'accessibility'],
+        'home' => ['file' => 'index.php', 'route' => 'home'],
+        'about' => ['file' => 'about.php', 'route' => 'about'],
+        'specialties' => ['file' => 'specialties.php', 'route' => 'specialties'],
+        'doctors' => ['file' => 'doctors.php', 'route' => 'doctors'],
+        'blog_index' => ['file' => 'blog.php', 'route' => 'blog'],
+        'contact' => ['file' => 'contact.php', 'route' => 'contact'],
+        'privacy' => ['file' => 'privacy.php', 'route' => 'privacy'],
+        'terms' => ['file' => 'terms.php', 'route' => 'terms'],
+        'accessibility' => ['file' => 'accessibility.php', 'route' => 'accessibility'],
     ];
 }
 

@@ -53,7 +53,7 @@ try {
         ':preferred_date' => $date !== '' ? $date : null,
         ':preferred_time_slot' => $time !== '' ? $time : null,
         ':message' => $storedMessage !== '' ? $storedMessage : null,
-        ':source_page' => 'index.html#appointment',
+        ':source_page' => 'index.php#appointment',
         ':ip_hash' => form_ip_hash(),
         ':user_agent' => form_user_agent(),
     ]);
