@@ -5,7 +5,7 @@ services:
       target: production
     restart: unless-stopped
     ports:
-      - "127.0.0.1:${PORT:-8082}:80"
+      - "0.0.0.0:${PORT:-8082}:80"
     environment:
       NMC_DB_HOST: db
       NMC_DB_NAME: ${COMPOSE_DB_NAME:-clinic}

@@ -1,7 +1,8 @@
 # Run NMC Clinic with Docker
 
 The multi-stage Dockerfile builds PHP/Apache with PDO MySQL and mbstring.
-Compose runs the app, MySQL 8.4, and phpMyAdmin on localhost.
+Compose publishes the app on all network interfaces. MySQL stays on the internal
+Docker network, and phpMyAdmin is accessible only on localhost.
 
 Use the existing `.env`, or copy `.env.example` to `.env` if it does not exist.
 Set `COMPOSE_DB_PASS` and `COMPOSE_DB_ROOT_PASS` to different strong passwords.
@@ -19,6 +20,10 @@ docker compose ps
 - Website: http://localhost:8082
 - CMS: http://localhost:8082/cms/login.php
 - phpMyAdmin: http://localhost:8083 (use `COMPOSE_DB_USER` and `COMPOSE_DB_PASS`)
+
+Other devices can open `http://<server-ip>:8082`. For internet access, allow the
+website port through the host firewall and configure router forwarding if needed.
+Use HTTPS through a reverse proxy for a public deployment.
 
 MySQL imports `db.sql` only when the database volume is empty.
 The SQL file seeds the CMS login `admin@nmcclinic.com` / `admin123`.
