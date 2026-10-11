@@ -1,0 +1,13 @@
+.git
+.env*
+!.env.example
+node_modules
+*.zip
+*.sql
+*.log
+*.bak
+.thumbnail
+plan
+Dockerfile
+docker-compose.yml
+DOCKER.md

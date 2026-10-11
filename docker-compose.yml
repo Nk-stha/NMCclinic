@@ -1,0 +1,53 @@
+services:
+  web:
+    build:
+      context: .
+      target: production
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${PORT:-8082}:80"
+    environment:
+      NMC_DB_HOST: db
+      NMC_DB_NAME: ${COMPOSE_DB_NAME:-clinic}
+      NMC_DB_USER: ${COMPOSE_DB_USER:-clinic_user}
+      NMC_DB_PASS: ${COMPOSE_DB_PASS:?Set COMPOSE_DB_PASS in .env}
+      SITE_URL: ${COMPOSE_SITE_URL:-http://localhost:${PORT:-8082}}
+    volumes:
+      - uploads:/var/www/html/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${COMPOSE_DB_NAME:-clinic}
+      MYSQL_USER: ${COMPOSE_DB_USER:-clinic_user}
+      MYSQL_PASSWORD: ${COMPOSE_DB_PASS:?Set COMPOSE_DB_PASS in .env}
+      MYSQL_ROOT_PASSWORD: ${COMPOSE_DB_ROOT_PASS:?Set COMPOSE_DB_ROOT_PASS in .env}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", 'MYSQL_PWD="$${MYSQL_PASSWORD}" mysql --protocol=TCP -h 127.0.0.1 -u "$${MYSQL_USER}" "$${MYSQL_DATABASE}" -e "SELECT 1"']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  phpmyadmin:
+    image: phpmyadmin:5-apache
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${PHPMYADMIN_PORT:-8083}:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: "3306"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
+  uploads:

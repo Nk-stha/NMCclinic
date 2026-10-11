@@ -1,48 +1,31 @@
+<?php
+declare(strict_types=1);
+
+require_once __DIR__ . '/includes/public_seo.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Our Doctors | NMC Clinic Butwal Medical Team</title>
-<meta name="description" content="Meet the doctors at NMC Clinic Butwal. View specialties, qualifications and consultation schedules across general medicine, gynecology, nephrology and physiotherapy.">
+<?php public_render_page_head('doctors'); ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400..800;1,500..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css?v=20261011">
 </head>
 <body>
+<a class="skip-link" href="#top">Skip to content</a>
 <div class="page">
 
   <!-- ============ HEADER ============ -->
   <header class="site-header">
-    <div class="topbar">
-      <div class="topbar-in">
-        <span class="topbar-item">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FDCA00" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-          <span class="topbar-label">Emergency:</span> <a class="topbar-em" href="tel:+97771000000">+977 71-000000</a>
-        </span>
-        <span class="topbar-item">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7FD4CA" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-10 6L2 7"></path></svg>
-          <a class="topbar-mail" href="mailto:info@nmcbutwal.com.np">info@nmcbutwal.com.np</a>
-        </span>
-        <span class="topbar-item">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7FD4CA" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15 14"></polyline></svg>
-          <span class="topbar-hours">Sun–Fri 8 AM–8 PM · Sat 9 AM–2 PM</span>
-        </span>
-        <div class="topbar-social">
-          <a class="social-btn" href="#" aria-label="Facebook"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
-          <a class="social-btn" href="#" aria-label="Instagram"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
-          <a class="social-btn" href="https://wa.me/9779800000000" aria-label="WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2z"></path></svg></a>
-        </div>
-      </div>
-    </div>
-
     <div class="header-bar">
       <a class="brand" href="home">
         <img src="uploads/logo.jpeg" alt="NMC clinic logo" width="48" height="48">
         <span class="brand-text">
           <span class="brand-name">NMC</span>
-          <span class="brand-sub">Clinic ·&nbsp;</span>
+          <span class="brand-sub">Clinic</span>
         </span>
       </a>
 
@@ -57,10 +40,10 @@
 
       <div class="header-actions">
         <a class="header-phone" href="tel:+97771000000">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#287772" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#286963" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
           +977 71-000000
         </a>
-        <a class="btn btn-primary" href="home#appointment">Book Appointment</a>
+        <a class="btn btn-primary" href="home#appointment">Book a visit</a>
       </div>
 
       <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false">
@@ -76,7 +59,7 @@
       <a href="blog">Blog</a>
       <a href="contact">Contact</a>
       <div class="nav-mobile-cta">
-        <a class="m-book" href="home#appointment">Book Appointment</a>
+        <a class="m-book" href="home#appointment">Book a visit</a>
         <a class="m-call" href="tel:+97771000000">Call +977 71-000000</a>
       </div>
     </div>
@@ -91,8 +74,8 @@
         <span class="sep">/</span>
         <span class="here">Doctors</span>
       </div>
-      <span class="pill"><span class="dot"></span>Our Medical Team</span>
-      <h1>Meet the Doctors <span class="accent">Behind Your Care</span></h1>
+      <span class="pill"><span class="dot"></span>Our medical team</span>
+      <h1>Meet the doctors <span class="accent">behind your care</span></h1>
       <p class="lead">View specialties, consultation schedules, and choose the doctor who best matches your needs.</p>
     </div>
   </section>
@@ -115,12 +98,9 @@
         </div>
         <div class="doc-body">
           <h3>Dr. [Name]</h3>
-          <p class="doc-qual">Qualification to be confirmed</p>
-          <p class="doc-reg">NMC Reg. No. to be confirmed</p>
-          <div class="doc-hours"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#287772" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Sun &ndash; Fri</div>
+          <div class="doc-hours"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#286963" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Sun-Fri</div>
           <div class="doc-actions">
-            <a class="doc-view-solid" href="doctors">View Profile</a>
-            <a class="doc-book" href="home#appointment">Book Appointment</a>
+            <a class="doc-view-solid" href="home#appointment">Book a visit</a>
           </div>
         </div>
       </article>
@@ -131,12 +111,9 @@
         </div>
         <div class="doc-body">
           <h3>Dr. [Name]</h3>
-          <p class="doc-qual">Qualification to be confirmed</p>
-          <p class="doc-reg">NMC Reg. No. to be confirmed</p>
-          <div class="doc-hours"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#287772" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Mon &ndash; Sat</div>
+          <div class="doc-hours"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#286963" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Mon-Sat</div>
           <div class="doc-actions">
-            <a class="doc-view-solid" href="doctors">View Profile</a>
-            <a class="doc-book" href="home#appointment">Book Appointment</a>
+            <a class="doc-view-solid" href="home#appointment">Book a visit</a>
           </div>
         </div>
       </article>
@@ -147,12 +124,9 @@
         </div>
         <div class="doc-body">
           <h3>Dr. [Name]</h3>
-          <p class="doc-qual">Qualification to be confirmed</p>
-          <p class="doc-reg">NMC Reg. No. to be confirmed</p>
-          <div class="doc-hours"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#287772" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Sun, Tue, Thu</div>
+          <div class="doc-hours"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#286963" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Sun, Tue, Thu</div>
           <div class="doc-actions">
-            <a class="doc-view-solid" href="doctors">View Profile</a>
-            <a class="doc-book" href="home#appointment">Book Appointment</a>
+            <a class="doc-view-solid" href="home#appointment">Book a visit</a>
           </div>
         </div>
       </article>
@@ -163,12 +137,9 @@
         </div>
         <div class="doc-body">
           <h3>Dr. [Name]</h3>
-          <p class="doc-qual">Qualification to be confirmed</p>
-          <p class="doc-reg">NMC Reg. No. to be confirmed</p>
-          <div class="doc-hours"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#287772" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Sun &ndash; Fri</div>
+          <div class="doc-hours"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#286963" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Sun-Fri</div>
           <div class="doc-actions">
-            <a class="doc-view-solid" href="doctors">View Profile</a>
-            <a class="doc-book" href="home#appointment">Book Appointment</a>
+            <a class="doc-view-solid" href="home#appointment">Book a visit</a>
           </div>
         </div>
       </article>
@@ -179,12 +150,9 @@
         </div>
         <div class="doc-body">
           <h3>Dr. [Name]</h3>
-          <p class="doc-qual">Qualification to be confirmed</p>
-          <p class="doc-reg">NMC Reg. No. to be confirmed</p>
-          <div class="doc-hours"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#287772" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Sun &ndash; Fri</div>
+          <div class="doc-hours"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#286963" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Sun-Fri</div>
           <div class="doc-actions">
-            <a class="doc-view-solid" href="doctors">View Profile</a>
-            <a class="doc-book" href="home#appointment">Book Appointment</a>
+            <a class="doc-view-solid" href="home#appointment">Book a visit</a>
           </div>
         </div>
       </article>
@@ -195,12 +163,9 @@
         </div>
         <div class="doc-body">
           <h3>Dr. [Name]</h3>
-          <p class="doc-qual">Qualification to be confirmed</p>
-          <p class="doc-reg">NMC Reg. No. to be confirmed</p>
-          <div class="doc-hours"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#287772" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Tue &ndash; Sun</div>
+          <div class="doc-hours"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#286963" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Tue-Sun</div>
           <div class="doc-actions">
-            <a class="doc-view-solid" href="doctors">View Profile</a>
-            <a class="doc-book" href="home#appointment">Book Appointment</a>
+            <a class="doc-view-solid" href="home#appointment">Book a visit</a>
           </div>
         </div>
       </article>
@@ -212,10 +177,10 @@
   <!-- ============ CTA BAND ============ -->
   <section class="band-light">
     <div class="wrap-narrow section-sm center">
-      <h2 class="section-title sm">Ready to See a Specialist?</h2>
+      <h2 class="section-title sm">Ready to see a specialist?</h2>
       <p class="section-lead">Book online or call reception, and our team will confirm your appointment with the right doctor.</p>
       <div class="cta-row">
-        <a class="btn btn-primary btn-lg" href="home#appointment">Book an Appointment</a>
+        <a class="btn btn-primary btn-lg" href="home#appointment">Book a visit</a>
         <a class="btn btn-light btn-lg" href="tel:+97771000000">Call +977 71-000000</a>
       </div>
     </div>
@@ -230,27 +195,17 @@
             <img src="uploads/logo.jpeg" alt="NMC clinic logo" width="44" height="44" loading="lazy">
             <span>NMC</span>
           </div>
-          <p class="footer-about">A community clinic in Butwal offering specialist consultation, diagnostics, physiotherapy, women's health, and kidney care under one roof.</p>
+          <p class="footer-about">A community clinic in Butwal offering specialist consultation, diagnostics, physiotherapy, women's health and kidney care.</p>
           <a class="footer-phone" href="tel:+97771000000">+977 71-000000</a>
-        </div>
-        <div>
-          <h4>Quick Links</h4>
-          <div class="footer-list">
-            <a href="home">Home</a>
-            <a href="about">About</a>
-            <a href="specialties">Specialties</a>
-            <a href="home#appointment">Book Appointment</a>
-            <a href="contact">Contact</a>
-          </div>
         </div>
         <div>
           <h4>Services</h4>
           <div class="footer-list">
-            <a href="specialties#consultation">Specialist Consultation</a>
-            <a href="specialties#diagnostics">Advanced Diagnostics</a>
-            <a href="specialties#laboratory">Laboratory Services</a>
+            <a href="specialties#consultation">Specialist consultation</a>
+            <a href="specialties#diagnostics">Advanced diagnostics</a>
+            <a href="specialties#laboratory">Laboratory services</a>
             <a href="specialties#physiotherapy">Physiotherapy</a>
-            <a href="specialties#kidney">Kidney Care</a>
+            <a href="specialties#kidney">Kidney care</a>
           </div>
         </div>
         <div>
@@ -258,14 +213,14 @@
           <div class="footer-list footer-contact">
             <span>Traffic Chowk, Butwal, Rupandehi, Nepal</span>
             <a href="mailto:info@nmcbutwal.com.np">info@nmcbutwal.com.np</a>
-            <span>Sun–Fri: 8 AM – 8 PM</span>
-            <span>Saturday: 9 AM – 2 PM</span>
+            <span>Sun-Fri: 8 AM-8 PM</span>
+            <span>Saturday: 9 AM-2 PM</span>
           </div>
         </div>
       </div>
 
       <div class="footer-emergency">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FDCA00" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFCC2A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
         <p>For medical emergencies, contact the nearest emergency service or hospital immediately.</p>
       </div>
 
@@ -286,7 +241,13 @@
     WhatsApp us
   </a>
 
+  <nav class="mobile-bar" aria-label="Quick contact">
+    <a href="tel:+97771000000" data-phone-href><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>Call</a>
+    <a href="https://wa.me/9779800000000" target="_blank" rel="noopener" data-whatsapp><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2z"></path></svg>WhatsApp</a>
+    <a class="is-book" href="home#appointment">Book a visit</a>
+  </nav>
+
 </div>
-<script src="assets/script.js"></script>
+<script src="assets/script.js?v=20261011"></script>
 </body>
 </html>

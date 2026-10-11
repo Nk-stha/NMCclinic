@@ -13,12 +13,25 @@
   if (header) {
     var toggle = header.querySelector('.nav-toggle');
 
+    // A 24px sentinel at the top of the page: once it leaves view, the header goes solid.
+    // IntersectionObserver instead of a scroll listener, so nothing runs per scroll frame.
+    var scrolled = false;
     var syncSolid = function () {
-      var scrolled = (window.scrollY || window.pageYOffset || 0) > 24;
       header.classList.toggle('is-solid', scrolled || header.classList.contains('is-open'));
     };
 
-    window.addEventListener('scroll', syncSolid, { passive: true });
+    if ('IntersectionObserver' in window) {
+      var sentinel = document.createElement('div');
+      sentinel.setAttribute('aria-hidden', 'true');
+      sentinel.style.cssText = 'position:absolute;top:0;left:0;width:1px;height:24px;pointer-events:none;';
+      document.body.prepend(sentinel);
+      new IntersectionObserver(function (entries) {
+        scrolled = !entries[0].isIntersecting;
+        syncSolid();
+      }).observe(sentinel);
+    } else {
+      scrolled = true;
+    }
     syncSolid();
 
     if (toggle) {
@@ -41,7 +54,7 @@
     }
 
     // The menu is desktop-irrelevant; drop it when the breakpoint is crossed.
-    var mq = window.matchMedia('(min-width: 1180px)');
+    var mq = window.matchMedia('(min-width: 1024px)');
     var onBreak = function (e) {
       if (e.matches && header.classList.contains('is-open')) {
         header.classList.remove('is-open');
@@ -159,13 +172,89 @@
     });
   });
 
+  /* ---------- scroll reveal ---------------------------------------------- */
+  /* Children of [data-reveal] fade up once, staggered. Skipped entirely when
+     the visitor prefers reduced motion, so content is never left hidden. */
+  var motionOk = window.matchMedia && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (motionOk && 'IntersectionObserver' in window) {
+    var revealer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-in');
+        revealer.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+
+    document.querySelectorAll('[data-reveal]').forEach(function (group) {
+      Array.prototype.forEach.call(group.children, function (child, i) {
+        child.classList.add('reveal');
+        child.style.setProperty('--i', String(i));
+        revealer.observe(child);
+      });
+    });
+  }
+
+  /* ---------- open-now status (clinic local time) ----------------------- */
+  /* Defaults mirror the published hours; CMS hours replace them when loaded. */
+  var DEFAULT_HOURS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(function (day) {
+    return { day: day, opens_at: '08:00', closes_at: '20:00', is_closed: false };
+  }).concat([{ day: 'Saturday', opens_at: '09:00', closes_at: '14:00', is_closed: false }]);
+
+  function clockLabel(hhmm) {
+    var parts = hhmm.split(':');
+    var h = parseInt(parts[0], 10);
+    var suffix = h >= 12 ? 'PM' : 'AM';
+    var h12 = h % 12 || 12;
+    return h12 + (parts[1] && parts[1] !== '00' ? ':' + parts[1] : '') + ' ' + suffix;
+  }
+
+  function renderOpenStatus(hours) {
+    var text = document.querySelector('[data-open-status]');
+    var dot = document.querySelector('[data-open-dot]');
+    if (!text || !window.Intl) return;
+
+    var now;
+    try {
+      now = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Asia/Kathmandu', weekday: 'long', hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
+      }).formatToParts(new Date()).reduce(function (acc, part) { acc[part.type] = part.value; return acc; }, {});
+    } catch (e) {
+      return;
+    }
+
+    var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    var byDay = {};
+    hours.forEach(function (row) { byDay[row.day] = row; });
+    var isOpenRow = function (row) { return row && !row.is_closed && row.opens_at && row.closes_at; };
+    var nowTime = now.hour + ':' + now.minute;
+    var today = byDay[now.weekday];
+    var open = isOpenRow(today) && nowTime >= today.opens_at && nowTime < today.closes_at;
+
+    if (open) {
+      text.textContent = 'Open now, until ' + clockLabel(today.closes_at);
+    } else if (isOpenRow(today) && nowTime < today.opens_at) {
+      text.textContent = 'Closed now, opens today at ' + clockLabel(today.opens_at);
+    } else {
+      var start = days.indexOf(now.weekday);
+      var next = null;
+      for (var i = 1; i <= 7 && !next; i++) {
+        var row = byDay[days[(start + i) % 7]];
+        if (isOpenRow(row)) next = row;
+      }
+      text.textContent = next ? 'Closed now, opens ' + next.day + ' at ' + clockLabel(next.opens_at) : 'Closed now';
+    }
+    if (dot) dot.classList.toggle('is-open', open);
+  }
+
+  renderOpenStatus(DEFAULT_HOURS);
+
   /* ---------- current year ---------------------------------------------- */
   document.querySelectorAll('[data-year]').forEach(function (el) {
     el.textContent = String(new Date().getFullYear());
   });
 
   function endpointUrl(file) {
-    var script = document.querySelector('script[src$="assets/script.js"]');
+    var script = document.querySelector('script[src*="assets/script.js"]');
     if (!script) return file;
 
     var src = script.getAttribute('src') || '';
@@ -252,11 +341,11 @@
   }
 
   function calendarSvg() {
-    return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#287772" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>';
+    return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#286963" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>';
   }
 
   function scheduleText(schedules) {
-    if (!Array.isArray(schedules) || schedules.length === 0) return 'Schedule to be confirmed';
+    if (!Array.isArray(schedules) || schedules.length === 0) return '';
     return schedules.map(function (schedule) {
       var time = schedule.start_time && schedule.end_time ? ' ' + schedule.start_time + '-' + schedule.end_time : '';
       var location = schedule.location ? ' · ' + schedule.location : '';
@@ -300,12 +389,6 @@
 
     var name = document.createElement('h3');
     name.textContent = cmsText(doctor.full_name);
-    var qual = document.createElement('p');
-    qual.className = 'doc-qual';
-    qual.textContent = Array.isArray(doctor.qualifications) && doctor.qualifications.length > 0 ? doctor.qualifications.join(', ') : 'Qualification to be confirmed';
-    var reg = document.createElement('p');
-    reg.className = 'doc-reg';
-    reg.textContent = doctor.registration_number ? 'NMC Reg. No. ' + doctor.registration_number : 'NMC Reg. No. to be confirmed';
     var hours = document.createElement('div');
     hours.className = 'doc-hours';
     hours.innerHTML = calendarSvg() + ' ';
@@ -313,13 +396,24 @@
     var actions = document.createElement('div');
     actions.className = 'doc-actions';
     actions.innerHTML = home
-      ? '<a class="doc-view" href="doctors">View Profile</a><a class="doc-book" href="#appointment">Book Appointment</a>'
-      : '<a class="doc-view-solid" href="doctors">View Profile</a><a class="doc-book" href="home#appointment">Book Appointment</a>';
+      ? '<a class="doc-view" href="#appointment">Book a visit</a>'
+      : '<a class="doc-view-solid" href="home#appointment">Book a visit</a>';
 
     body.appendChild(name);
-    body.appendChild(qual);
-    body.appendChild(reg);
-    body.appendChild(hours);
+    // Qualification and registration lines only when the CMS has them; no placeholder text.
+    if (Array.isArray(doctor.qualifications) && doctor.qualifications.length > 0) {
+      var qual = document.createElement('p');
+      qual.className = 'doc-qual';
+      qual.textContent = doctor.qualifications.join(', ');
+      body.appendChild(qual);
+    }
+    if (doctor.registration_number) {
+      var reg = document.createElement('p');
+      reg.className = 'doc-reg';
+      reg.textContent = 'NMC Reg. No. ' + doctor.registration_number;
+      body.appendChild(reg);
+    }
+    if (hours.textContent.trim()) body.appendChild(hours);
     body.appendChild(actions);
     card.appendChild(photo);
     card.appendChild(body);
@@ -339,7 +433,7 @@
     var link = document.createElement('a');
     link.className = 'link-cta inline';
     link.href = 'specialties#' + encodeURIComponent(cmsText(specialty.slug));
-    link.innerHTML = 'Learn More ' + arrowSvg();
+    link.innerHTML = 'Learn more ' + arrowSvg();
 
     card.appendChild(title);
     card.appendChild(description);
@@ -385,22 +479,22 @@
     var settings = data.settings;
     var hours = Array.isArray(data.hours) ? data.hours : [];
 
-    document.querySelectorAll('.topbar-em').forEach(function (anchor) {
-      setAnchor(anchor, settings.primary_phone_href, settings.primary_phone);
-    });
     document.querySelectorAll('.header-phone, .footer-phone').forEach(function (anchor) {
       setAnchor(anchor, settings.primary_phone_href, settings.primary_phone);
     });
-    document.querySelectorAll('.topbar-mail').forEach(function (anchor) {
-      setAnchor(anchor, settings.email_href, settings.email);
-    });
-    document.querySelectorAll('.topbar-hours').forEach(function (item) {
-      if (data.hours_summary) item.textContent = data.hours_summary;
-    });
-    document.querySelectorAll('.wa-float').forEach(function (anchor) {
+    document.querySelectorAll('.wa-float, [data-whatsapp]').forEach(function (anchor) {
       if (settings.whatsapp_url) anchor.href = settings.whatsapp_url;
     });
-    document.querySelectorAll('iframe[title*="location"]').forEach(function (iframe) {
+    document.querySelectorAll('[data-phone-href]').forEach(function (anchor) {
+      if (settings.primary_phone_href) anchor.href = settings.primary_phone_href;
+    });
+    document.querySelectorAll('[data-phone]').forEach(function (item) {
+      if (settings.primary_phone) item.textContent = settings.primary_phone;
+    });
+    // Only trust CMS hours that carry real times; label-only rows keep the defaults.
+    if (hours.some(function (row) { return row.opens_at && row.closes_at; })) renderOpenStatus(hours);
+    // Branch maps are driven by the branch picker, not the single global pin.
+    document.querySelectorAll('iframe[title*="location"]:not([data-branch-map])').forEach(function (iframe) {
       if (settings.map_embed_url) iframe.src = settings.map_embed_url;
     });
 
@@ -412,14 +506,158 @@
       if ((text.indexOf('terms') !== -1 || text.indexOf('conditions') !== -1) && settings.terms_url) anchor.href = settings.terms_url;
       if (text.indexOf('accessibility') !== -1 && settings.accessibility_url) anchor.href = settings.accessibility_url;
     });
+  }
 
-    if (Array.isArray(data.socials)) {
-      data.socials.forEach(function (social) {
-        document.querySelectorAll('.topbar-social a[aria-label="' + social.label + '"], .topbar-social a[aria-label="' + social.platform + '"]').forEach(function (anchor) {
-          anchor.href = social.url;
-        });
-      });
+  /* ---------- branch picker (home "Visit us", contact page) ------------- */
+  /* Markup contract, inside one [data-branch-picker] container:
+       [data-branch-list]        holds .branch-item > button.branch-select[data-branch-*]
+       iframe[data-branch-map]   the map that follows the selected branch
+       [data-branch-directions]  directions link, [data-branch-caption] live caption
+     [data-branch-field="name|address"] anywhere on the page mirrors the selection.
+     The built-in items are the fallback; CMS branches replace them when loaded. */
+  function branchQuery(data) {
+    return data.lat && data.lng ? data.lat + ',' + data.lng : data.address;
+  }
+
+  function branchMapUrl(data) {
+    return 'https://www.google.com/maps?q=' + encodeURIComponent(branchQuery(data)) +
+      '&z=' + (parseInt(data.zoom, 10) || 15) + '&output=embed';
+  }
+
+  function branchDirectionsUrl(data) {
+    return 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(branchQuery(data));
+  }
+
+  function branchData(button) {
+    return {
+      name: button.getAttribute('data-branch-name') || '',
+      address: button.getAttribute('data-branch-address') || '',
+      lat: button.getAttribute('data-branch-lat') || '',
+      lng: button.getAttribute('data-branch-lng') || '',
+      zoom: button.getAttribute('data-branch-zoom') || '15',
+      phone: button.getAttribute('data-branch-phone') || '',
+      phoneHref: button.getAttribute('data-branch-phone-href') || ''
+    };
+  }
+
+  function selectBranch(picker, button) {
+    var data = branchData(button);
+
+    picker.querySelectorAll('.branch-select').forEach(function (item) {
+      var on = item === button;
+      item.setAttribute('aria-pressed', on ? 'true' : 'false');
+      item.closest('.branch-item').classList.toggle('is-active', on);
+      var cta = item.querySelector('[data-branch-cta]');
+      if (cta) cta.textContent = on ? 'Showing on map' : 'Show on map';
+    });
+
+    var map = picker.querySelector('[data-branch-map]');
+    var url = branchMapUrl(data);
+    if (map && map.getAttribute('src') !== url) {
+      map.setAttribute('src', url);
+      map.setAttribute('title', 'Map of NMC ' + data.name);
     }
+    var directions = picker.querySelector('[data-branch-directions]');
+    if (directions) directions.href = branchDirectionsUrl(data);
+    var caption = picker.querySelector('[data-branch-caption]');
+    if (caption) caption.textContent = 'Showing ' + data.name;
+
+    document.querySelectorAll('[data-branch-field]').forEach(function (field) {
+      var key = field.getAttribute('data-branch-field');
+      // Remember the page's original value, so a branch without a phone
+      // falls back to the main number instead of keeping the last branch's.
+      if (!field.hasAttribute('data-default-text')) {
+        field.setAttribute('data-default-text', field.textContent);
+        if (field.tagName === 'A') field.setAttribute('data-default-href', field.getAttribute('href') || '');
+      }
+      var text = data[key] || field.getAttribute('data-default-text');
+      field.textContent = text;
+      if (key === 'phone' && field.tagName === 'A') {
+        field.href = data.phone && data.phoneHref ? data.phoneHref : field.getAttribute('data-default-href');
+      }
+    });
+  }
+
+  function createBranchItem(branch) {
+    var item = document.createElement('div');
+    item.className = 'branch-item';
+
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'branch-select';
+    button.setAttribute('aria-pressed', 'false');
+    button.setAttribute('data-branch-name', cmsText(branch.name));
+    button.setAttribute('data-branch-address', cmsText(branch.address));
+    button.setAttribute('data-branch-lat', cmsText(branch.lat));
+    button.setAttribute('data-branch-lng', cmsText(branch.lng));
+    button.setAttribute('data-branch-zoom', String(branch.zoom || 15));
+    button.setAttribute('data-branch-phone', cmsText(branch.phone));
+    button.setAttribute('data-branch-phone-href', cmsText(branch.phone_href));
+    button.innerHTML =
+      '<span class="icon-badge md"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>' +
+      '<span class="branch-body"><span class="branch-head"><span class="branch-name"></span></span>' +
+      '<span class="branch-text"></span><span class="branch-cta" data-branch-cta>Show on map</span></span>';
+    button.querySelector('.branch-name').textContent = cmsText(branch.name);
+    button.querySelector('.branch-text').textContent = cmsText(branch.address);
+    if (branch.tag) {
+      var tag = document.createElement('span');
+      tag.className = 'branch-tag' + (branch.is_primary ? '' : ' is-soft');
+      tag.textContent = cmsText(branch.tag);
+      button.querySelector('.branch-head').appendChild(tag);
+    }
+    item.appendChild(button);
+
+    var meta = document.createElement('div');
+    meta.className = 'branch-meta';
+    if (branch.phone && branch.phone_href) {
+      var phone = document.createElement('a');
+      phone.href = branch.phone_href;
+      phone.textContent = cmsText(branch.phone);
+      meta.appendChild(phone);
+    }
+    if (branch.hours) {
+      var hours = document.createElement('span');
+      hours.textContent = cmsText(branch.hours);
+      meta.appendChild(hours);
+    }
+    if (meta.childNodes.length) item.appendChild(meta);
+
+    return item;
+  }
+
+  var branchPickers = document.querySelectorAll('[data-branch-picker]');
+
+  branchPickers.forEach(function (picker) {
+    var list = picker.querySelector('[data-branch-list]');
+    if (!list) return;
+    list.addEventListener('click', function (event) {
+      var button = event.target.closest('.branch-select');
+      if (button && list.contains(button)) selectBranch(picker, button);
+    });
+  });
+
+  if (window.fetch && branchPickers.length) {
+    fetch(endpointUrl('branches-data.php'), { headers: { 'Accept': 'application/json' } })
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (data) {
+        if (!data || !data.ok || !Array.isArray(data.branches) || data.branches.length === 0) return;
+
+        branchPickers.forEach(function (picker) {
+          var list = picker.querySelector('[data-branch-list]');
+          if (!list) return;
+          list.innerHTML = '';
+          data.branches.forEach(function (branch) {
+            list.appendChild(createBranchItem(branch));
+          });
+          // The endpoint lists the main clinic first; show it by default.
+          selectBranch(picker, list.querySelector('.branch-select'));
+        });
+      })
+      .catch(function () {
+        // Keep the built-in branch list when CMS branches are unavailable.
+      });
   }
 
   /* ---------- CMS-backed site settings ---------------------------------- */
@@ -549,7 +787,7 @@
           var eyebrow = document.createElement('span');
           eyebrow.className = 'eyebrow with-icon';
           eyebrow.innerHTML = '<span class="icon-badge sm">' + iconSvg(22) + '</span>';
-          eyebrow.appendChild(document.createTextNode(title));
+          eyebrow.setAttribute('aria-hidden', 'true');
           body.appendChild(eyebrow);
 
           var heading = document.createElement('h2');
@@ -576,10 +814,11 @@
             body.appendChild(list);
           }
 
-          var actions = document.createElement('div');
-          actions.className = 'btn-row';
-          actions.innerHTML = '<a class="btn btn-primary btn-sm" href="home#appointment">Book an Appointment</a><a class="link-cta" href="doctors">Find a specialist</a>';
-          body.appendChild(actions);
+          var action = document.createElement('a');
+          action.className = 'link-cta inline';
+          action.href = 'home#appointment';
+          action.innerHTML = 'Book this service ' + arrowSvg();
+          body.appendChild(action);
 
           row.appendChild(media);
           row.appendChild(body);
@@ -592,11 +831,10 @@
   }
 
   /* ---------- CMS-backed doctors listing -------------------------------- */
-  var homeDoctorTabs = document.querySelector('[data-cms-home-doctor-tabs]');
+  // Homepage shows four doctors without filters; filtering lives on the doctors page.
   var homeDoctorList = document.querySelector('[data-cms-home-doctor-list]');
-  var homeDoctorEmpty = document.querySelector('[data-filter-empty="home-doctors"]');
   var homeDoctorFallbackNote = document.querySelector('[data-cms-home-doctor-fallback-note]');
-  if (window.fetch && homeDoctorTabs && homeDoctorList) {
+  if (window.fetch && homeDoctorList) {
     fetch(endpointUrl('doctors-data.php'), { headers: { 'Accept': 'application/json' } })
       .then(function (response) {
         return response.json();
@@ -604,43 +842,11 @@
       .then(function (data) {
         if (!data || !data.ok || !Array.isArray(data.doctors) || data.doctors.length === 0) return;
 
-        function applyHomeDoctorFilter(value) {
-          var cards = homeDoctorList.querySelectorAll('[data-category]');
-          var shown = 0;
-          cards.forEach(function (card) {
-            var match = value === 'All' || card.getAttribute('data-category') === value;
-            card.hidden = !match;
-            if (match) shown++;
-          });
-          if (homeDoctorEmpty) homeDoctorEmpty.hidden = shown !== 0;
-        }
-
-        homeDoctorTabs.innerHTML = '';
         homeDoctorList.innerHTML = '';
-
-        ['All'].concat(data.specialties || []).forEach(function (specialty, index) {
-          var tab = document.createElement('button');
-          tab.type = 'button';
-          tab.className = 'tab' + (index === 0 ? ' is-active' : '');
-          tab.setAttribute('data-filter', specialty);
-          tab.setAttribute('aria-pressed', index === 0 ? 'true' : 'false');
-          tab.textContent = specialty;
-          tab.addEventListener('click', function () {
-            homeDoctorTabs.querySelectorAll('[data-filter]').forEach(function (item) {
-              var active = item === tab;
-              item.classList.toggle('is-active', active);
-              item.setAttribute('aria-pressed', active ? 'true' : 'false');
-            });
-            applyHomeDoctorFilter(specialty);
-          });
-          homeDoctorTabs.appendChild(tab);
-        });
-
         data.doctors.slice(0, 4).forEach(function (doctor) {
           homeDoctorList.appendChild(createDoctorCard(doctor, true));
         });
 
-        applyHomeDoctorFilter('All');
         if (homeDoctorFallbackNote) homeDoctorFallbackNote.hidden = true;
       })
       .catch(function () {

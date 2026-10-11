@@ -70,6 +70,7 @@ function cms_header(string $title, array $admin, string $active = 'dashboard'): 
         'blog' => ['Blog', 'blog.php', 'edit_note'],
         'blog_categories' => ['Blog Categories', 'blog-categories.php', 'category'],
         'contact' => ['Contact', 'contact.php', 'contact_mail'],
+        'branches' => ['Branches', 'branches.php', 'location_on'],
         'submissions' => ['Submissions', 'submissions.php', 'inbox'],
         'media' => ['Media', 'media.php', 'image'],
         'seo' => ['SEO Metadata', 'seo.php', 'travel_explore'],
