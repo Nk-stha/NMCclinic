@@ -31,11 +31,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!csrf_is_valid($_POST['csrf_token'] ?? null)) {
         $toast = ['error', 'Invalid request. Please reload the page and try again.'];
-        $posted[$key] = $fields + ['items' => $items];
+        $norm = content_validate_section($section, ['fields' => $fields, 'items' => $items]);
+        $posted[$key] = $norm['values'] + ['items' => $norm['items']];
     } elseif (($_POST['action'] ?? '') === 'reset') {
         try {
             content_reset_section($slug, $key);
-            header('Location: content.php?page=' . rawurlencode($slug) . '&saved=' . rawurlencode($key) . '#section-' . $key);
+            header('Location: content.php?page=' . rawurlencode($slug) . '&reset=' . rawurlencode($key) . '#section-' . $key);
             exit;
         } catch (Throwable $exception) {
             error_log('content reset: ' . $exception->getMessage());
@@ -49,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 content_save_section($slug, $key, $result['values'], $result['items']);
                 header('Location: content.php?page=' . rawurlencode($slug) . '&saved=' . rawurlencode($key) . '#section-' . $key);
                 exit;
-            } catch (RuntimeException $exception) {
+            } catch (ContentValidationException $exception) {
                 $toast = ['error', $exception->getMessage()];
             } catch (Throwable $exception) {
                 error_log('content save: ' . $exception->getMessage());
@@ -62,13 +63,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$saved = (string) ($_GET['saved'] ?? '');
-if ($slug !== '' && $toast === null && isset($registry[$slug]['sections'][$saved])) {
-    $toast = ['success', $registry[$slug]['sections'][$saved]['label'] . ' saved.'];
+foreach (['saved' => ' saved.', 'reset' => ' reset to default.'] as $param => $suffix) {
+    $k = (string) ($_GET[$param] ?? '');
+    if ($slug !== '' && $toast === null && isset($registry[$slug]['sections'][$k])) {
+        $toast = ['success', $registry[$slug]['sections'][$k]['label'] . $suffix];
+    }
 }
 
-// Anchor on the public page for "View on site" (global content shows on every page, so link to the home page).
-$viewUrl = '../' . ($slug === 'global' ? '' : $slug);
+// Public route per registry slug; no section anchors yet (public pages have none), '' hides the link.
+$viewUrl = match ($slug) {
+    'home', 'global' => '../',
+    'blog', 'blog_detail' => '../blog',
+    '404' => '',
+    default => '../' . $slug,
+};
 
 cms_header('Page Content', $admin, 'content');
 ?>

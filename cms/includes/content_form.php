@@ -3,6 +3,11 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../includes/content.php';
 
+/** Message is safe to show to the admin; every other exception is logged and hidden. */
+class ContentValidationException extends RuntimeException
+{
+}
+
 /** Same query as doctor_media_options(); duplicated so this file does not pull in the doctor form. */
 function content_media_options(): array
 {
@@ -107,10 +112,10 @@ function content_save_section(string $slug, string $sectionKey, array $values, a
         $mediaIds = array_values(array_unique($mediaIds));
         if ($mediaIds) {
             $in = implode(',', array_fill(0, count($mediaIds), '?'));
-            $stmt = $pdo->prepare("SELECT COUNT(*) FROM media_assets WHERE id IN ($in) AND deleted_at IS NULL");
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM media_assets WHERE id IN ($in) AND deleted_at IS NULL AND is_public = 1 AND mime_type LIKE 'image/%'");
             $stmt->execute($mediaIds);
             if ((int) $stmt->fetchColumn() !== count($mediaIds)) {
-                throw new RuntimeException('Selected image no longer exists.');
+                throw new ContentValidationException('Selected image no longer exists.');
             }
         }
 

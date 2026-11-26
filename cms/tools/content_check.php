@@ -161,6 +161,7 @@ check('validate_rejects_bad_url', isset($val(['cta' => 'javascript:x'])['errors'
 check('validate_items_bounds', isset($val([], [])['errors']['items']) && isset($val([], [['title' => 'a'], ['title' => 'a'], ['title' => 'a'], ['title' => 'a']])['errors']['items']) && !isset($val([], $goodItems)['errors']['items']));
 check('validate_item_field_path', isset($val([], [['title' => 'a'], ['title' => 'b'], ['title' => '']])['errors']['items.2.title']));
 check('validate_icon_whitelist', isset($val(['ic' => 'nope'])['errors']['ic']) && !isset($val(['ic' => 'kidney'])['errors']['ic']) && !isset($val(['ic' => ''])['errors']['ic']));
+check('validate_image_rejects_non_numeric', isset($val(['primary_media_id' => 'abc'])['errors']['primary_media_id']) && isset($val(['primary_media_id' => '-3'])['errors']['primary_media_id']) && isset($val(['primary_media_id' => '1.5'])['errors']['primary_media_id']));
 check('validate_image_and_normalise', isset($val(['primary_media_id' => 'abc'])['errors']['primary_media_id']) && isset($val(['primary_media_id' => '0'])['errors']['primary_media_id'])
     && $val(['primary_media_id' => '7'])['values']['primary_media_id'] === '7' && $val(['heading' => " a\r\nb "])['values']['heading'] === "a\nb");
 
