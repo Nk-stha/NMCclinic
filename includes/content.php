@@ -188,6 +188,16 @@ function content_safe_url(string $url): string
     return '#';
 }
 
+/** Prefix a relative URL with the site base so pages at /blog/{slug} resolve it; #, scheme:, // and / URLs stay as is. */
+function content_abs_url(string $url): string
+{
+    if ($url === '' || preg_match('/^(#|\/|[a-z][a-z0-9+.-]*:)/i', $url)) {
+        return $url;
+    }
+
+    return public_base_url() . '/' . $url;
+}
+
 function content_paragraphs(string $text): string
 {
     $html = '';
@@ -222,6 +232,12 @@ function c_text(array $values, string $field): string
 function c_url(array $values, string $field): string
 {
     return public_e(content_safe_url((string) ($values[$field] ?? '')));
+}
+
+/** Escaped, safe, base-prefixed URL for output in href/src. */
+function c_href(string $url): string
+{
+    return public_e(content_abs_url(content_safe_url($url)));
 }
 
 function c_img(array $values, string $field): array

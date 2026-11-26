@@ -8,6 +8,7 @@ if (PHP_SAPI !== 'cli') {
 }
 
 require_once __DIR__ . '/../../includes/content.php';
+require_once __DIR__ . '/../../includes/site_footer.php';
 
 $failures = 0;
 function check(string $name, bool $ok): void
@@ -26,6 +27,14 @@ $globalSpec = content_page_spec('global');
 check('db_down_returns_defaults', page_content('global')['footer']['about'] === $globalSpec['sections']['footer']['fields']['about']['default']);
 require_once __DIR__ . '/../../includes/site_data.php';
 check('site_data_db_down_shapes', site_doctors() === [] && site_settings()['settings'] === null && site_branches() === [] && site_form_options() === ['specialties' => [], 'subjects' => []] && !site_data_ok());
+$footerOk = false;
+if (function_exists('site_footer')) {
+    ob_start();
+    site_footer();
+    $html = (string) ob_get_clean();
+    $footerOk = !str_contains($html, 'Privacy Policy') && !str_contains($html, 'footer-legal') && str_contains($html, 'wa.me/9779800000000') && str_contains($html, 'Traffic Chowk');
+}
+check('footer_hides_legal_without_url', $footerOk);
 ini_set('error_log', (string) $errLog);
 
 $spec = ['label' => 'T', 'sections' => ['s' => [
@@ -114,6 +123,23 @@ foreach (content_registry() as $page) {
     }
 }
 check('registry_defaults_complete', $ok);
+
+$_SERVER['HTTP_HOST'] = 'example.test';
+$base = public_base_url();
+check('abs_url_prefixes_relative_only',
+    content_abs_url('about') === $base . '/about' && content_abs_url('specialties#kidney') === $base . '/specialties#kidney'
+    && content_abs_url('#x') === '#x' && content_abs_url('https://a.b/c') === 'https://a.b/c' && content_abs_url('tel:+977') === 'tel:+977'
+    && content_abs_url('mailto:a@b.c') === 'mailto:a@b.c' && content_abs_url('/x') === '/x' && c_href('javascript:alert(1)') === '#'
+    && c_href('a?x=1&y=2') === public_e($base . '/a?x=1&y=2'));
+
+$headerOk = false;
+if (function_exists('site_header')) {
+    ob_start();
+    site_header('about');
+    $html = (string) ob_get_clean();
+    $headerOk = substr_count($html, 'aria-current="page"') === 2 && preg_match_all('/<a href="[^"]*about" aria-current="page">About<\/a>/', $html) === 2;
+}
+check('header_marks_active', $headerOk);
 
 $seo = (string) file_get_contents(__DIR__ . '/../../includes/public_seo.php') . (string) file_get_contents(__DIR__ . '/../includes/seo_form.php');
 check('sitemap_excludes_generic', substr_count($seo, "page_type <> \"generic\"") >= 2);

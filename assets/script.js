@@ -455,24 +455,6 @@
     }
   }
 
-  function replaceFooterContact(settings, hours) {
-    document.querySelectorAll('.footer-contact').forEach(function (list) {
-      var items = list.children;
-      if (items.length > 0 && settings.address) items[0].textContent = settings.address;
-      if (items.length > 1 && settings.email) {
-        items[1].textContent = settings.email;
-        if (items[1].tagName === 'A') items[1].href = settings.email_href;
-      }
-      if (items.length > 2 && hours.length > 0) {
-        items[2].textContent = hours[0].day + ': ' + (hours[0].is_closed ? 'Closed' : (hours[0].label || hours[0].opens_at + '-' + hours[0].closes_at));
-      }
-      if (items.length > 3 && hours.length > 1) {
-        var last = hours[hours.length - 1];
-        items[3].textContent = last.day + ': ' + (last.is_closed ? 'Closed' : (last.label || last.opens_at + '-' + last.closes_at));
-      }
-    });
-  }
-
   function applySiteSettings(data) {
     if (!data || !data.ok || !data.settings) return;
 
@@ -496,15 +478,6 @@
     // Branch maps are driven by the branch picker, not the single global pin.
     document.querySelectorAll('iframe[title*="location"]:not([data-branch-map])').forEach(function (iframe) {
       if (settings.map_embed_url) iframe.src = settings.map_embed_url;
-    });
-
-    replaceFooterContact(settings, hours);
-
-    document.querySelectorAll('.footer-legal a').forEach(function (anchor) {
-      var text = anchor.textContent.trim().toLowerCase();
-      if (text.indexOf('privacy') !== -1 && settings.privacy_url) anchor.href = settings.privacy_url;
-      if ((text.indexOf('terms') !== -1 || text.indexOf('conditions') !== -1) && settings.terms_url) anchor.href = settings.terms_url;
-      if (text.indexOf('accessibility') !== -1 && settings.accessibility_url) anchor.href = settings.accessibility_url;
     });
   }
 
