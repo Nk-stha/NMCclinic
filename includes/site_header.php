@@ -66,7 +66,7 @@ function site_header(string $active): void
         <a class="btn btn-primary" href="<?= c_href((string) $h['cta_url']) ?>"><?= c($h, 'cta_label') ?></a>
       </div>
 
-      <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false">
+      <button class="nav-toggle" type="button" aria-label="<?= c($h, 'menu_open_label') ?>" aria-expanded="false" data-label-open="<?= c($h, 'menu_open_label') ?>" data-label-close="<?= c($h, 'menu_close_label') ?>">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
       </button>
     </div>
@@ -76,7 +76,7 @@ function site_header(string $active): void
 
       <div class="nav-mobile-cta">
         <a class="m-book" href="<?= c_href((string) $h['cta_url']) ?>"><?= c($h, 'cta_label') ?></a>
-        <a class="m-call" href="<?= public_e($ct['phone_href']) ?>">Call <?= public_e($ct['phone']) ?></a>
+        <a class="m-call" href="<?= public_e($ct['phone_href']) ?>"><?= c($g['mobile_bar'], 'call_label') ?> <?= public_e($ct['phone']) ?></a>
       </div>
     </div>
   </header>

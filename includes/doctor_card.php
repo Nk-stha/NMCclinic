@@ -5,7 +5,7 @@ require_once __DIR__ . '/content.php';
 
 /**
  * One doctor card, shared by the home page (compact) and the doctors page.
- * $labels holds the page's editable strings: card_photo_placeholder, card_reg_prefix, card_cta_label.
+ * $labels holds the page's editable strings: card_photo_placeholder, card_reg_prefix, card_cta_label, card_cta_url.
  */
 function render_doctor_card(array $d, array $labels, bool $home): void
 {
@@ -31,7 +31,7 @@ function render_doctor_card(array $d, array $labels, bool $home): void
             <div class="doc-hours"><?= $calendar ?> <?= public_e($hours) ?></div>
 <?php endif; ?>
             <div class="doc-actions">
-              <a class="<?= $home ? 'doc-view' : 'doc-view-solid' ?>" href="<?= $home ? '#appointment' : 'home#appointment' ?>"><?= c($labels, 'card_cta_label') ?></a>
+              <a class="<?= $home ? 'doc-view' : 'doc-view-solid' ?>" href="<?= c_href((string) $labels['card_cta_url']) ?>"><?= c($labels, 'card_cta_label') ?></a>
             </div>
           </div>
         </article>

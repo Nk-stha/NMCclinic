@@ -108,6 +108,6 @@ $arrow = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="cu
   <?php site_footer(true); ?>
 
 </div>
-<script src="assets/script.js?v=20261126"></script>
+<script src="assets/script.js?v=20261126b"></script>
 </body>
 </html>

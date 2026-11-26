@@ -345,6 +345,6 @@ $phoneSvg = static fn (string $stroke): string => '<svg width="22" height="22" v
   <?php site_footer(false); ?>
 
 </div>
-<script src="assets/script.js?v=20261126"></script>
+<script src="assets/script.js?v=20261126b"></script>
 </body>
 </html>

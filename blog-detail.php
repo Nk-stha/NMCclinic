@@ -175,7 +175,7 @@ $schema = public_blog_schema($post, $canonical, $imageUrl);
   <?php site_footer(true); ?>
 
 </div>
-<script src="<?= public_e($basePath) ?>/assets/script.js?v=20261126"></script>
+<script src="<?= public_e($basePath) ?>/assets/script.js?v=20261126b"></script>
 </body>
 </html>
 <?php

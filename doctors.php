@@ -80,6 +80,6 @@ $specialties = site_distinct($doctors, 'specialty');
   <?php site_footer(true); ?>
 
 </div>
-<script src="assets/script.js?v=20261126"></script>
+<script src="assets/script.js?v=20261126b"></script>
 </body>
 </html>

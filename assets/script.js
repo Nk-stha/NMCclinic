@@ -34,11 +34,15 @@
     }
     syncSolid();
 
+    // Labels come from the CMS (Site-wide > Header) via data attributes.
+    var openLabel = (toggle && toggle.getAttribute('data-label-open')) || 'Open menu';
+    var closeLabel = (toggle && toggle.getAttribute('data-label-close')) || 'Close menu';
+
     if (toggle) {
       toggle.addEventListener('click', function () {
         var open = header.classList.toggle('is-open');
         toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-        toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        toggle.setAttribute('aria-label', open ? closeLabel : openLabel);
         syncSolid();
       });
 
@@ -47,7 +51,7 @@
         link.addEventListener('click', function () {
           header.classList.remove('is-open');
           toggle.setAttribute('aria-expanded', 'false');
-          toggle.setAttribute('aria-label', 'Open menu');
+          toggle.setAttribute('aria-label', openLabel);
           syncSolid();
         });
       });
@@ -60,7 +64,7 @@
         header.classList.remove('is-open');
         if (toggle) {
           toggle.setAttribute('aria-expanded', 'false');
-          toggle.setAttribute('aria-label', 'Open menu');
+          toggle.setAttribute('aria-label', openLabel);
         }
         syncSolid();
       }

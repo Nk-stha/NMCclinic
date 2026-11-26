@@ -188,6 +188,6 @@ $emLabel = trim((string) ($page['emergency_phone_label'] ?? ''));
   <?php site_footer(false); ?>
 
 </div>
-<script src="assets/script.js?v=20261126"></script>
+<script src="assets/script.js?v=20261126b"></script>
 </body>
 </html>

@@ -19,6 +19,8 @@ function content_registry(): array
                 'skip_label' => ['type' => 'text', 'label' => 'Skip link text (keyboard users)', 'max' => 40, 'required' => true, 'default' => 'Skip to content'],
                 'cta_label' => ['type' => 'text', 'label' => 'Button label', 'max' => 30, 'required' => true, 'default' => 'Book a visit'],
                 'cta_url' => ['type' => 'url', 'label' => 'Button link', 'max' => 200, 'required' => true, 'default' => 'home#appointment'],
+                'menu_open_label' => ['type' => 'text', 'label' => 'Phone menu button, closed (screen readers)', 'max' => 30, 'required' => true, 'default' => 'Open menu'],
+                'menu_close_label' => ['type' => 'text', 'label' => 'Phone menu button, open (screen readers)', 'max' => 30, 'required' => true, 'default' => 'Close menu'],
             ], 'items' => null],
             'nav' => ['label' => 'Navigation', 'fields' => [], 'items' => [
                 'item_type' => 'nav', 'label' => 'Menu links', 'min' => 1, 'max' => 8,
@@ -67,6 +69,7 @@ function content_registry(): array
                 'book_label' => ['type' => 'text', 'label' => 'Book label', 'max' => 30, 'required' => true, 'default' => 'Book a visit'],
                 'book_url' => ['type' => 'url', 'label' => 'Book link', 'max' => 200, 'required' => true, 'default' => 'home#appointment'],
                 'float_label' => ['type' => 'text', 'label' => 'Floating WhatsApp button text', 'max' => 30, 'required' => true, 'default' => 'WhatsApp us'],
+                'float_aria_label' => ['type' => 'text', 'label' => 'Floating WhatsApp button name (screen readers)', 'max' => 60, 'required' => true, 'default' => 'Chat with us on WhatsApp'],
             ], 'items' => null],
         ]],
         'home' => ['label' => 'Home', 'sections' => [
@@ -124,6 +127,7 @@ function content_registry(): array
                 'card_photo_placeholder' => ['type' => 'text', 'label' => 'Card text when a doctor has no photo', 'max' => 40, 'required' => true, 'default' => 'doctor photo'],
                 'card_reg_prefix' => ['type' => 'text', 'label' => 'Card registration prefix', 'max' => 30, 'required' => true, 'default' => 'NMC Reg. No.'],
                 'card_cta_label' => ['type' => 'text', 'label' => 'Card button label', 'max' => 30, 'required' => true, 'default' => 'Book a visit'],
+                'card_cta_url' => ['type' => 'url', 'label' => 'Card button link', 'max' => 200, 'required' => true, 'default' => '#appointment'],
                 'empty_message' => ['type' => 'textarea', 'label' => 'Message when no doctors are published', 'max' => 200, 'required' => true, 'default' => 'Our doctor profiles are being updated. Please call us to book.'],
             ], 'items' => null],
             'why_choose' => ['label' => 'Why choose us', 'fields' => [
@@ -338,6 +342,7 @@ function content_registry(): array
                 'card_photo_placeholder' => ['type' => 'text', 'label' => 'Card text when a doctor has no photo', 'max' => 40, 'required' => true, 'default' => 'doctor photo'],
                 'card_reg_prefix' => ['type' => 'text', 'label' => 'Card registration prefix', 'max' => 30, 'required' => true, 'default' => 'NMC Reg. No.'],
                 'card_cta_label' => ['type' => 'text', 'label' => 'Card button label', 'max' => 30, 'required' => true, 'default' => 'Book a visit'],
+                'card_cta_url' => ['type' => 'url', 'label' => 'Card button link', 'max' => 200, 'required' => true, 'default' => 'home#appointment'],
                 'empty_message' => ['type' => 'textarea', 'label' => 'Message when no doctors are published', 'max' => 200, 'required' => true, 'default' => 'Our doctor profiles are being updated. Please call us to book.'],
             ], 'items' => null],
             'cta_band' => ['label' => 'Call to action', 'fields' => [

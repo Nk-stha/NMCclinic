@@ -142,6 +142,6 @@ $ct = site_contact_defaults();
   <?php site_footer(true); ?>
 
 </div>
-<script src="assets/script.js?v=20261126"></script>
+<script src="assets/script.js?v=20261126b"></script>
 </body>
 </html>
