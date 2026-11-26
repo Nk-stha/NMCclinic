@@ -124,6 +124,29 @@ foreach (content_registry() as $page) {
 }
 check('registry_defaults_complete', $ok);
 
+// R10: a field's max must fit its DB column (body / settings_json fields are unlimited).
+$secLimits = ['eyebrow' => 100, 'heading' => 255, 'subheading' => 255, 'primary_cta_label' => 100, 'secondary_cta_label' => 100, 'primary_cta_url' => 500, 'secondary_cta_url' => 500];
+$itemLimits = ['label' => 100, 'title' => 255, 'subtitle' => 255, 'value_text' => 100, 'icon_key' => 100, 'link_label' => 100, 'link_url' => 500];
+$tooLong = [];
+foreach (content_registry() as $pSlug => $pg) {
+    foreach ($pg['sections'] as $sKey => $sec) {
+        foreach ($sec['fields'] as $fName => $fSpec) {
+            if (isset($secLimits[$fName]) && (int) $fSpec['max'] > $secLimits[$fName]) {
+                $tooLong[] = "$pSlug.$sKey.$fName";
+            }
+        }
+        foreach ($sec['items']['fields'] ?? [] as $fName => $fSpec) {
+            if (isset($itemLimits[$fName]) && (int) $fSpec['max'] > $itemLimits[$fName]) {
+                $tooLong[] = "$pSlug.$sKey.items.$fName";
+            }
+        }
+    }
+}
+if ($tooLong) {
+    fwrite(STDERR, 'max exceeds column: ' . implode(', ', $tooLong) . "\n");
+}
+check('registry_max_fits_columns', $tooLong === []);
+
 $h = static fn (string $d, string $o, string $c, bool $x = false, string $l = ''): array => ['day' => $d, 'opens_at' => $o, 'closes_at' => $c, 'label' => $l, 'is_closed' => $x];
 check('hours_lines_groups_days', hours_lines([$h('Sunday', '08:00', '20:00'), $h('Monday', '08:00', '20:00'), $h('Friday', '08:00', '20:00'), $h('Saturday', '09:00', '14:00')]) === ['Sun-Fri: 8:00 AM - 8:00 PM', 'Saturday: 9:00 AM - 2:00 PM']
     && hours_lines([$h('Sunday', '', '', true), $h('Monday', '', '', false, 'By appointment'), $h('Tuesday', '', '')]) === ['Sunday: Closed', 'Monday: By appointment']);

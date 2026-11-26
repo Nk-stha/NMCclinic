@@ -76,7 +76,7 @@ $ct = site_contact_defaults();
       </div>
 <?php endforeach; ?>
 <?php if (!$mv['items']): ?>
-      <div class="empty-state"><?= c_text($mv, 'empty_message') ?></div>
+      <div class="empty-state" style="grid-column:1/-1"><?= c_text($mv, 'empty_message') ?></div>
 <?php endif; ?>
     </div>
   </section>
