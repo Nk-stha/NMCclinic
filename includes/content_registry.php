@@ -318,6 +318,31 @@ function content_registry(): array
                 'call_label' => ['type' => 'text', 'label' => 'Call button text (the phone number from Settings follows it)', 'max' => 30, 'required' => true, 'default' => 'Call'],
             ], 'items' => null],
         ]],
+        'doctors' => ['label' => 'Doctors', 'sections' => [
+            'banner' => ['label' => 'Banner', 'fields' => [
+                'crumb_home' => ['type' => 'text', 'label' => 'Breadcrumb home label', 'max' => 30, 'required' => true, 'default' => 'Home'],
+                'crumb_here' => ['type' => 'text', 'label' => 'Breadcrumb current page label', 'max' => 30, 'required' => true, 'default' => 'Doctors'],
+                'eyebrow' => ['type' => 'text', 'label' => 'Pill text', 'max' => 60, 'required' => false, 'default' => 'Our medical team'],
+                'heading' => ['type' => 'heading', 'label' => 'Heading (wrap words in *stars* to highlight)', 'max' => 90, 'required' => true, 'default' => 'Meet the doctors *behind your care*'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => 'View specialties, consultation schedules, and choose the doctor who best matches your needs.'],
+            ], 'items' => null],
+            'listing' => ['label' => 'Doctor list (doctors come from Doctors; filter tabs from their specialties)', 'fields' => [
+                'all_label' => ['type' => 'text', 'label' => 'Filter tab label for all doctors', 'max' => 30, 'required' => true, 'default' => 'All'],
+                'no_match_message' => ['type' => 'text', 'label' => 'Message when a filter has no doctors', 'max' => 120, 'required' => true, 'default' => 'No doctors match this specialty yet.'],
+                'note' => ['type' => 'text', 'label' => 'Note under the list', 'max' => 200, 'required' => false, 'default' => 'Specialist names, photos, and registration details will be added as they are confirmed.'],
+                'card_photo_placeholder' => ['type' => 'text', 'label' => 'Card text when a doctor has no photo', 'max' => 40, 'required' => true, 'default' => 'doctor photo'],
+                'card_reg_prefix' => ['type' => 'text', 'label' => 'Card registration prefix', 'max' => 30, 'required' => true, 'default' => 'NMC Reg. No.'],
+                'card_cta_label' => ['type' => 'text', 'label' => 'Card button label', 'max' => 30, 'required' => true, 'default' => 'Book a visit'],
+                'empty_message' => ['type' => 'textarea', 'label' => 'Message when no doctors are published', 'max' => 200, 'required' => true, 'default' => 'Our doctor profiles are being updated. Please call us to book.'],
+            ], 'items' => null],
+            'cta_band' => ['label' => 'Call to action', 'fields' => [
+                'heading' => ['type' => 'heading', 'label' => 'Heading', 'max' => 90, 'required' => true, 'default' => 'Ready to see a specialist?'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => 'Book online or call reception, and our team will confirm your appointment with the right doctor.'],
+                'primary_cta_label' => ['type' => 'text', 'label' => 'Button label', 'max' => 30, 'required' => true, 'default' => 'Book a visit'],
+                'primary_cta_url' => ['type' => 'url', 'label' => 'Button link', 'max' => 200, 'required' => true, 'default' => 'home#appointment'],
+                'call_label' => ['type' => 'text', 'label' => 'Call button text (the phone number from Settings follows it)', 'max' => 30, 'required' => true, 'default' => 'Call'],
+            ], 'items' => null],
+        ]],
     ];
 }
 

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/includes/public_seo.php';
 require_once __DIR__ . '/includes/site_footer.php';
+require_once __DIR__ . '/includes/doctor_card.php';
 
 $p = page_content('home');
 $ct = site_contact_defaults();
@@ -26,10 +27,6 @@ $heroBg = preg_match('#^[\w/.:%~-]+$#', $heroBg) ? $heroBg : content_abs_url('up
 $aboutImg = c_img($p['about'], 'primary_media_id');
 $arrow = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
 $phoneSvg = static fn (string $stroke): string => '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="' . $stroke . '" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>';
-$calendarSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#286963" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>';
-$schedule = static fn (array $rows): string => implode(', ', array_map(static fn (array $r): string => $r['day']
-    . ($r['start_time'] !== '' && $r['end_time'] !== '' ? ' ' . $r['start_time'] . '-' . $r['end_time'] : '')
-    . ($r['location'] !== '' ? ' · ' . $r['location'] : ''), $rows));
 $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !== '' ? $b['lat'] . ',' . $b['lng'] : $b['address'];
 ?>
 <!DOCTYPE html>
@@ -152,27 +149,7 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
     </div>
 <?php if ($doctors): ?>
     <div class="grid grid-260 gap-22">
-<?php foreach ($doctors as $d): $hours = $schedule($d['schedules']); ?>
-        <article class="doc-card is-home" data-category="<?= public_e($d['specialty']) ?>">
-          <div class="doc-photo"><?php if ($d['photo_path']): ?><img src="<?= public_e(content_safe_url($d['photo_path'])) ?>" alt="<?= public_e($d['photo_alt']) ?>" loading="lazy"><?php else: ?><span class="ph-label"><?= c($p['doctors'], 'card_photo_placeholder') ?></span><?php endif; ?></div>
-          <div class="doc-body">
-            <span class="doc-chip"><?= public_e($d['specialty']) ?></span>
-            <h3><?= public_e($d['full_name']) ?></h3>
-<?php if ($d['qualifications']): ?>
-            <p class="doc-qual"><?= public_e(implode(', ', $d['qualifications'])) ?></p>
-<?php endif; ?>
-<?php if ($d['registration_number'] !== ''): ?>
-            <p class="doc-reg"><?= c($p['doctors'], 'card_reg_prefix') ?> <?= public_e($d['registration_number']) ?></p>
-<?php endif; ?>
-<?php if ($hours !== ''): ?>
-            <div class="doc-hours"><?= $calendarSvg ?> <?= public_e($hours) ?></div>
-<?php endif; ?>
-            <div class="doc-actions">
-              <a class="doc-view" href="#appointment"><?= c($p['doctors'], 'card_cta_label') ?></a>
-            </div>
-          </div>
-        </article>
-<?php endforeach; ?>
+<?php foreach ($doctors as $d) { render_doctor_card($d, $p['doctors'], true); } ?>
     </div>
 <?php else: ?>
     <div class="empty-state"><?= c_text($p['doctors'], 'empty_message') ?></div>

@@ -3,6 +3,13 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/includes/public_seo.php';
 require_once __DIR__ . '/includes/site_footer.php';
+require_once __DIR__ . '/includes/doctor_card.php';
+
+$p = page_content('doctors');
+$ct = site_contact_defaults();
+[$b, $l, $cta] = [$p['banner'], $p['listing'], $p['cta_band']];
+$doctors = site_doctors();
+$specialties = site_distinct($doctors, 'specialty');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,118 +33,46 @@ require_once __DIR__ . '/includes/site_footer.php';
     <div class="banner-veil"></div>
     <div class="banner-in">
       <div class="crumb">
-        <a href="home">Home</a>
+        <a href="home"><?= c($b, 'crumb_home') ?></a>
         <span class="sep">/</span>
-        <span class="here">Doctors</span>
+        <span class="here"><?= c($b, 'crumb_here') ?></span>
       </div>
-      <span class="pill"><span class="dot"></span>Our medical team</span>
-      <h1>Meet the doctors <span class="accent">behind your care</span></h1>
-      <p class="lead">View specialties, consultation schedules, and choose the doctor who best matches your needs.</p>
+      <span class="pill"><span class="dot"></span><?= c($b, 'eyebrow') ?></span>
+      <h1><?= c_heading($b, 'heading', 'accent') ?></h1>
+      <p class="lead"><?= c($b, 'subheading') ?></p>
     </div>
   </section>
 
   <!-- ============ FILTER + DOCTOR GRID ============ -->
   <section class="wrap listing">
-    <div class="tabs" data-filter-group="doctors" data-cms-doctor-tabs aria-label="Filter doctors by specialty">
-        <button type="button" class="tab lg is-active" data-filter="All" aria-pressed="true">All</button>
-        <button type="button" class="tab lg" data-filter="General Medicine" aria-pressed="false">General Medicine</button>
-        <button type="button" class="tab lg" data-filter="Obstetrics &amp; Gynecology" aria-pressed="false">Obstetrics &amp; Gynecology</button>
-        <button type="button" class="tab lg" data-filter="Nephrology" aria-pressed="false">Nephrology</button>
-        <button type="button" class="tab lg" data-filter="Physiotherapy" aria-pressed="false">Physiotherapy</button>
+<?php if ($doctors): ?>
+    <div class="tabs" data-filter-group="doctors" aria-label="Filter doctors by specialty">
+        <button type="button" class="tab lg is-active" data-filter="All" aria-pressed="true"><?= c($l, 'all_label') ?></button>
+<?php foreach ($specialties as $name): ?>
+        <button type="button" class="tab lg" data-filter="<?= public_e($name) ?>" aria-pressed="false"><?= public_e($name) ?></button>
+<?php endforeach; ?>
     </div>
 
-    <div class="grid grid-280 fill-280" data-filter-target="doctors" data-cms-doctor-list>
-      <article class="doc-card" data-category="General Medicine">
-        <div class="doc-photo">
-          <span class="ph-label">doctor photo</span>
-          <span class="doc-tag">General Medicine</span>
-        </div>
-        <div class="doc-body">
-          <h3>Dr. [Name]</h3>
-          <div class="doc-hours"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#286963" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Sun-Fri</div>
-          <div class="doc-actions">
-            <a class="doc-view-solid" href="home#appointment">Book a visit</a>
-          </div>
-        </div>
-      </article>
-      <article class="doc-card" data-category="Obstetrics &amp; Gynecology">
-        <div class="doc-photo">
-          <span class="ph-label">doctor photo</span>
-          <span class="doc-tag">Obstetrics &amp; Gynecology</span>
-        </div>
-        <div class="doc-body">
-          <h3>Dr. [Name]</h3>
-          <div class="doc-hours"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#286963" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Mon-Sat</div>
-          <div class="doc-actions">
-            <a class="doc-view-solid" href="home#appointment">Book a visit</a>
-          </div>
-        </div>
-      </article>
-      <article class="doc-card" data-category="Nephrology">
-        <div class="doc-photo">
-          <span class="ph-label">doctor photo</span>
-          <span class="doc-tag">Nephrology</span>
-        </div>
-        <div class="doc-body">
-          <h3>Dr. [Name]</h3>
-          <div class="doc-hours"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#286963" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Sun, Tue, Thu</div>
-          <div class="doc-actions">
-            <a class="doc-view-solid" href="home#appointment">Book a visit</a>
-          </div>
-        </div>
-      </article>
-      <article class="doc-card" data-category="Physiotherapy">
-        <div class="doc-photo">
-          <span class="ph-label">doctor photo</span>
-          <span class="doc-tag">Physiotherapy</span>
-        </div>
-        <div class="doc-body">
-          <h3>Dr. [Name]</h3>
-          <div class="doc-hours"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#286963" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Sun-Fri</div>
-          <div class="doc-actions">
-            <a class="doc-view-solid" href="home#appointment">Book a visit</a>
-          </div>
-        </div>
-      </article>
-      <article class="doc-card" data-category="General Medicine">
-        <div class="doc-photo">
-          <span class="ph-label">doctor photo</span>
-          <span class="doc-tag">General Medicine</span>
-        </div>
-        <div class="doc-body">
-          <h3>Dr. [Name]</h3>
-          <div class="doc-hours"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#286963" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Sun-Fri</div>
-          <div class="doc-actions">
-            <a class="doc-view-solid" href="home#appointment">Book a visit</a>
-          </div>
-        </div>
-      </article>
-      <article class="doc-card" data-category="Obstetrics &amp; Gynecology">
-        <div class="doc-photo">
-          <span class="ph-label">doctor photo</span>
-          <span class="doc-tag">Obstetrics &amp; Gynecology</span>
-        </div>
-        <div class="doc-body">
-          <h3>Dr. [Name]</h3>
-          <div class="doc-hours"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#286963" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Tue-Sun</div>
-          <div class="doc-actions">
-            <a class="doc-view-solid" href="home#appointment">Book a visit</a>
-          </div>
-        </div>
-      </article>
+    <div class="grid grid-280 fill-280" data-filter-target="doctors">
+<?php foreach ($doctors as $d) { render_doctor_card($d, $l, false); } ?>
     </div>
-    <p class="listing-note" data-filter-empty="doctors" hidden>No doctors match this specialty yet.</p>
-    <p class="listing-note">Specialist names, photos, and registration details will be added as they are confirmed.</p>
+    <p class="listing-note" data-filter-empty="doctors" hidden><?= c($l, 'no_match_message') ?></p>
+<?php else: ?>
+    <div class="empty-state"><?= c_text($l, 'empty_message') ?></div>
+<?php endif; ?>
+<?php if ((string) $l['note'] !== ''): ?>
+    <p class="listing-note"><?= c($l, 'note') ?></p>
+<?php endif; ?>
   </section>
 
   <!-- ============ CTA BAND ============ -->
   <section class="band-light">
     <div class="wrap-narrow section-sm center">
-      <h2 class="section-title sm">Ready to see a specialist?</h2>
-      <p class="section-lead">Book online or call reception, and our team will confirm your appointment with the right doctor.</p>
+      <h2 class="section-title sm"><?= c_heading($cta, 'heading') ?></h2>
+      <p class="section-lead"><?= c($cta, 'subheading') ?></p>
       <div class="cta-row">
-        <a class="btn btn-primary btn-lg" href="home#appointment">Book a visit</a>
-        <a class="btn btn-light btn-lg" href="tel:+97771000000">Call +977 71-000000</a>
+        <a class="btn btn-primary btn-lg" href="<?= c_url($cta, 'primary_cta_url') ?>"><?= c($cta, 'primary_cta_label') ?></a>
+        <a class="btn btn-light btn-lg" href="<?= public_e($ct['phone_href']) ?>"><?= c($cta, 'call_label') ?> <?= public_e($ct['phone']) ?></a>
       </div>
     </div>
   </section>
