@@ -198,6 +198,8 @@ function content_render_field(array $f, string $name, mixed $value, array $media
     $id = $idPrefix;
     $type = $f['type'];
     $max = (int) ($f['max'] ?? 0);
+    // Ties the inline error to its control for screen readers.
+    $aria = $error ? ' aria-invalid="true" aria-describedby="' . e($id) . '-err"' : '';
     ?>
     <div class="field<?= in_array($type, ['textarea', 'heading'], true) ? ' full' : '' ?>">
       <label for="<?= e($id) ?>"><?= e($f['label']) ?><?= !empty($f['required']) ? ' *' : '' ?></label>
@@ -210,7 +212,7 @@ function content_render_field(array $f, string $name, mixed $value, array $media
             }
         }
         ?>
-        <select class="select" id="<?= e($id) ?>" name="<?= e($name) ?>">
+        <select class="select" id="<?= e($id) ?>" name="<?= e($name) ?>"<?= $aria ?>>
           <option value="">Default image</option>
           <?php foreach ($mediaOptions as $m): ?>
             <option value="<?= (int) $m['id'] ?>"<?= (int) $m['id'] === $sel ? ' selected' : '' ?>><?= e('#' . $m['id'] . ' ' . basename((string) $m['file_path'])) ?></option>
@@ -218,20 +220,20 @@ function content_render_field(array $f, string $name, mixed $value, array $media
         </select>
         <?php if ($thumb !== ''): ?><img src="../<?= e($thumb) ?>" alt="" width="64" height="64" style="object-fit:contain;border:1px solid var(--border);border-radius:8px;background:#fff"><?php endif; ?>
       <?php elseif ($type === 'icon'): ?>
-        <select class="select" id="<?= e($id) ?>" name="<?= e($name) ?>">
+        <select class="select" id="<?= e($id) ?>" name="<?= e($name) ?>"<?= $aria ?>>
           <option value="">No icon</option>
           <?php foreach (array_keys(content_icons()) as $key): ?>
             <option value="<?= e($key) ?>"<?= (string) $value === $key ? ' selected' : '' ?>><?= e($key) ?></option>
           <?php endforeach; ?>
         </select>
       <?php elseif ($type === 'textarea' || $type === 'heading'): ?>
-        <textarea class="textarea" id="<?= e($id) ?>" name="<?= e($name) ?>" rows="<?= $type === 'heading' ? 2 : 4 ?>"<?= $max > 0 ? ' maxlength="' . $max . '"' : '' ?>><?= e((string) $value) ?></textarea>
+        <textarea class="textarea" id="<?= e($id) ?>" name="<?= e($name) ?>" rows="<?= $type === 'heading' ? 2 : 4 ?>"<?= $aria ?><?= $max > 0 ? ' maxlength="' . $max . '"' : '' ?>><?= e((string) $value) ?></textarea>
         <?php if ($type === 'heading'): ?><p class="hint">Wrap words in *asterisks* to highlight them.</p><?php endif; ?>
       <?php else: ?>
-        <input class="input" type="text" id="<?= e($id) ?>" name="<?= e($name) ?>" value="<?= e((string) $value) ?>"<?= $max > 0 ? ' maxlength="' . $max . '"' : '' ?>>
+        <input class="input" type="text" id="<?= e($id) ?>" name="<?= e($name) ?>" value="<?= e((string) $value) ?>"<?= $aria ?><?= $max > 0 ? ' maxlength="' . $max . '"' : '' ?>>
         <?php if ($type === 'url'): ?><p class="hint">Use a page name (e.g. contact), #section, https://…, tel: or mailto:</p><?php endif; ?>
       <?php endif; ?>
-      <?php if ($error): ?><p class="hint" style="color:var(--danger)" role="alert"><?= e($error) ?></p><?php endif; ?>
+      <?php if ($error): ?><p class="hint" id="<?= e($id) ?>-err" style="color:var(--danger)" role="alert"><?= e($error) ?></p><?php endif; ?>
     </div>
     <?php
 }
@@ -315,14 +317,19 @@ document.querySelectorAll('.content-section').forEach(function (form) {
   add.addEventListener('click', function () {
     if (list.children.length >= max) return;
     var row = tpl.content.firstElementChild.cloneNode(true);
-    row.querySelectorAll('[id]').forEach(function (el) { el.id = el.id + '-n' + Date.now(); });
+    var suffix = '-n' + Date.now();
+    row.querySelectorAll('[id]').forEach(function (el) { el.id = el.id + suffix; });
+    row.querySelectorAll('label[for]').forEach(function (el) { el.htmlFor = el.htmlFor + suffix; });
     list.appendChild(row);
     renumber(); sync();
+    var first = row.querySelector('input, select, textarea');
+    if (first) first.focus();
   });
   list.addEventListener('click', function (ev) {
     var row = ev.target.closest('.content-item');
     if (!row) return;
-    if (ev.target.closest('.content-remove')) row.remove();
+    // Keep keyboard focus on the form after the focused row is removed.
+    if (ev.target.closest('.content-remove')) { row.remove(); renumber(); sync(); add.focus(); return; }
     else if (ev.target.closest('.content-up') && row.previousElementSibling) list.insertBefore(row, row.previousElementSibling);
     else if (ev.target.closest('.content-down') && row.nextElementSibling) list.insertBefore(row.nextElementSibling, row);
     else return;
