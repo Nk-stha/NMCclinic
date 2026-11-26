@@ -149,7 +149,7 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
       <a class="link-cta inline" href="<?= c_url($p['doctors'], 'primary_cta_url') ?>"><?= c($p['doctors'], 'primary_cta_label') ?> <?= $arrow ?></a>
     </div>
 <?php if ($doctors): ?>
-    <div class="grid grid-260 gap-22">
+    <div class="grid grid-260 gap-22 doc-grid-home">
 <?php foreach ($doctors as $d) { render_doctor_card($d, $p['doctors'], true); } ?>
     </div>
 <?php else: ?>

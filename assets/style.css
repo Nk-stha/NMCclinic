@@ -1153,30 +1153,30 @@ section.band-dark:has(+ .site-footer) { margin-bottom: 72px; }
 .icon-badge { border-radius: var(--radius); }
 
 /* homepage doctors: 4 across on desktop, 2 on tablets, swipe row on phones */
-[data-cms-home-doctor-list] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-@media (max-width: 900px) { [data-cms-home-doctor-list] { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.doc-grid-home { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 900px) { .doc-grid-home { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 /* portrait photos only where cards are narrow enough for them */
 @media (max-width: 1100px) { .doc-photo, .doc-card.is-home .doc-photo { aspect-ratio: 1 / 1; } }
 @media (max-width: 640px) {
-  [data-cms-home-doctor-list] {
+  .doc-grid-home {
     grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 74%;
     overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
     margin-inline: calc(-1 * var(--gutter)); padding: 4px var(--gutter) 12px;
     scroll-padding-inline: var(--gutter); scrollbar-width: none;
   }
-  [data-cms-home-doctor-list]::-webkit-scrollbar { display: none; }
-  [data-cms-home-doctor-list] > * { scroll-snap-align: start; }
+  .doc-grid-home::-webkit-scrollbar { display: none; }
+  .doc-grid-home > * { scroll-snap-align: start; }
 }
 
 /* doctors page: 3 across (6 doctors = 2 full rows), 2 on tablets, 1 on phones */
-[data-cms-doctor-list] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-@media (max-width: 1000px) { [data-cms-doctor-list] { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 560px) { [data-cms-doctor-list] { grid-template-columns: 1fr; } }
+.doc-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 1000px) { .doc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .doc-grid { grid-template-columns: 1fr; } }
 
 /* phones: shorter doctor photos and compact service rows */
 @media (max-width: 640px) {
   .doc-photo, .doc-card.is-home .doc-photo { aspect-ratio: 4 / 3; }
-  [data-cms-home-doctor-list] .doc-photo { aspect-ratio: 1 / 1; }
+  .doc-grid-home .doc-photo { aspect-ratio: 1 / 1; }
 }
 @media (max-width: 600px) {
   .bento { gap: 12px; }
@@ -1207,8 +1207,8 @@ section.band-dark:has(+ .site-footer) { margin-bottom: 72px; }
   .quick-label { font-size: 13.5px; }
 }
 /* doctors page cards are wider (3 across), so square photos keep rows short */
-[data-cms-doctor-list] .doc-photo { aspect-ratio: 1 / 1; }
-@media (max-width: 640px) { [data-cms-doctor-list] .doc-photo { aspect-ratio: 4 / 3; } }
+.doc-grid .doc-photo { aspect-ratio: 1 / 1; }
+@media (max-width: 640px) { .doc-grid .doc-photo { aspect-ratio: 4 / 3; } }
 
 /* Light text on brand-teal surfaces, lifted so it clears 4.5:1 against #286963.
    (The old greys were tuned for the darker #124E4A.) */

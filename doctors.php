@@ -53,7 +53,7 @@ $specialties = site_distinct($doctors, 'specialty');
 <?php endforeach; ?>
     </div>
 
-    <div class="grid grid-280 fill-280" data-filter-target="doctors">
+    <div class="grid grid-280 fill-280 doc-grid" data-filter-target="doctors">
 <?php foreach ($doctors as $d) { render_doctor_card($d, $l, false); } ?>
     </div>
     <p class="listing-note" data-filter-empty="doctors" hidden><?= c($l, 'no_match_message') ?></p>

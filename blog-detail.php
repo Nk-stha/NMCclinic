@@ -67,9 +67,9 @@ $schema = public_blog_schema($post, $canonical, $imageUrl);
 <meta name="twitter:description" content="<?= public_e($seo['og_description']) ?>">
 <meta property="og:site_name" content="NMC Clinic">
 <?php public_render_head_assets(); ?>
-<script type="application/ld+json"><?= json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR) ?></script>
-<?php if (!empty($seo['schema_json'])): ?>
-<script type="application/ld+json"><?= $seo['schema_json'] ?></script>
+<script type="application/ld+json"><?= public_json_ld($schema) ?></script>
+<?php if (!empty($seo['schema_json']) && ($override = public_json_ld_override((string) $seo['schema_json'])) !== ''): ?>
+<script type="application/ld+json"><?= $override ?></script>
 <?php endif; ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

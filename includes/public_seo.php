@@ -191,8 +191,8 @@ function public_render_seo_meta(array $seo, string $ogType = 'website'): void
 <meta name="twitter:card" content="<?= public_e($seo['twitter_card']) ?>">
 <meta name="twitter:title" content="<?= public_e($seo['og_title']) ?>">
 <meta name="twitter:description" content="<?= public_e($seo['og_description']) ?>">
-<?php if (!empty($seo['schema_json'])): ?>
-<script type="application/ld+json"><?= $seo['schema_json'] ?></script>
+<?php if (!empty($seo['schema_json']) && ($override = public_json_ld_override((string) $seo['schema_json'])) !== ''): ?>
+<script type="application/ld+json"><?= $override ?></script>
 <?php endif; ?>
     <?php
 }
@@ -423,12 +423,23 @@ function public_schema_graph(array $seo): array
     return ['@context' => 'https://schema.org', '@graph' => array_merge($graph, $departments)];
 }
 
+/** JSON for a <script type="application/ld+json"> body: JSON_HEX_TAG/AMP keep "</script>" from closing the tag early. */
+function public_json_ld(mixed $data): string
+{
+    return json_encode($data, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+}
+
+/** An admin schema override, re-encoded so raw "</script>" text cannot break out; '' when it is not valid JSON. */
+function public_json_ld_override(string $json): string
+{
+    $data = json_decode($json, true);
+
+    return $data === null ? '' : public_json_ld($data);
+}
+
 function public_render_schema(array $seo): void
 {
-    // JSON_HEX_TAG keeps "</script>" sequences from ever closing the tag early.
-    echo '<script type="application/ld+json">'
-        . json_encode(public_schema_graph($seo), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_THROW_ON_ERROR)
-        . "</script>\n";
+    echo '<script type="application/ld+json">' . public_json_ld(public_schema_graph($seo)) . "</script>\n";
 }
 
 /** Everything a public page needs in <head> for search and sharing. */

@@ -154,6 +154,11 @@ check('hours_lines_groups_days', hours_lines([...$week, $h('Saturday', '09:00', 
     && hours_lines([$h('Sunday', '08:00', '20:00'), $h('Monday', '08:00', '20:00'), $h('Friday', '08:00', '20:00'), $h('Saturday', '09:00', '14:00')]) === ['Sun-Mon: 8:00 AM - 8:00 PM', 'Friday: 8:00 AM - 8:00 PM', 'Saturday: 9:00 AM - 2:00 PM']
     && hours_lines([$h('Sunday', '', '', true), $h('Monday', '', '', false, 'By appointment'), $h('Tuesday', '', '')]) === ['Sunday: Closed', 'Monday: By appointment']);
 
+$breakout = ['name' => '</script><script>x</script>'];
+check('jsonld_escapes_script_close', stripos(public_json_ld($breakout), '</script') === false
+    && stripos(public_json_ld_override((string) json_encode($breakout, JSON_UNESCAPED_SLASHES)), '</script') === false
+    && public_json_ld_override('not json') === '' && json_decode(public_json_ld($breakout), true) === $breakout);
+
 $_SERVER['HTTP_HOST'] = 'example.test';
 $base = public_base_url();
 check('abs_url_prefixes_relative_only',
