@@ -39,7 +39,9 @@ async function checkFilter(page: Page, group: string) {
   await expect(tabs.first()).toHaveAttribute('aria-pressed', 'false');
   const total = await cards.count();
   const matching = page.locator(`[data-filter-target="${group}"] [data-category="${value}"]`);
-  expect(await matching.count()).toBeGreaterThan(0);
+  const matchCount = await matching.count();
+  expect(matchCount).toBeGreaterThan(0);
+  expect(total, `${group}: some cards must NOT match "${value}", or hiding is never tested`).toBeGreaterThan(matchCount);
   for (let i = 0; i < total; i++) {
     const card = cards.nth(i);
     if ((await card.getAttribute('data-category')) === value) await expect(card).toBeVisible();

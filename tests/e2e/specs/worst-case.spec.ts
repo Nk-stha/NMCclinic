@@ -38,6 +38,7 @@ test('long CMS values do not overflow at 320, 390 and 768', async ({ page }) => 
         await expectNoHorizontalOverflow(page, `${path}@${width}`);
         await expectInside(page, 'h1', `h1 ${path}@${width}`);
         // The long label is the doctors page's; home cards are a swipe row that runs off-screen by design.
+        if (path === '/doctors') await expect(page.locator('.doc-actions a').getByText(CARD_CTA).first()).toBeVisible();
         if (path === '/doctors') await expectInside(page, '.doc-actions a', `doctor card button ${path}@${width}`);
         // The long nav label lives in the mobile menu at these widths.
         await page.getByRole('button', { name: 'Open menu' }).click();

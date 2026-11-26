@@ -7,12 +7,15 @@ const stamp = () => `E2E ${Date.now()}`;
 
 test('footer about text shows on public pages, then resets', async ({ page }) => {
   const value = `${stamp()} footer about`;
-  await setField(page, 'global', 'footer', 'about', value);
-  for (const path of ['/', '/contact']) {
-    await page.goto(path);
-    await expect(page.locator('.footer-about')).toHaveText(value);
+  try {
+    await setField(page, 'global', 'footer', 'about', value);
+    for (const path of ['/', '/contact']) {
+      await page.goto(path);
+      await expect(page.locator('.footer-about')).toHaveText(value);
+    }
+  } finally {
+    await resetSection(page, 'global', 'footer');
   }
-  await resetSection(page, 'global', 'footer');
   await page.goto('/');
   await expect(page.locator('.footer-about')).not.toHaveText(value);
 });
@@ -33,10 +36,13 @@ for (const [slug, key, field, where] of PER_PAGE) {
   test(`edit ${slug}.${key}.${field} shows on the public page, then resets`, async ({ page }) => {
     const path = where === 'FIRST_POST' ? await firstPostPath(page) : where;
     const value = `${stamp()} ${slug}`;
-    await setField(page, slug, key, field, value);
-    await page.goto(path);
-    await expect(page.getByText(value, { exact: true })).toBeVisible();
-    await resetSection(page, slug, key);
+    try {
+      await setField(page, slug, key, field, value);
+      await page.goto(path);
+      await expect(page.getByText(value, { exact: true })).toBeVisible();
+    } finally {
+      await resetSection(page, slug, key);
+    }
     await page.goto(path);
     await expect(page.getByText(value, { exact: true })).toHaveCount(0);
   });
@@ -44,44 +50,50 @@ for (const [slug, key, field, where] of PER_PAGE) {
 
 test('nav item list: add, move up, save, remove, reset', async ({ page }) => {
   const label = `${stamp()} nav`;
-  let panel = await openSection(page, 'global', 'nav');
-  const rows = panel.locator('fieldset.content-item');
-  const before = await rows.count();
-  await panel.getByRole('button', { name: 'Add menu links entry' }).click();
-  await expect(rows).toHaveCount(before + 1);
-  const added = rows.last();
-  await added.getByLabel('Label').fill(label);
-  await added.getByLabel('Link', { exact: false }).last().fill('contact');
-  await added.getByRole('button', { name: `Move item ${before + 1} up` }).click();
-  await saveSection(panel);
+  try {
+    let panel = await openSection(page, 'global', 'nav');
+    const rows = panel.locator('fieldset.content-item');
+    const before = await rows.count();
+    await panel.getByRole('button', { name: 'Add menu links entry' }).click();
+    await expect(rows).toHaveCount(before + 1);
+    const added = rows.last();
+    await added.getByLabel('Label').fill(label);
+    await added.getByLabel('Link', { exact: false }).last().fill('contact');
+    await added.getByRole('button', { name: `Move item ${before + 1} up` }).click();
+    await saveSection(panel);
 
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/');
-  const links = page.locator('.nav-main a');
-  await expect(links.nth(before - 1)).toHaveText(label); // moved one above the old last item
-  await expect(links).toHaveCount(before + 1);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const links = page.locator('.nav-main a');
+    await expect(links.nth(before - 1)).toHaveText(label); // moved one above the old last item
+    await expect(links).toHaveCount(before + 1);
 
-  panel = await openSection(page, 'global', 'nav');
-  const row = panel.locator('fieldset.content-item').filter({ has: page.locator(`input[value="${label}"]`) });
-  await row.getByRole('button', { name: /^Remove item/ }).click();
-  await expect(panel.locator('fieldset.content-item')).toHaveCount(before);
-  await saveSection(panel);
-  await page.goto('/');
-  await expect(page.locator('.nav-main').getByText(label)).toHaveCount(0);
-  await resetSection(page, 'global', 'nav');
+    panel = await openSection(page, 'global', 'nav');
+    const row = panel.locator('fieldset.content-item').filter({ has: page.locator(`input[value="${label}"]`) });
+    await row.getByRole('button', { name: /^Remove item/ }).click();
+    await expect(panel.locator('fieldset.content-item')).toHaveCount(before);
+    await saveSection(panel);
+    await page.goto('/');
+    await expect(page.locator('.nav-main').getByText(label)).toHaveCount(0);
+  } finally {
+    await resetSection(page, 'global', 'nav');
+  }
 });
 
 test('script tags in content render as literal text', async ({ page }) => {
   const payload = '<script>alert(1)</script>';
   let dialogs = 0;
   const onDialog = (d: Dialog) => { dialogs++; void d.dismiss(); };
-  await setField(page, 'home', 'hero', 'subheading', payload);
-  page.on('dialog', onDialog);
-  await page.goto('/');
-  await expect(page.locator('.hero').getByText(payload, { exact: true })).toBeVisible();
-  expect(dialogs).toBe(0);
-  page.off('dialog', onDialog); // the reset button's confirm() is expected
-  await resetSection(page, 'home', 'hero');
+  try {
+    await setField(page, 'home', 'hero', 'subheading', payload);
+    page.on('dialog', onDialog);
+    await page.goto('/');
+    await expect(page.locator('.hero').getByText(payload, { exact: true })).toBeVisible();
+    expect(dialogs).toBe(0);
+  } finally {
+    page.off('dialog', onDialog); // the reset button's confirm() is expected
+    await resetSection(page, 'home', 'hero');
+  }
 });
 
 test('javascript: URL is rejected and the old value is kept', async ({ page }) => {

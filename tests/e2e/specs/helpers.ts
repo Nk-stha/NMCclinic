@@ -63,6 +63,14 @@ export function siteBreakpoints() {
   return { navMax: Number(nav[1]), barMax: Number(bar[1]) };
 }
 
+/** The CMS phone-shell breakpoint (menu button shown), read from cms/includes/layout.php. */
+export function cmsBreakpoint(): number {
+  const src = readFileSync(path.join(__dirname, '../../../cms/includes/layout.php'), 'utf8');
+  const m = src.match(/@media\(max-width:(\d+)px\)\{\.topbar\{height:60px/);
+  if (!m) throw new Error('Could not read the CMS phone breakpoint from cms/includes/layout.php');
+  return Number(m[1]);
+}
+
 /** Opens one section panel of the Page Content editor. */
 export async function openSection(page: Page, slug: string, key: string): Promise<Locator> {
   await page.goto(`/cms/content.php?page=${encodeURIComponent(slug)}`);
@@ -90,15 +98,32 @@ export async function setField(page: Page, slug: string, key: string, field: str
   await saveSection(panel);
 }
 
-/** Fails with the offending element list when the page scrolls sideways. */
+/** Fails with the offending element list when the page, or the clipping `.page` wrapper, is wider than the viewport. */
 export async function expectNoHorizontalOverflow(page: Page, label: string) {
   const r = await page.evaluate(() => {
     const vw = window.innerWidth;
+    // `.page` has overflow-x: hidden, which keeps documentElement.scrollWidth in bounds even when content
+    // overflows, so measure the wrapper too. Nested overflow-x: auto rows (swipe rows) contain their own
+    // overflow and do not add to the wrapper's scrollWidth.
+    const wrap = document.querySelector<HTMLElement>('.page');
+    const inScroller = (el: Element) => {
+      for (let p = el.parentElement; p && p !== wrap; p = p.parentElement) {
+        if (/(auto|scroll)/.test(getComputedStyle(p).overflowX)) return true;
+      }
+      return false;
+    };
     const wide = [...document.querySelectorAll<HTMLElement>('body *')]
-      .filter((el) => el.getBoundingClientRect().right > vw + 1)
-      .slice(0, 5)
-      .map((el) => `${el.tagName.toLowerCase()}.${el.className}`);
-    return { sw: document.documentElement.scrollWidth, vw, wide };
+      .filter((el) => el.getBoundingClientRect().right > vw + 1 && !inScroller(el))
+      .slice(0, 8)
+      .map((el) => `${el.tagName.toLowerCase()}.${el.className} right=${Math.round(el.getBoundingClientRect().right)}`);
+    return {
+      sw: document.documentElement.scrollWidth,
+      vw,
+      pageSw: wrap ? wrap.scrollWidth : 0,
+      pageCw: wrap ? wrap.clientWidth : 0,
+      wide,
+    };
   });
   expect(r.sw, `${label}: scrollWidth ${r.sw} > innerWidth ${r.vw}; wide: ${r.wide.join(', ')}`).toBeLessThanOrEqual(r.vw);
+  expect(r.pageSw, `${label}: .page scrollWidth ${r.pageSw} > clientWidth ${r.pageCw}; wide: ${r.wide.join(', ')}`).toBeLessThanOrEqual(r.pageCw);
 }

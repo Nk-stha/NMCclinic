@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
-import { AUTH_FILE, PUBLIC_PAGES, expectNoHorizontalOverflow, firstPostPath, siteBreakpoints } from './helpers';
+import { AUTH_FILE, PUBLIC_PAGES, cmsBreakpoint, expectNoHorizontalOverflow, firstPostPath, siteBreakpoints } from './helpers';
 
 const VIEWPORTS = [
   [320, 640], [360, 740], [375, 667], [390, 844], [414, 896],
@@ -14,6 +14,7 @@ const CMS_PAGES = [
 ];
 
 const { navMax, barMax } = siteBreakpoints();
+const cmsMax = cmsBreakpoint();
 const SHOTS = path.join(__dirname, '../screenshots');
 mkdirSync(SHOTS, { recursive: true });
 
@@ -52,6 +53,9 @@ for (const [width, height] of VIEWPORTS) {
             await expect(page.locator('.nav-main')).toBeVisible();
           }
           await (width <= barMax ? expect(page.locator('.mobile-bar')).toBeVisible() : expect(page.locator('.mobile-bar')).toBeHidden());
+        } else {
+          // The 44px check below only measures visible targets, so prove the menu button is there first.
+          await (width <= cmsMax ? expect(page.locator('.menu-btn')).toBeVisible() : expect(page.locator('.menu-btn')).toBeHidden());
         }
 
         const m = await page.evaluate(() => {

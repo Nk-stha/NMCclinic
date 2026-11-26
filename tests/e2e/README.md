@@ -26,6 +26,8 @@ npx playwright show-report              # HTML report of the last run
 `docker compose exec -T db sh -c 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"'`.
 If the docker socket says "permission denied", the suite retries the command through
 `sg docker -c "…"`.
+`E2E_DB_EXEC` must reach the same database that the site at `E2E_BASE_URL` uses. Otherwise setup
+and cleanup run against one DB while the tests edit another.
 
 ## Specs
 
@@ -39,15 +41,29 @@ If the docker socket says "permission denied", the suite retries the command thr
 
 Tests run with one worker, because they share the dev DB.
 
-- **globalSetup** first deletes old `E2E …` form rows. It then copies `page_sections`, `section_items` and the admin `last_login_at`/`updated_at` columns into `e2e_bak_*` tables. Last, it empties `page_sections`, so every test starts from registry defaults.
-- During the run, tests save and reset CMS sections, and submit forms named `E2E Appointment` and `E2E Contact`.
-- **globalTeardown** deletes `appointment_requests` and `contact_inquiries` rows whose `full_name` starts with `E2E `. It then restores the backed-up content and login times, and drops the `e2e_bak_*` tables.
+- **globalSetup** first removes leftovers: `E2E …` form rows, the seeded `e2e-suite-*` blog rows,
+  and any `e2e_tmp_*` tables. It then copies `page_sections`, `section_items` and the admin
+  `last_login_at`/`updated_at` columns into `e2e_tmp_*` tables. One atomic `RENAME TABLE` turns
+  those into `e2e_bak_*`. Only after that does setup do anything destructive: it empties
+  `page_sections`, so every test starts from registry defaults. It also seeds the blog category
+  `e2e-suite-category` with one published post, `e2e-suite-post`, so the blog filter test has a
+  card to hide.
+- During the run, tests save and reset CMS sections (each in `try/finally`), and submit forms
+  named `E2E Appointment` and `E2E Contact`.
+- **globalTeardown** deletes the `E2E …` form rows and the two `e2e-suite-*` blog rows. It then
+  checks that the full `e2e_bak_*` set (3 tables) exists. If the set is incomplete, it stops with
+  an error and restores nothing. Otherwise it runs `db/restore.sql`, which:
+  1. Fails before touching any data unless all 3 backup tables exist.
+  2. Restores the content and login times in one transaction.
+  3. Drops the backups.
 
 The DB is left as it was found, except for AUTO_INCREMENT counters.
 
 If a run is killed before teardown, the next run refuses to start while `e2e_bak_*` tables exist.
-Restore them by hand from the repo root:
+Because the backups appear only through the atomic rename, an `e2e_bak_*` set is always complete.
+Restore it by hand from the repo root:
 
 ```sh
 docker compose exec -T db sh -c 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' < tests/e2e/db/restore.sql
+docker compose exec -T db sh -c 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' < tests/e2e/db/cleanup.sql
 ```
