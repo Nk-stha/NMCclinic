@@ -1,13 +1,14 @@
 <?php
 declare(strict_types=1);
 
-function db(): PDO
+/** Load .env into the environment once; real env vars win. Safe to call from anywhere, in any order. */
+function env_load(): void
 {
-    static $pdo = null;
-
-    if ($pdo instanceof PDO) {
-        return $pdo;
+    static $loaded = false;
+    if ($loaded) {
+        return;
     }
+    $loaded = true;
 
     $envFile = dirname(__DIR__, 2) . '/.env';
     if (is_file($envFile) && is_readable($envFile)) {
@@ -34,6 +35,17 @@ function db(): PDO
             }
         }
     }
+}
+
+function db(): PDO
+{
+    static $pdo = null;
+
+    if ($pdo instanceof PDO) {
+        return $pdo;
+    }
+
+    env_load();
 
     $getVal = static function (string $key, string $default): string {
         $val = getenv($key);

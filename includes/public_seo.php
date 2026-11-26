@@ -13,6 +13,7 @@ function public_e(string $value): string
 
 function public_base_url(): string
 {
+    env_load();
     $envUrl = trim((string) getenv('SITE_URL'));
     if ($envUrl !== '') {
         return rtrim($envUrl, '/');
