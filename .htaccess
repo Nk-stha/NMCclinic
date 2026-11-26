@@ -3,7 +3,7 @@ RewriteEngine On
 
 # Never serve source, dumps, plans or dotfiles (db.sql holds the admin hash; the zip holds the whole site).
 # .well-known stays reachable for HTTPS certificate checks.
-RewriteRule ^(migrations|plan)(/|$) - [F,END]
+RewriteRule ^(migrations|plan|tests|docs|cms/tools)(/|$) - [F,END]
 RewriteRule \.(sql|zip|md)$ - [F,END]
 RewriteCond %{REQUEST_URI} !/\.well-known/
 RewriteRule (^|/)\. - [F,END]
