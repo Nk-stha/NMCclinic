@@ -3,3 +3,4 @@ uploads/*
 !.gitkeep
 graphify-out/
 docker-compose.override.yml
+.playwright-cli/
