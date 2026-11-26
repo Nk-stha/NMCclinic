@@ -12,7 +12,7 @@ $specialties = array_slice(site_specialties(), 0, 6);
 $doctors = array_slice(site_doctors(), 0, 4); // mirrors the old JS home list (first 4 in CMS order)
 $posts = array_slice(site_blog_posts(), 0, 3);
 $branches = site_branches();
-$serviceOptions = site_form_options()['specialties'];
+$serviceOptions = site_form_options_filled()['specialties'];
 // Contact details are edited in CMS > Settings; the shipped values are only a fallback.
 $settings = $ct['settings']['settings'];
 $email = (string) ($settings['email'] ?? '') !== '' ? (string) $settings['email'] : 'info@nmcbutwal.com.np';

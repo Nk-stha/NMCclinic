@@ -351,6 +351,23 @@ function site_form_options(): array
     return $response;
 }
 
+/** site_form_options() with the shipped lists when the CMS has none, so a fresh or failed DB keeps the dropdowns filled. */
+function site_form_options_filled(): array
+{
+    $o = site_form_options();
+    $labels = [
+        'specialties' => ['Specialist Consultation', 'Advanced Diagnostics', 'Laboratory Services', 'Physiotherapy & Rehabilitation', 'Obstetrics & Gynecology', 'Nephrology & Kidney Care'],
+        'subjects' => ['Book an appointment', 'Ask about a service', 'Diagnostics & reports', 'General enquiry'],
+    ];
+    foreach ($labels as $key => $list) {
+        if (!$o[$key]) {
+            $o[$key] = array_map(static fn (string $l): array => ['label' => $l, 'value' => $l], $list);
+        }
+    }
+
+    return $o;
+}
+
 /** Contact page emergency block and response-time note (CMS > Contact); [] when there is no row or the DB is down. */
 function site_contact_page(): array
 {

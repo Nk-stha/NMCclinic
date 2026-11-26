@@ -8,6 +8,8 @@ http_response_code(404);
 $base = public_base_url();
 $p = page_content('404');
 $b = $p['banner'];
+$h = page_content('global')['header'];
+$logo = c_img($h, 'logo');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -28,8 +30,8 @@ $b = $p['banner'];
     <div class="banner-veil"></div>
     <div class="banner-in">
       <a class="brand" href="<?= public_e($base) ?>/" style="--hdr-brand:#fff;--hdr-brand-sub:rgba(255,255,255,.75);margin-bottom:28px">
-        <img src="<?= public_e($base) ?>/uploads/logo.jpeg" alt="NMC clinic logo" width="48" height="48">
-        <span class="brand-text"><span class="brand-name">NMC</span><span class="brand-sub">Clinic</span></span>
+        <img src="<?= c_href((string) ($h['logo']['src'] ?? '')) ?>" alt="<?= $logo['alt'] ?>" width="48" height="48">
+        <span class="brand-text"><span class="brand-name"><?= c($h, 'brand_name') ?></span><span class="brand-sub"><?= c($h, 'brand_sub') ?></span></span>
       </a>
       <span class="pill"><span class="dot"></span><?= c($b, 'eyebrow') ?></span>
       <h1><?= c_heading($b, 'heading') ?></h1>

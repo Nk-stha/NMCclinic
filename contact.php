@@ -9,7 +9,7 @@ $p = page_content('contact');
 $ct = site_contact_defaults();
 $branches = site_branches();
 $first = $branches[0] ?? null;
-$subjects = site_form_options()['subjects'];
+$subjects = site_form_options_filled()['subjects'];
 $page = site_contact_page();
 // Contact details are edited in CMS > Settings and Branches; the shipped values are only a fallback.
 $settings = $ct['settings']['settings'];
