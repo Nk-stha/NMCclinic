@@ -4,6 +4,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/includes/public_seo.php';
 require_once __DIR__ . '/includes/site_footer.php';
 require_once __DIR__ . '/includes/doctor_card.php';
+require_once __DIR__ . '/includes/blog_card.php';
 
 $p = page_content('home');
 $ct = site_contact_defaults();
@@ -283,18 +284,7 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
     </div>
 <?php $ar = $p['articles']; if ($posts): ?>
     <div class="grid grid-280 gap-22">
-<?php foreach ($posts as $post): $reviewed = $post['reviewed_at'] !== '' ? $post['reviewed_at'] : $post['published_at']; ?>
-        <a class="post-card" href="<?= public_e(content_safe_url($post['url'])) ?>" data-category="<?= public_e($post['category']) ?>">
-          <div class="post-photo"><?php if ($post['image_path']): ?><img src="<?= public_e(content_safe_url($post['image_path'])) ?>" alt="<?= public_e($post['image_alt']) ?>" loading="lazy"><?php else: ?><span class="ph-label"><?= c($ar, 'card_image_placeholder') ?></span><?php endif; ?><span class="doc-tag"><?= public_e($post['category']) ?></span></div>
-          <div class="post-body">
-            <div class="post-meta"><?= $post['reading_time_minutes'] ? public_e((string) $post['reading_time_minutes']) . ' ' . c($ar, 'card_read_time_suffix') : c($ar, 'card_no_read_time') ?></div>
-            <h3><?= public_e($post['title']) ?></h3>
-            <p><?= public_e($post['excerpt']) ?></p>
-            <div class="post-byline"><?= c($ar, 'card_reviewed_by') ?> <?= $post['reviewer_name'] !== '' ? public_e($post['reviewer_name']) : c($ar, 'card_default_reviewer') ?><?= $reviewed !== '' ? ' · ' . c($ar, 'card_reviewed_date') . ' ' . public_e($reviewed) : '' ?></div>
-            <span class="link-cta inline"><?= c($ar, 'card_link_label') ?> <?= $arrow ?></span>
-          </div>
-        </a>
-<?php endforeach; ?>
+<?php foreach ($posts as $post) { render_blog_card($post, $ar); } ?>
     </div>
 <?php else: ?>
     <div class="empty-state"><?= c_text($p['articles'], 'empty_message') ?></div>

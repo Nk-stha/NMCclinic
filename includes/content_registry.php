@@ -343,6 +343,39 @@ function content_registry(): array
                 'call_label' => ['type' => 'text', 'label' => 'Call button text (the phone number from Settings follows it)', 'max' => 30, 'required' => true, 'default' => 'Call'],
             ], 'items' => null],
         ]],
+        'blog' => ['label' => 'Blog', 'sections' => [
+            'banner' => ['label' => 'Banner', 'fields' => [
+                'crumb_home' => ['type' => 'text', 'label' => 'Breadcrumb home label', 'max' => 30, 'required' => true, 'default' => 'Home'],
+                'crumb_here' => ['type' => 'text', 'label' => 'Breadcrumb current page label', 'max' => 30, 'required' => true, 'default' => 'Blog'],
+                'eyebrow' => ['type' => 'text', 'label' => 'Pill text', 'max' => 60, 'required' => false, 'default' => 'Health guides'],
+                'heading' => ['type' => 'heading', 'label' => 'Heading (wrap words in *stars* to highlight)', 'max' => 90, 'required' => true, 'default' => 'Clear information for *better health decisions*'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => 'Practical articles reviewed by healthcare professionals to help you understand common conditions, tests, and treatments.'],
+            ], 'items' => null],
+            'listing' => ['label' => 'Article list (posts come from Blog; filter tabs from their categories)', 'fields' => [
+                'filter_label' => ['type' => 'text', 'label' => 'Filter tabs accessible label', 'max' => 80, 'required' => true, 'default' => 'Filter articles by category'],
+                'all_label' => ['type' => 'text', 'label' => 'Filter tab label for all articles', 'max' => 30, 'required' => true, 'default' => 'All'],
+                'no_match_message' => ['type' => 'text', 'label' => 'Message when a filter has no articles', 'max' => 120, 'required' => true, 'default' => 'No articles in this category yet.'],
+                'card_featured_prefix' => ['type' => 'text', 'label' => 'Featured card tag prefix', 'max' => 30, 'required' => true, 'default' => 'Featured ·'],
+                'card_featured_placeholder' => ['type' => 'text', 'label' => 'Featured card text when a post has no image', 'max' => 40, 'required' => true, 'default' => 'featured article image'],
+                'card_image_placeholder' => ['type' => 'text', 'label' => 'Card text when a post has no image', 'max' => 40, 'required' => true, 'default' => 'article image'],
+                'card_read_time_suffix' => ['type' => 'text', 'label' => 'Reading time suffix (after the minutes)', 'max' => 20, 'required' => true, 'default' => 'min read'],
+                'card_no_read_time' => ['type' => 'text', 'label' => 'Card text when reading time is unknown', 'max' => 30, 'required' => true, 'default' => 'Health guide'],
+                'card_reviewed_by' => ['type' => 'text', 'label' => 'Reviewer prefix', 'max' => 30, 'required' => true, 'default' => 'Reviewed by'],
+                'card_default_reviewer' => ['type' => 'text', 'label' => 'Reviewer when none is set', 'max' => 60, 'required' => true, 'default' => 'NMC medical team'],
+                'card_reviewed_date' => ['type' => 'text', 'label' => 'Review date prefix', 'max' => 30, 'required' => true, 'default' => 'Reviewed'],
+                'card_link_label' => ['type' => 'text', 'label' => 'Card link label', 'max' => 30, 'required' => true, 'default' => 'Read article'],
+                'empty_message' => ['type' => 'textarea', 'label' => 'Message when no posts are published', 'max' => 200, 'required' => true, 'default' => 'New health guides are on the way. Please check back soon.'],
+            ], 'items' => null],
+            'newsletter' => ['label' => 'Newsletter (the form does not send yet)', 'fields' => [
+                'eyebrow' => ['type' => 'text', 'label' => 'Eyebrow', 'max' => 40, 'required' => false, 'default' => 'Stay informed'],
+                'heading' => ['type' => 'heading', 'label' => 'Heading', 'max' => 90, 'required' => true, 'default' => 'Health tips, straight to your inbox'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => 'Occasional, practical health guides from our team. No spam, and you can unsubscribe anytime.'],
+                'email_label' => ['type' => 'text', 'label' => 'Email field accessible label', 'max' => 40, 'required' => true, 'default' => 'Email address'],
+                'email_placeholder' => ['type' => 'text', 'label' => 'Email placeholder', 'max' => 60, 'required' => true, 'default' => 'Your email address'],
+                'submit_label' => ['type' => 'text', 'label' => 'Button label', 'max' => 30, 'required' => true, 'default' => 'Subscribe'],
+                'success_message' => ['type' => 'text', 'label' => 'Message after subscribing', 'max' => 200, 'required' => true, 'default' => "You're subscribed. Thank you."],
+            ], 'items' => null],
+        ]],
     ];
 }
 
