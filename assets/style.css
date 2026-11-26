@@ -316,6 +316,8 @@ h1, h2 { font-family: var(--font-display); letter-spacing: -.025em; }
   padding: 12px 14px; font-size: 15px; color: var(--ink); background: var(--white);
 }
 .input:focus, .textarea:focus, .select:focus { border-color: var(--teal-600); outline: none; box-shadow: 0 0 0 3px rgba(40, 105, 99,.12); }
+/* iOS Safari zooms the page when a focused field is under 16px. */
+@media (max-width: 767px) { .input, .textarea, .select { font-size: 16px; } }
 .textarea { resize: vertical; line-height: 1.6; }
 .consent { display: flex; align-items: flex-start; gap: 10px; margin-top: 18px; font-size: 14px; line-height: 1.55; color: var(--muted); }
 .consent input { margin-top: 3px; flex-shrink: 0; }
