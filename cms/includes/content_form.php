@@ -198,99 +198,154 @@ function content_render_field(array $f, string $name, mixed $value, array $media
     $id = $idPrefix;
     $type = $f['type'];
     $max = (int) ($f['max'] ?? 0);
-    // Ties the inline error to its control for screen readers.
-    $aria = $error ? ' aria-invalid="true" aria-describedby="' . e($id) . '-err"' : '';
+    $hint = match ($type) {
+        'heading' => 'Wrap words in *asterisks* to highlight them.',
+        'url' => 'Use a page name (e.g. contact), #section, https://…, tel: or mailto:',
+        default => '',
+    };
+    $describedBy = trim(($hint !== '' ? $id . '-hint ' : '') . ($error ? $id . '-err' : ''));
+    // Ties the hint and inline error to the control for screen readers.
+    $aria = ($error ? ' aria-invalid="true"' : '') . ($describedBy !== '' ? ' aria-describedby="' . e($describedBy) . '"' : '')
+        . (!empty($f['required']) && $type !== 'image' ? ' aria-required="true"' : '');
+    $wide = in_array($type, ['textarea', 'heading'], true);
     ?>
-    <div class="field<?= in_array($type, ['textarea', 'heading'], true) ? ' full' : '' ?>">
+    <div class="field field-<?= e($type) ?><?= $wide ? ' full' : '' ?><?= $error ? ' has-error' : '' ?>">
       <label for="<?= e($id) ?>"><?= e($f['label']) ?><?= !empty($f['required']) ? ' *' : '' ?></label>
       <?php if ($type === 'image'):
         $sel = is_numeric($value) ? (int) $value : 0;
-        $thumb = is_array($value) ? (string) ($value['src'] ?? '') : (string) ($f['default']['src'] ?? '');
+        $default = (string) ($f['default']['src'] ?? '');
+        $thumb = is_array($value) ? (string) ($value['src'] ?? '') : $default;
         foreach ($mediaOptions as $m) {
             if ((int) $m['id'] === $sel) {
                 $thumb = (string) $m['file_path'];
             }
         }
+        $custom = $sel > 0 && $thumb !== $default;
         ?>
-        <select class="select" id="<?= e($id) ?>" name="<?= e($name) ?>"<?= $aria ?>>
-          <option value="">Default image</option>
-          <?php foreach ($mediaOptions as $m): ?>
-            <option value="<?= (int) $m['id'] ?>"<?= (int) $m['id'] === $sel ? ' selected' : '' ?>><?= e('#' . $m['id'] . ' ' . basename((string) $m['file_path'])) ?></option>
-          <?php endforeach; ?>
-        </select>
-        <?php if ($thumb !== ''): ?><img src="../<?= e($thumb) ?>" alt="" width="64" height="64" style="object-fit:contain;border:1px solid var(--border);border-radius:8px;background:#fff"><?php endif; ?>
-      <?php elseif ($type === 'icon'): ?>
-        <select class="select" id="<?= e($id) ?>" name="<?= e($name) ?>"<?= $aria ?>>
-          <option value="">No icon</option>
-          <?php foreach (array_keys(content_icons()) as $key): ?>
-            <option value="<?= e($key) ?>"<?= (string) $value === $key ? ' selected' : '' ?>><?= e($key) ?></option>
-          <?php endforeach; ?>
-        </select>
+        <div class="content-media">
+          <select class="select" id="<?= e($id) ?>" name="<?= e($name) ?>"<?= $aria ?>>
+            <option value="">Default image</option>
+            <?php foreach ($mediaOptions as $m): ?>
+              <option value="<?= (int) $m['id'] ?>" data-src="../<?= e((string) $m['file_path']) ?>"<?= (int) $m['id'] === $sel ? ' selected' : '' ?>><?= e('#' . $m['id'] . ' ' . basename((string) $m['file_path'])) ?></option>
+            <?php endforeach; ?>
+          </select>
+          <div class="content-thumbs">
+            <figure class="content-thumb" data-thumb="current"<?= $thumb === '' ? ' hidden' : '' ?>>
+              <img src="<?= $thumb !== '' ? '../' . e($thumb) : '' ?>" alt="" width="72" height="72" loading="lazy">
+              <figcaption><?= $custom ? 'Selected' : 'Default image' ?></figcaption>
+            </figure>
+            <?php if ($default !== ''): ?>
+              <figure class="content-thumb" data-thumb="default"<?= $custom ? '' : ' hidden' ?>>
+                <img src="../<?= e($default) ?>" alt="" width="72" height="72" loading="lazy">
+                <figcaption>Default</figcaption>
+              </figure>
+            <?php endif; ?>
+          </div>
+        </div>
+      <?php elseif ($type === 'icon'): $svg = content_icons()[(string) $value] ?? ''; ?>
+        <div class="content-icon-pick">
+          <span class="content-icon-preview" aria-hidden="true"><?= $svg /* trusted static SVG from content_icons() */ ?></span>
+          <select class="select" id="<?= e($id) ?>" name="<?= e($name) ?>"<?= $aria ?>>
+            <option value="">No icon</option>
+            <?php foreach (array_keys(content_icons()) as $key): ?>
+              <option value="<?= e($key) ?>"<?= (string) $value === $key ? ' selected' : '' ?>><?= e($key) ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
       <?php elseif ($type === 'textarea' || $type === 'heading'): ?>
-        <textarea class="textarea" id="<?= e($id) ?>" name="<?= e($name) ?>" rows="<?= $type === 'heading' ? 2 : 4 ?>"<?= $aria ?><?= $max > 0 ? ' maxlength="' . $max . '"' : '' ?>><?= e((string) $value) ?></textarea>
-        <?php if ($type === 'heading'): ?><p class="hint">Wrap words in *asterisks* to highlight them.</p><?php endif; ?>
+        <textarea class="textarea" autocomplete="off" id="<?= e($id) ?>" name="<?= e($name) ?>" rows="<?= $type === 'heading' ? 2 : 4 ?>"<?= $aria ?><?= $max > 0 ? ' maxlength="' . $max . '"' : '' ?>><?= e((string) $value) ?></textarea>
+      <?php elseif ($type === 'url'): ?>
+        <div class="content-input-icon">
+          <span class="material-symbols-outlined" aria-hidden="true">link</span>
+          <input class="input" type="text" autocomplete="off" inputmode="url" autocapitalize="none" autocorrect="off" spellcheck="false" id="<?= e($id) ?>" name="<?= e($name) ?>" value="<?= e((string) $value) ?>"<?= $aria ?><?= $max > 0 ? ' maxlength="' . $max . '"' : '' ?>>
+        </div>
       <?php else: ?>
-        <input class="input" type="text" id="<?= e($id) ?>" name="<?= e($name) ?>" value="<?= e((string) $value) ?>"<?= $aria ?><?= $max > 0 ? ' maxlength="' . $max . '"' : '' ?>>
-        <?php if ($type === 'url'): ?><p class="hint">Use a page name (e.g. contact), #section, https://…, tel: or mailto:</p><?php endif; ?>
+        <input class="input" type="text" autocomplete="off" id="<?= e($id) ?>" name="<?= e($name) ?>" value="<?= e((string) $value) ?>"<?= $aria ?><?= $max > 0 ? ' maxlength="' . $max . '"' : '' ?>>
       <?php endif; ?>
-      <?php if ($error): ?><p class="hint" id="<?= e($id) ?>-err" style="color:var(--danger)" role="alert"><?= e($error) ?></p><?php endif; ?>
+      <?php if ($hint !== ''): ?><p class="hint" id="<?= e($id) ?>-hint"><?= e($hint) ?></p><?php endif; ?>
+      <?php if ($error): ?><p class="content-field-error" id="<?= e($id) ?>-err"><span class="material-symbols-outlined" aria-hidden="true">error</span><?= e($error) ?></p><?php endif; ?>
     </div>
     <?php
 }
 
-/** Form for one section. $values is in content_merge() shape (items under 'items'). */
-function content_render_section(string $slug, string $key, array $section, array $values, array $errors, array $mediaOptions, string $viewUrl): void
+/** Form for one section, as a collapsible panel. $values is in content_merge() shape (items under 'items'). */
+function content_render_section(string $slug, string $key, array $section, array $values, array $errors, array $mediaOptions, string $viewUrl, bool $open = false): void
 {
     $items = $section['items'] ?? null;
+    $rows = $values['items'] ?? [];
+    $meta = count($section['fields']) . (count($section['fields']) === 1 ? ' field' : ' fields');
+    if ($items !== null) {
+        $meta .= ' · ' . count($rows) . (count($rows) === 1 ? ' entry' : ' entries');
+    }
     ?>
-    <form class="card form-card content-section" method="post" action="content.php?page=<?= e(rawurlencode($slug)) ?>#section-<?= e($key) ?>" id="section-<?= e($key) ?>" style="margin-bottom:24px">
-      <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
-      <input type="hidden" name="page" value="<?= e($slug) ?>">
-      <input type="hidden" name="section" value="<?= e($key) ?>">
-      <h2><?= e($section['label']) ?></h2>
-      <?php if ($errors): ?><p class="hint" style="color:var(--danger)" role="alert">Please fix the highlighted fields.</p><?php endif; ?>
-      <?php if ($section['fields']): ?>
-        <div class="form-grid">
-          <?php foreach ($section['fields'] as $n => $f) {
-              content_render_field($f, "fields[$n]", $values[$n] ?? '', $mediaOptions, $errors[$n] ?? null, "f-$key-$n");
-          } ?>
+    <details class="card content-panel" id="section-<?= e($key) ?>"<?= $open || $errors ? ' open' : '' ?>>
+      <summary class="content-panel-head">
+        <span class="content-panel-title">
+          <span class="content-panel-name"><?= e($section['label']) ?></span>
+          <span class="content-panel-meta"><?= e($meta) ?></span>
+        </span>
+        <?php if ($errors): ?><span class="content-badge">Needs fixing</span><?php endif; ?>
+        <span class="material-symbols-outlined content-chevron" aria-hidden="true">expand_more</span>
+      </summary>
+      <form class="content-section" method="post" action="content.php?page=<?= e(rawurlencode($slug)) ?>#section-<?= e($key) ?>">
+        <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+        <input type="hidden" name="page" value="<?= e($slug) ?>">
+        <input type="hidden" name="section" value="<?= e($key) ?>">
+        <?php if ($errors): ?><p class="content-alert" role="alert"><span class="material-symbols-outlined" aria-hidden="true">error</span>Please fix the highlighted fields.</p><?php endif; ?>
+        <?php if ($section['fields']): ?>
+          <div class="form-grid">
+            <?php foreach ($section['fields'] as $n => $f) {
+                content_render_field($f, "fields[$n]", $values[$n] ?? '', $mediaOptions, $errors[$n] ?? null, "f-$key-$n");
+            } ?>
+          </div>
+        <?php endif; ?>
+        <?php if ($items !== null): ?>
+          <div class="content-items-block">
+            <div class="content-items-head">
+              <h3><?= e($items['label']) ?></h3>
+              <span class="content-count" data-min="<?= (int) $items['min'] ?>"><?= count($rows) ?> of <?= (int) $items['max'] ?> max<?= (int) $items['min'] > 0 ? ' · at least ' . (int) $items['min'] : '' ?></span>
+            </div>
+            <?php if (isset($errors['items'])): ?><p class="content-field-error" role="alert"><span class="material-symbols-outlined" aria-hidden="true">error</span><?= e($errors['items']) ?></p><?php endif; ?>
+            <div class="content-items" data-max="<?= (int) $items['max'] ?>">
+              <?php foreach ($rows as $i => $row): ?>
+                <?php content_render_item_row($key, $items, (string) $i, $row, $errors, $mediaOptions); ?>
+              <?php endforeach; ?>
+            </div>
+            <p class="content-empty"<?= $rows ? ' hidden' : '' ?>>No entries yet. Add one below.</p>
+            <template class="content-item-template"><?php content_render_item_row($key, $items, '__i__', array_map(static fn (array $f) => $f['type'] === 'image' ? $f['default'] : '', $items['fields']), [], $mediaOptions); ?></template>
+            <button type="button" class="secondary-btn content-add"><span class="material-symbols-outlined" aria-hidden="true">add</span>Add <?= e(strtolower($items['label'])) ?> entry</button>
+            <p class="content-live sr-only" aria-live="polite"></p>
+          </div>
+        <?php endif; ?>
+        <div class="content-actions">
+          <button class="primary-btn content-save" type="submit">Save <?= e($section['label']) ?></button>
+          <?php if ($viewUrl !== ''): ?><a class="content-view" href="<?= e($viewUrl) ?>" target="_blank" rel="noopener">View on site<span class="material-symbols-outlined" aria-hidden="true">open_in_new</span><span class="sr-only"> (opens in a new tab)</span></a><?php endif; ?>
+          <button class="content-reset" type="submit" name="action" value="reset" formnovalidate onclick="return confirm('Reset this section to its default content? Your edits will be lost.')"><span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>Reset to default</button>
         </div>
-      <?php endif; ?>
-      <?php if ($items !== null): ?>
-        <h3 style="margin:24px 0 8px"><?= e($items['label']) ?> <span class="hint">(<?= (int) $items['min'] ?>–<?= (int) $items['max'] ?>)</span></h3>
-        <?php if (isset($errors['items'])): ?><p class="hint" style="color:var(--danger)" role="alert"><?= e($errors['items']) ?></p><?php endif; ?>
-        <div class="content-items" data-max="<?= (int) $items['max'] ?>">
-          <?php foreach ($values['items'] ?? [] as $i => $row): ?>
-            <?php content_render_item_row($key, $items, (string) $i, $row, $errors, $mediaOptions); ?>
-          <?php endforeach; ?>
-        </div>
-        <template class="content-item-template"><?php content_render_item_row($key, $items, '__i__', array_map(static fn (array $f) => $f['type'] === 'image' ? $f['default'] : '', $items['fields']), [], $mediaOptions); ?></template>
-        <button type="button" class="secondary-btn content-add" style="margin-top:12px">Add <?= e(strtolower($items['label'])) ?> entry</button>
-      <?php endif; ?>
-      <div class="sticky-actions" style="position:static;margin:24px 0 0;padding:16px 0 0;background:none;backdrop-filter:none">
-        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
-          <button class="primary-btn" style="width:auto" type="submit">Save <?= e($section['label']) ?></button>
-          <?php if ($viewUrl !== ''): ?><a class="secondary-btn" href="<?= e($viewUrl) ?>" target="_blank" rel="noopener">View on site</a><?php endif; ?>
-        </div>
-        <button class="secondary-btn" type="submit" name="action" value="reset" formnovalidate style="color:var(--danger);border-color:var(--danger)" onclick="return confirm('Reset this section to its default content? Your edits will be lost.')">Reset to default</button>
-      </div>
-    </form>
+      </form>
+    </details>
     <?php
 }
 
 function content_render_item_row(string $key, array $items, string $i, array $row, array $errors, array $mediaOptions): void
 {
+    // Server rows number from 1; the template ('__i__') is numbered by the script.
+    $n = ctype_digit($i) ? (string) ((int) $i + 1) : '';
     ?>
-    <fieldset class="content-item" style="border:1px solid var(--border);border-radius:10px;padding:14px;margin:0 0 12px">
-      <div class="form-grid">
-        <?php foreach ($items['fields'] as $n => $f) {
-            content_render_field($f, "items[$i][$n]", $row[$n] ?? '', $mediaOptions, $errors["items.$i.$n"] ?? null, "i-$key-$i-$n");
-        } ?>
+    <fieldset class="content-item">
+      <legend class="sr-only content-item-name">Item <?= e($n) ?></legend>
+      <div class="content-item-head">
+        <span class="content-item-num" aria-hidden="true">Item <?= e($n) ?></span>
+        <span class="content-item-tools">
+          <button type="button" class="content-icon-btn content-up" aria-label="Move item <?= e($n) ?> up" title="Move up"><span class="material-symbols-outlined" aria-hidden="true">arrow_upward</span></button>
+          <button type="button" class="content-icon-btn content-down" aria-label="Move item <?= e($n) ?> down" title="Move down"><span class="material-symbols-outlined" aria-hidden="true">arrow_downward</span></button>
+          <button type="button" class="content-icon-btn content-remove" aria-label="Remove item <?= e($n) ?>" title="Remove"><span class="material-symbols-outlined" aria-hidden="true">delete</span></button>
+        </span>
       </div>
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <button type="button" class="secondary-btn content-up" aria-label="Move up">Up</button>
-        <button type="button" class="secondary-btn content-down" aria-label="Move down">Down</button>
-        <button type="button" class="secondary-btn content-remove" style="color:var(--danger);border-color:var(--danger)">Remove</button>
+      <div class="form-grid">
+        <?php foreach ($items['fields'] as $fn => $f) {
+            content_render_field($f, "items[$i][$fn]", $row[$fn] ?? '', $mediaOptions, $errors["items.$i.$fn"] ?? null, "i-$key-$i-$fn");
+        } ?>
       </div>
     </fieldset>
     <?php
@@ -299,19 +354,37 @@ function content_render_item_row(string $key, array $items, string $i, array $ro
 function content_render_script(): void
 {
     ?>
+<template id="content-icon-set"><?php foreach (content_icons() as $iconKey => $svg): ?><span data-icon="<?= e($iconKey) ?>"><?= $svg /* trusted static SVG */ ?></span><?php endforeach; ?></template>
 <script>
 document.querySelectorAll('.content-section').forEach(function (form) {
   var list = form.querySelector('.content-items');
   if (!list) return;
   var tpl = form.querySelector('.content-item-template');
   var add = form.querySelector('.content-add');
+  var empty = form.querySelector('.content-empty');
+  var count = form.querySelector('.content-count');
+  var live = form.querySelector('.content-live');
   var max = parseInt(list.dataset.max, 10);
-  function sync() { add.disabled = list.children.length >= max; }
+  var min = parseInt(count.dataset.min, 10);
+  function sync() {
+    var n = list.children.length;
+    add.disabled = n >= max;
+    empty.hidden = n > 0;
+    count.textContent = n + ' of ' + max + ' max' + (min > 0 ? ' · at least ' + min : '');
+  }
   function renumber() {
     Array.prototype.forEach.call(list.children, function (row, i) {
+      var n = i + 1;
       row.querySelectorAll('[name]').forEach(function (el) {
         el.name = el.name.replace(/^items\[[^\]]*\]/, 'items[' + i + ']');
       });
+      row.querySelector('.content-item-name').textContent = 'Item ' + n;
+      row.querySelector('.content-item-num').textContent = 'Item ' + n;
+      row.querySelector('.content-up').setAttribute('aria-label', 'Move item ' + n + ' up');
+      row.querySelector('.content-down').setAttribute('aria-label', 'Move item ' + n + ' down');
+      row.querySelector('.content-remove').setAttribute('aria-label', 'Remove item ' + n);
+      row.querySelector('.content-up').disabled = i === 0;
+      row.querySelector('.content-down').disabled = i === list.children.length - 1;
     });
   }
   add.addEventListener('click', function () {
@@ -320,23 +393,68 @@ document.querySelectorAll('.content-section').forEach(function (form) {
     var suffix = '-n' + Date.now();
     row.querySelectorAll('[id]').forEach(function (el) { el.id = el.id + suffix; });
     row.querySelectorAll('label[for]').forEach(function (el) { el.htmlFor = el.htmlFor + suffix; });
+    row.querySelectorAll('[aria-describedby]').forEach(function (el) {
+      el.setAttribute('aria-describedby', el.getAttribute('aria-describedby').split(' ').map(function (id) { return id + suffix; }).join(' '));
+    });
     list.appendChild(row);
     renumber(); sync();
+    live.textContent = 'Item ' + list.children.length + ' added.';
     var first = row.querySelector('input, select, textarea');
     if (first) first.focus();
   });
   list.addEventListener('click', function (ev) {
+    var btn = ev.target.closest('button');
     var row = ev.target.closest('.content-item');
-    if (!row) return;
+    if (!btn || !row) return;
     // Keep keyboard focus on the form after the focused row is removed.
-    if (ev.target.closest('.content-remove')) { row.remove(); renumber(); sync(); add.focus(); return; }
-    else if (ev.target.closest('.content-up') && row.previousElementSibling) list.insertBefore(row, row.previousElementSibling);
-    else if (ev.target.closest('.content-down') && row.nextElementSibling) list.insertBefore(row.nextElementSibling, row);
+    if (btn.classList.contains('content-remove')) { row.remove(); renumber(); sync(); live.textContent = 'Item removed.'; add.focus(); return; }
+    else if (btn.classList.contains('content-up') && row.previousElementSibling) list.insertBefore(row, row.previousElementSibling);
+    else if (btn.classList.contains('content-down') && row.nextElementSibling) list.insertBefore(row.nextElementSibling, row);
     else return;
     renumber(); sync();
+    live.textContent = 'Moved to position ' + (Array.prototype.indexOf.call(list.children, row) + 1) + '.';
+    // Moving the row can disable the pressed button at the list edge; keep focus inside the row.
+    (btn.disabled ? row.querySelector('.content-up:not([disabled]), .content-down:not([disabled]), .content-remove') : btn).focus();
   });
   form.addEventListener('submit', renumber);
-  sync();
+  renumber(); sync();
+});
+// Live previews for the image and icon pickers (rows added later included).
+document.addEventListener('change', function (ev) {
+  var el = ev.target;
+  var media = el.closest('.content-media');
+  if (media && el.tagName === 'SELECT') {
+    var opt = el.options[el.selectedIndex];
+    var cur = media.querySelector('[data-thumb="current"]');
+    var def = media.querySelector('[data-thumb="default"]');
+    var src = opt.dataset.src || (def ? def.querySelector('img').getAttribute('src') : '');
+    cur.hidden = !src;
+    if (src) cur.querySelector('img').src = src;
+    cur.querySelector('figcaption').textContent = opt.value ? 'Selected' : 'Default image';
+    if (def) def.hidden = !opt.value;
+  }
+  var pick = el.closest('.content-icon-pick');
+  if (pick && el.tagName === 'SELECT') {
+    var box = pick.querySelector('.content-icon-preview');
+    var src2 = document.querySelector('#content-icon-set').content.querySelector('[data-icon="' + CSS.escape(el.value) + '"]');
+    box.replaceChildren(src2 ? src2.firstElementChild.cloneNode(true) : '');
+  }
+});
+// Each section is its own form: warn before a save, reset or link drops edits made in another section.
+var dirty = new Set();
+function markDirty(ev) { var f = ev.target.closest && ev.target.closest('.content-section'); if (f) dirty.add(f); }
+document.addEventListener('input', markDirty);
+document.addEventListener('change', markDirty);
+document.querySelectorAll('.content-section').forEach(function (form) {
+  form.addEventListener('click', function (ev) { if (ev.target.closest('.content-items button, .content-add')) dirty.add(form); });
+  form.addEventListener('submit', function () { dirty.delete(form); });
+});
+window.addEventListener('beforeunload', function (ev) { if (dirty.size) { ev.preventDefault(); ev.returnValue = ''; } });
+// After a failed save, put focus on the first invalid field.
+var firstBad = document.querySelector('.content-editor [aria-invalid="true"]');
+if (firstBad) firstBad.focus();
+document.querySelectorAll('.content-toast-close').forEach(function (btn) {
+  btn.addEventListener('click', function () { btn.closest('.toast').remove(); });
 });
 </script>
     <?php

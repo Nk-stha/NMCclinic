@@ -80,17 +80,21 @@ $viewUrl = match ($slug) {
 
 cms_header('Page Content', $admin, 'content');
 ?>
-<section class="content">
+<section class="content content-editor">
   <div class="page-head">
     <div>
       <h1>Page Content</h1>
-      <p><?= $slug === '' ? 'Edit the text, images and links shown on each public page.' : e($registry[$slug]['label']) ?></p>
+      <p><?= $slug === '' ? 'Edit the text, images and links shown on each public page.' : e($registry[$slug]['label']) . ': open a section, edit it, then save that section.' ?></p>
     </div>
-    <?php if ($slug !== ''): ?><a class="secondary-btn" href="content.php">All pages</a><?php endif; ?>
+    <?php if ($slug !== ''): ?><a class="secondary-btn content-back" href="content.php"><span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>All pages</a><?php endif; ?>
   </div>
 
   <?php if ($toast): ?>
-    <div class="toast <?= e($toast[0]) ?>" role="status"><?= e($toast[1]) ?></div>
+    <div class="toast <?= e($toast[0]) ?>" role="<?= $toast[0] === 'error' ? 'alert' : 'status' ?>">
+      <span class="material-symbols-outlined" aria-hidden="true"><?= $toast[0] === 'error' ? 'error' : 'check_circle' ?></span>
+      <span><?= e($toast[1]) ?></span>
+      <button type="button" class="content-toast-close" aria-label="Dismiss message"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+    </div>
   <?php endif; ?>
 
   <?php if ($slug === ''): ?>
@@ -101,15 +105,15 @@ cms_header('Page Content', $admin, 'content');
         $updated = [];
     }
     ?>
-    <div class="card table-wrap">
+    <div class="card content-pages">
       <table>
-        <thead><tr><th>Page</th><th>Last updated</th><th></th></tr></thead>
+        <thead><tr><th scope="col">Page</th><th scope="col">Last updated</th><th scope="col"><span class="sr-only">Action</span></th></tr></thead>
         <tbody>
-          <?php foreach ($registry as $pageSlug => $pageSpec): ?>
+          <?php foreach ($registry as $pageSlug => $pageSpec): $u = $updated[$pageSlug] ?? null; ?>
             <tr>
-              <td><?= e($pageSpec['label']) ?></td>
-              <td><?= e($updated[$pageSlug] ?? 'Using defaults') ?></td>
-              <td><a class="secondary-btn" href="content.php?page=<?= e(rawurlencode($pageSlug)) ?>">Edit</a></td>
+              <th scope="row"><?= e($pageSpec['label']) ?></th>
+              <td><?php if ($u): ?><time datetime="<?= e(str_replace(' ', 'T', (string) $u)) ?>"><?= e(date('j M Y, H:i', strtotime((string) $u) ?: 0)) ?></time><?php else: ?><span class="status archived">Using defaults</span><?php endif; ?></td>
+              <td><a class="secondary-btn" href="content.php?page=<?= e(rawurlencode((string) $pageSlug)) ?>">Edit<span class="sr-only"> <?= e($pageSpec['label']) ?></span></a></td>
             </tr>
           <?php endforeach; ?>
         </tbody>
@@ -128,8 +132,10 @@ cms_header('Page Content', $admin, 'content');
         $mediaOptions = [];
         echo '<div class="toast error" role="status">Stored content could not be loaded; showing defaults.</div>';
     }
+    // Open the section just posted, saved or reset; otherwise the first one.
+    $openKey = $_POST['section'] ?? $_GET['saved'] ?? $_GET['reset'] ?? array_key_first($spec['sections']);
     foreach ($spec['sections'] as $key => $section) {
-        content_render_section($slug, $key, $section, $posted[$key] ?? $stored[$key], $errors[$key] ?? [], $mediaOptions, $viewUrl);
+        content_render_section($slug, $key, $section, $posted[$key] ?? $stored[$key], $errors[$key] ?? [], $mediaOptions, $viewUrl, $key === $openKey);
     }
     content_render_script();
     ?>
