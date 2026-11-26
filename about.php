@@ -3,6 +3,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/includes/public_seo.php';
 require_once __DIR__ . '/includes/site_footer.php';
+
+$p = page_content('about');
+$ct = site_contact_defaults();
+[$b, $in, $mv, $v, $st, $cta] = [$p['banner'], $p['intro'], $p['mission_vision'], $p['values'], $p['story'], $p['cta_band']];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,125 +30,111 @@ require_once __DIR__ . '/includes/site_footer.php';
     <div class="banner-veil"></div>
     <div class="banner-in">
       <div class="crumb">
-        <a href="home">Home</a>
+        <a href="home"><?= c($b, 'crumb_home') ?></a>
         <span class="sep">/</span>
-        <span class="here">About</span>
+        <span class="here"><?= c($b, 'crumb_here') ?></span>
       </div>
-      <span class="pill"><span class="dot"></span>About NMC</span>
-      <h1>A community clinic built around <span class="accent">people</span></h1>
-      <p class="lead">We bring specialist care, diagnostics, and rehabilitation together in one welcoming clinic in Butwal, so getting the care you need feels simpler and closer to home.</p>
+      <span class="pill"><span class="dot"></span><?= c($b, 'eyebrow') ?></span>
+      <h1><?= c_heading($b, 'heading', 'accent') ?></h1>
+      <p class="lead"><?= c($b, 'subheading') ?></p>
     </div>
   </section>
 
   <!-- ============ INTRO ============ -->
   <section class="wrap split">
     <div class="split-media">
-      <div class="photo-ph ratio-4x3"><span>clinic / reception photo</span></div>
+      <div class="photo-ph ratio-4x3"><span><?= c($in, 'photo_placeholder') ?></span></div>
       <div class="stat-badge">
-        <div class="stat-badge-num">6</div>
-        <div class="stat-badge-txt">specialties in<br>one clinic</div>
+        <div class="stat-badge-num"><?= c($in, 'stat_value') ?></div>
+        <div class="stat-badge-txt"><?= nl2br(c($in, 'stat_label'), false) ?></div>
       </div>
     </div>
     <div class="split-body">
-      <h2 class="section-title">Healthcare that feels personal</h2>
-      <p class="section-lead">NMC brings specialist consultations, diagnostic testing, physiotherapy, women's healthcare, and kidney care together in one convenient location. Our team focuses on listening carefully, explaining clearly, and helping every patient understand the next step in their care.</p>
+      <h2 class="section-title"><?= c_heading($in, 'heading') ?></h2>
+      <p class="section-lead"><?= c($in, 'body') ?></p>
+<?php if ($in['items']): ?>
       <ul class="tick-list">
-        <li><span class="tick"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Experienced medical professionals</li>
-        <li><span class="tick"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Modern diagnostic facilities</li>
-        <li><span class="tick"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Clear and respectful communication</li>
-        <li><span class="tick"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Coordinated care across departments</li>
+<?php foreach ($in['items'] as $item): ?>
+        <li><span class="tick"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span><?= c($item, 'title') ?></li>
+<?php endforeach; ?>
       </ul>
-      <a class="btn btn-primary" href="home#appointment">Book a visit</a>
+<?php else: ?>
+      <div class="empty-state"><?= c_text($in, 'empty_message') ?></div>
+<?php endif; ?>
+      <a class="btn btn-primary" href="<?= c_url($in, 'primary_cta_url') ?>"><?= c($in, 'primary_cta_label') ?></a>
     </div>
   </section>
 
   <!-- ============ MISSION & VISION ============ -->
   <section class="band-light">
     <div class="wrap section-80 grid grid-320">
-      <div class="mv-card">
-        <span class="mv-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg></span>
-        <h3>Our mission</h3>
-        <p>To make trusted, specialist healthcare easier to reach for families in Butwal, with honest advice, timely tests, and care that treats every patient as a person, not a case number.</p>
+<?php foreach ($mv['items'] as $i => $item): ?>
+      <div class="mv-card<?= $i === 1 ? ' is-dark' : '' ?>">
+        <span class="mv-icon"><?= c_icon($item, 'icon_key') ?></span>
+        <h3><?= c($item, 'title') ?></h3>
+        <p><?= c($item, 'body') ?></p>
       </div>
-      <div class="mv-card is-dark">
-        <span class="mv-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
-        <h3>Our vision</h3>
-        <p>To be the clinic our community turns to first: a calm, well-equipped place where consultation, diagnosis, and recovery work together, close to home.</p>
-      </div>
+<?php endforeach; ?>
+<?php if (!$mv['items']): ?>
+      <div class="empty-state"><?= c_text($mv, 'empty_message') ?></div>
+<?php endif; ?>
     </div>
   </section>
 
   <!-- ============ CORE VALUES ============ -->
   <section class="wrap section">
     <div class="center head-block">
-      <h2 class="section-title">The values behind our care</h2>
-      <p class="section-lead">Simple principles that shape how we treat every patient who walks through our door.</p>
+      <h2 class="section-title"><?= c_heading($v, 'heading') ?></h2>
+      <p class="section-lead"><?= c($v, 'subheading') ?></p>
     </div>
+<?php if ($v['items']): ?>
     <div class="grid grid-250 gap-22">
+<?php foreach ($v['items'] as $item): ?>
       <div class="card value-card">
-        <span class="icon-badge lg"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"></path></svg></span>
-        <h3>Compassion</h3>
-        <p>We listen first and treat every patient with patience, warmth, and respect.</p>
+        <span class="icon-badge lg"><?= c_icon($item, 'icon_key') ?></span>
+        <h3><?= c($item, 'title') ?></h3>
+        <p><?= c($item, 'body') ?></p>
       </div>
-      <div class="card value-card">
-        <span class="icon-badge lg"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg></span>
-        <h3>Trust</h3>
-        <p>Honest advice and clear information. No exaggerated claims, ever.</p>
-      </div>
-      <div class="card value-card">
-        <span class="icon-badge lg"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"></path><path d="M12 18v4"></path><path d="m4.93 4.93 2.83 2.83"></path><path d="m16.24 16.24 2.83 2.83"></path><path d="M2 12h4"></path><path d="M18 12h4"></path><path d="m4.93 19.07 2.83-2.83"></path><path d="m16.24 7.76 2.83-2.83"></path></svg></span>
-        <h3>Excellence</h3>
-        <p>Careful diagnosis and modern facilities to support the right decisions.</p>
-      </div>
-      <div class="card value-card">
-        <span class="icon-badge lg"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>
-        <h3>Community</h3>
-        <p>Care that stays local, familiar, and accessible to the families we serve.</p>
-      </div>
+<?php endforeach; ?>
     </div>
+<?php else: ?>
+    <div class="empty-state"><?= c_text($v, 'empty_message') ?></div>
+<?php endif; ?>
   </section>
 
   <!-- ============ STORY / TIMELINE ============ -->
   <section class="band-cream">
     <div class="wrap-narrow section">
       <div class="center head-block">
-        <span class="eyebrow">Our story</span>
-        <h2 class="section-title">How NMC came together</h2>
+        <span class="eyebrow"><?= c($st, 'eyebrow') ?></span>
+        <h2 class="section-title"><?= c_heading($st, 'heading') ?></h2>
       </div>
+<?php if ($st['items']): ?>
       <ol class="timeline">
+<?php $last = count($st['items']) - 1; foreach ($st['items'] as $i => $item): $isLast = $i === $last; ?>
         <li>
-          <div class="tl-rail"><span class="tl-dot">01</span><span class="tl-line"></span></div>
-          <div class="tl-body">
-            <h3>A clear need</h3>
-            <p>Families in Butwal often travelled between several places for a consultation, a test, and follow-up care. We set out to bring those steps together in one trusted clinic.</p>
+          <div class="tl-rail"><span class="tl-dot<?= $isLast ? ' is-last' : '' ?>"><?= sprintf('%02d', $i + 1) ?></span><?= $isLast ? '' : '<span class="tl-line"></span>' ?></div>
+          <div class="tl-body<?= $isLast ? ' is-last' : '' ?>">
+            <h3><?= c($item, 'title') ?></h3>
+            <p><?= c($item, 'body') ?></p>
           </div>
         </li>
-        <li>
-          <div class="tl-rail"><span class="tl-dot">02</span><span class="tl-line"></span></div>
-          <div class="tl-body">
-            <h3>Care under one roof</h3>
-            <p>We brought specialist consultation, an in-house laboratory, diagnostic imaging, physiotherapy, women's health, and kidney care into a single, welcoming space.</p>
-          </div>
-        </li>
-        <li>
-          <div class="tl-rail"><span class="tl-dot is-last">03</span></div>
-          <div class="tl-body is-last">
-            <h3>Growing with our community</h3>
-            <p>Today we keep listening to our patients and improving, adding services and refining care around what the community around us actually needs.</p>
-          </div>
-        </li>
+<?php endforeach; ?>
       </ol>
+<?php else: ?>
+      <div class="empty-state"><?= c_text($st, 'empty_message') ?></div>
+<?php endif; ?>
     </div>
   </section>
 
   <!-- ============ CTA BAND ============ -->
   <section class="band-light">
     <div class="wrap-narrow section-sm center">
-      <h2 class="section-title sm">Ready when you are</h2>
-      <p class="section-lead">Book a visit online, or call our reception team. We'll help you find the right service and confirm your time.</p>
+      <h2 class="section-title sm"><?= c_heading($cta, 'heading') ?></h2>
+      <p class="section-lead"><?= c($cta, 'subheading') ?></p>
       <div class="cta-row">
-        <a class="btn btn-primary btn-lg" href="home#appointment">Book a visit</a>
-        <a class="btn btn-light btn-lg" href="tel:+97771000000">Call +977 71-000000</a>
+        <a class="btn btn-primary btn-lg" href="<?= c_url($cta, 'primary_cta_url') ?>"><?= c($cta, 'primary_cta_label') ?></a>
+        <a class="btn btn-light btn-lg" href="<?= public_e($ct['phone_href']) ?>"><?= c($cta, 'call_label') ?> <?= public_e($ct['phone']) ?></a>
       </div>
     </div>
   </section>

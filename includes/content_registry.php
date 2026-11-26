@@ -211,6 +211,91 @@ function content_registry(): array
                 'empty_message' => ['type' => 'textarea', 'label' => 'Message when no branches are listed', 'max' => 200, 'required' => true, 'default' => 'Branch details are being updated. Please call us for directions.'],
             ], 'items' => null],
         ]],
+        'about' => ['label' => 'About', 'sections' => [
+            'banner' => ['label' => 'Banner', 'fields' => [
+                'crumb_home' => ['type' => 'text', 'label' => 'Breadcrumb home label', 'max' => 30, 'required' => true, 'default' => 'Home'],
+                'crumb_here' => ['type' => 'text', 'label' => 'Breadcrumb current page label', 'max' => 30, 'required' => true, 'default' => 'About'],
+                'eyebrow' => ['type' => 'text', 'label' => 'Pill text', 'max' => 60, 'required' => false, 'default' => 'About NMC'],
+                'heading' => ['type' => 'heading', 'label' => 'Heading (wrap words in *stars* to highlight)', 'max' => 90, 'required' => true, 'default' => 'A community clinic built around *people*'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => 'We bring specialist care, diagnostics, and rehabilitation together in one welcoming clinic in Butwal, so getting the care you need feels simpler and closer to home.'],
+            ], 'items' => null],
+            'intro' => ['label' => 'Intro', 'fields' => [
+                'photo_placeholder' => ['type' => 'text', 'label' => 'Photo placeholder text', 'max' => 60, 'required' => false, 'default' => 'clinic / reception photo'],
+                'stat_value' => ['type' => 'text', 'label' => 'Badge number', 'max' => 10, 'required' => true, 'default' => '6'],
+                'stat_label' => ['type' => 'textarea', 'label' => 'Badge text (new line = line break)', 'max' => 60, 'required' => true, 'default' => "specialties in\none clinic"],
+                'heading' => ['type' => 'heading', 'label' => 'Heading', 'max' => 90, 'required' => true, 'default' => 'Healthcare that feels personal'],
+                'body' => ['type' => 'textarea', 'label' => 'Lead text', 'max' => 500, 'required' => false, 'default' => "NMC brings specialist consultations, diagnostic testing, physiotherapy, women's healthcare, and kidney care together in one convenient location. Our team focuses on listening carefully, explaining clearly, and helping every patient understand the next step in their care."],
+                'primary_cta_label' => ['type' => 'text', 'label' => 'Button label', 'max' => 30, 'required' => true, 'default' => 'Book a visit'],
+                'primary_cta_url' => ['type' => 'url', 'label' => 'Button link', 'max' => 200, 'required' => true, 'default' => 'home#appointment'],
+                'empty_message' => ['type' => 'textarea', 'label' => 'Message when there are no points', 'max' => 200, 'required' => true, 'default' => 'Our highlights are being updated. Please call us to learn more.'],
+            ], 'items' => [
+                'item_type' => 'point', 'label' => 'Points', 'min' => 0, 'max' => 8,
+                'fields' => [
+                    'title' => ['type' => 'text', 'label' => 'Text', 'max' => 80, 'required' => true, 'default' => 'Point'],
+                ],
+                'default' => [
+                    ['title' => 'Experienced medical professionals'],
+                    ['title' => 'Modern diagnostic facilities'],
+                    ['title' => 'Clear and respectful communication'],
+                    ['title' => 'Coordinated care across departments'],
+                ],
+            ]],
+            'mission_vision' => ['label' => 'Mission and vision cards', 'fields' => [
+                'empty_message' => ['type' => 'textarea', 'label' => 'Message when there are no cards', 'max' => 200, 'required' => true, 'default' => 'Our mission and vision are being updated.'],
+            ], 'items' => [
+                'item_type' => 'card', 'label' => 'Cards', 'min' => 0, 'max' => 4,
+                'fields' => [
+                    'icon_key' => ['type' => 'icon', 'label' => 'Icon', 'max' => 0, 'required' => false, 'default' => ''],
+                    'title' => ['type' => 'text', 'label' => 'Title', 'max' => 60, 'required' => true, 'default' => 'Item'],
+                    'body' => ['type' => 'text', 'label' => 'Text', 'max' => 300, 'required' => false, 'default' => ''],
+                ],
+                'default' => [
+                    ['icon_key' => 'mission', 'title' => 'Our mission', 'body' => 'To make trusted, specialist healthcare easier to reach for families in Butwal, with honest advice, timely tests, and care that treats every patient as a person, not a case number.'],
+                    ['icon_key' => 'vision', 'title' => 'Our vision', 'body' => 'To be the clinic our community turns to first: a calm, well-equipped place where consultation, diagnosis, and recovery work together, close to home.'],
+                ],
+            ]],
+            'values' => ['label' => 'Values', 'fields' => [
+                'heading' => ['type' => 'heading', 'label' => 'Heading', 'max' => 90, 'required' => true, 'default' => 'The values behind our care'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => 'Simple principles that shape how we treat every patient who walks through our door.'],
+                'empty_message' => ['type' => 'textarea', 'label' => 'Message when there are no values', 'max' => 200, 'required' => true, 'default' => 'Our values are being updated.'],
+            ], 'items' => [
+                'item_type' => 'value', 'label' => 'Values', 'min' => 0, 'max' => 8,
+                'fields' => [
+                    'icon_key' => ['type' => 'icon', 'label' => 'Icon', 'max' => 0, 'required' => false, 'default' => ''],
+                    'title' => ['type' => 'text', 'label' => 'Title', 'max' => 60, 'required' => true, 'default' => 'Item'],
+                    'body' => ['type' => 'text', 'label' => 'Text', 'max' => 300, 'required' => false, 'default' => ''],
+                ],
+                'default' => [
+                    ['icon_key' => 'compassion', 'title' => 'Compassion', 'body' => 'We listen first and treat every patient with patience, warmth, and respect.'],
+                    ['icon_key' => 'trust', 'title' => 'Trust', 'body' => 'Honest advice and clear information. No exaggerated claims, ever.'],
+                    ['icon_key' => 'excellence', 'title' => 'Excellence', 'body' => 'Careful diagnosis and modern facilities to support the right decisions.'],
+                    ['icon_key' => 'community', 'title' => 'Community', 'body' => 'Care that stays local, familiar, and accessible to the families we serve.'],
+                ],
+            ]],
+            'story' => ['label' => 'Story', 'fields' => [
+                'eyebrow' => ['type' => 'text', 'label' => 'Eyebrow', 'max' => 40, 'required' => false, 'default' => 'Our story'],
+                'heading' => ['type' => 'heading', 'label' => 'Heading', 'max' => 90, 'required' => true, 'default' => 'How NMC came together'],
+                'empty_message' => ['type' => 'textarea', 'label' => 'Message when there are no story steps', 'max' => 200, 'required' => true, 'default' => 'Our story is being updated.'],
+            ], 'items' => [
+                'item_type' => 'step', 'label' => 'Steps (numbered automatically)', 'min' => 0, 'max' => 8,
+                'fields' => [
+                    'title' => ['type' => 'text', 'label' => 'Title', 'max' => 60, 'required' => true, 'default' => 'Item'],
+                    'body' => ['type' => 'text', 'label' => 'Text', 'max' => 300, 'required' => false, 'default' => ''],
+                ],
+                'default' => [
+                    ['title' => 'A clear need', 'body' => 'Families in Butwal often travelled between several places for a consultation, a test, and follow-up care. We set out to bring those steps together in one trusted clinic.'],
+                    ['title' => 'Care under one roof', 'body' => "We brought specialist consultation, an in-house laboratory, diagnostic imaging, physiotherapy, women's health, and kidney care into a single, welcoming space."],
+                    ['title' => 'Growing with our community', 'body' => 'Today we keep listening to our patients and improving, adding services and refining care around what the community around us actually needs.'],
+                ],
+            ]],
+            'cta_band' => ['label' => 'Call to action', 'fields' => [
+                'heading' => ['type' => 'heading', 'label' => 'Heading', 'max' => 90, 'required' => true, 'default' => 'Ready when you are'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => "Book a visit online, or call our reception team. We'll help you find the right service and confirm your time."],
+                'primary_cta_label' => ['type' => 'text', 'label' => 'Button label', 'max' => 30, 'required' => true, 'default' => 'Book a visit'],
+                'primary_cta_url' => ['type' => 'url', 'label' => 'Button link', 'max' => 200, 'required' => true, 'default' => 'home#appointment'],
+                'call_label' => ['type' => 'text', 'label' => 'Call button text (the phone number from Settings follows it)', 'max' => 30, 'required' => true, 'default' => 'Call'],
+            ], 'items' => null],
+        ]],
     ];
 }
 
