@@ -418,6 +418,27 @@ function hours_summary(array $hours): string
     return short_day($first['day']) . '-' . short_day($last['day']) . ' ' . $time;
 }
 
+/** Opening hours as display lines, consecutive days with the same hours merged: "Sun-Fri: 8:00 AM - 8:00 PM", "Saturday: 9:00 AM - 2:00 PM". */
+function hours_lines(array $hours): array
+{
+    $groups = [];
+    foreach ($hours as $hour) {
+        $time = $hour['is_closed'] ? 'Closed' : ($hour['label'] !== '' ? $hour['label']
+            : ($hour['opens_at'] !== '' && $hour['closes_at'] !== '' ? date('g:i A', strtotime($hour['opens_at'])) . ' - ' . date('g:i A', strtotime($hour['closes_at'])) : ''));
+        if ($time === '') {
+            continue;
+        }
+        $last = count($groups) - 1;
+        if ($last >= 0 && $groups[$last]['time'] === $time) {
+            $groups[$last]['to'] = $hour['day'];
+        } else {
+            $groups[] = ['from' => $hour['day'], 'to' => $hour['day'], 'time' => $time];
+        }
+    }
+
+    return array_map(static fn (array $g): string => ($g['from'] === $g['to'] ? $g['from'] : short_day($g['from']) . '-' . short_day($g['to'])) . ': ' . $g['time'], $groups);
+}
+
 function short_day(string $day): string
 {
     return substr($day, 0, 3);

@@ -11,6 +11,11 @@ $doctors = array_slice(site_doctors(), 0, 4); // mirrors the old JS home list (f
 $posts = array_slice(site_blog_posts(), 0, 3);
 $branches = site_branches();
 $serviceOptions = site_form_options()['specialties'];
+// Contact details are edited in CMS > Settings; the shipped values are only a fallback.
+$settings = $ct['settings']['settings'];
+$email = (string) ($settings['email'] ?? '') !== '' ? (string) $settings['email'] : 'info@nmcbutwal.com.np';
+$hoursLines = $settings !== null ? hours_lines($ct['settings']['hours']) : [];
+$hoursLines = $hoursLines ?: ['Sun-Fri: 8:00 AM - 8:00 PM', 'Saturday: 9:00 AM - 2:00 PM'];
 
 $hero = $p['hero'];
 // Only plain path characters reach the inline style, so an image path cannot break out of url().
@@ -84,7 +89,7 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
           <span class="icon-badge"><?= content_icons()['generic'] ?></span>
           <h3><?= public_e($s['title']) ?></h3>
           <p><?= public_e($s['short_description']) ?></p>
-          <a class="link-cta inline" href="specialties#<?= public_e(rawurlencode($s['slug'])) ?>">Learn more <?= $arrow ?></a>
+          <a class="link-cta inline" href="specialties#<?= public_e(rawurlencode($s['slug'])) ?>"><?= c($p['services'], 'card_link_label') ?> <?= $arrow ?></a>
         </article>
 <?php endforeach; ?>
     </div>
@@ -147,7 +152,7 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
     <div class="grid grid-260 gap-22">
 <?php foreach ($doctors as $d): $hours = $schedule($d['schedules']); ?>
         <article class="doc-card is-home" data-category="<?= public_e($d['specialty']) ?>">
-          <div class="doc-photo"><?php if ($d['photo_path']): ?><img src="<?= public_e(content_safe_url($d['photo_path'])) ?>" alt="<?= public_e($d['photo_alt']) ?>" loading="lazy"><?php else: ?><span class="ph-label">doctor photo</span><?php endif; ?></div>
+          <div class="doc-photo"><?php if ($d['photo_path']): ?><img src="<?= public_e(content_safe_url($d['photo_path'])) ?>" alt="<?= public_e($d['photo_alt']) ?>" loading="lazy"><?php else: ?><span class="ph-label"><?= c($p['doctors'], 'card_photo_placeholder') ?></span><?php endif; ?></div>
           <div class="doc-body">
             <span class="doc-chip"><?= public_e($d['specialty']) ?></span>
             <h3><?= public_e($d['full_name']) ?></h3>
@@ -155,13 +160,13 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
             <p class="doc-qual"><?= public_e(implode(', ', $d['qualifications'])) ?></p>
 <?php endif; ?>
 <?php if ($d['registration_number'] !== ''): ?>
-            <p class="doc-reg">NMC Reg. No. <?= public_e($d['registration_number']) ?></p>
+            <p class="doc-reg"><?= c($p['doctors'], 'card_reg_prefix') ?> <?= public_e($d['registration_number']) ?></p>
 <?php endif; ?>
 <?php if ($hours !== ''): ?>
             <div class="doc-hours"><?= $calendarSvg ?> <?= public_e($hours) ?></div>
 <?php endif; ?>
             <div class="doc-actions">
-              <a class="doc-view" href="#appointment">Book a visit</a>
+              <a class="doc-view" href="#appointment"><?= c($p['doctors'], 'card_cta_label') ?></a>
             </div>
           </div>
         </article>
@@ -213,39 +218,39 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
         <form class="form-card is-home" data-success="appointment-ok" action="submit-appointment.php" method="post">
           <div class="grid grid-200 form-grid">
             <div class="field">
-              <label for="f-name">Full name</label>
-              <input class="input" id="f-name" name="name" type="text" required placeholder="Your name">
+              <label for="f-name"><?= c($a, 'name_label') ?></label>
+              <input class="input" id="f-name" name="name" type="text" required placeholder="<?= c($a, 'name_placeholder') ?>">
             </div>
             <div class="field">
-              <label for="f-phone">Phone number</label>
-              <input class="input" id="f-phone" name="phone" type="tel" required placeholder="+977 …">
+              <label for="f-phone"><?= c($a, 'phone_label') ?></label>
+              <input class="input" id="f-phone" name="phone" type="tel" required placeholder="<?= c($a, 'phone_placeholder') ?>">
             </div>
             <div class="field">
-              <label for="f-service">Service or department</label>
+              <label for="f-service"><?= c($a, 'service_label') ?></label>
               <select class="select" id="f-service" name="service">
-                <option value="">Select a service</option>
+                <option value=""><?= c($a, 'service_placeholder') ?></option>
 <?php foreach ($serviceOptions as $o): ?>
                 <option value="<?= public_e($o['value']) ?>"><?= public_e($o['label']) ?></option>
 <?php endforeach; ?>
               </select>
             </div>
             <div class="field">
-              <label for="f-date">Preferred date</label>
+              <label for="f-date"><?= c($a, 'date_label') ?></label>
               <input class="input" id="f-date" name="date" type="date">
             </div>
             <div class="field">
-              <label for="f-time">Preferred time</label>
+              <label for="f-time"><?= c($a, 'time_label') ?></label>
               <select class="select" id="f-time" name="time">
-                <option value="">Any time</option>
-                <option>Morning (8 AM-12 PM)</option>
-                <option>Afternoon (12-4 PM)</option>
-                <option>Evening (4-8 PM)</option>
+                <option value=""><?= c($a, 'time_any') ?></option>
+                <option><?= c($a, 'time_morning') ?></option>
+                <option><?= c($a, 'time_afternoon') ?></option>
+                <option><?= c($a, 'time_evening') ?></option>
               </select>
             </div>
           </div>
           <div class="field">
-            <label for="f-msg">Message <span class="optional">(optional)</span></label>
-            <textarea class="textarea" id="f-msg" name="message" rows="3" placeholder="Anything you'd like us to know"></textarea>
+            <label for="f-msg"><?= c($a, 'message_label') ?> <span class="optional"><?= c($a, 'optional_label') ?></span></label>
+            <textarea class="textarea" id="f-msg" name="message" rows="3" placeholder="<?= c($a, 'message_placeholder') ?>"></textarea>
           </div>
 
           <label class="consent">
@@ -297,17 +302,17 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
       <h2 class="section-title"><?= c_heading($p['articles'], 'heading') ?></h2>
       <p class="section-lead"><?= c($p['articles'], 'subheading') ?></p>
     </div>
-<?php if ($posts): ?>
+<?php $ar = $p['articles']; if ($posts): ?>
     <div class="grid grid-280 gap-22">
 <?php foreach ($posts as $post): $reviewed = $post['reviewed_at'] !== '' ? $post['reviewed_at'] : $post['published_at']; ?>
         <a class="post-card" href="<?= public_e(content_safe_url($post['url'])) ?>" data-category="<?= public_e($post['category']) ?>">
-          <div class="post-photo"><?php if ($post['image_path']): ?><img src="<?= public_e(content_safe_url($post['image_path'])) ?>" alt="<?= public_e($post['image_alt']) ?>" loading="lazy"><?php else: ?><span class="ph-label">article image</span><?php endif; ?><span class="doc-tag"><?= public_e($post['category']) ?></span></div>
+          <div class="post-photo"><?php if ($post['image_path']): ?><img src="<?= public_e(content_safe_url($post['image_path'])) ?>" alt="<?= public_e($post['image_alt']) ?>" loading="lazy"><?php else: ?><span class="ph-label"><?= c($ar, 'card_image_placeholder') ?></span><?php endif; ?><span class="doc-tag"><?= public_e($post['category']) ?></span></div>
           <div class="post-body">
-            <div class="post-meta"><?= $post['reading_time_minutes'] ? public_e($post['reading_time_minutes'] . ' min read') : 'Health guide' ?></div>
+            <div class="post-meta"><?= $post['reading_time_minutes'] ? public_e((string) $post['reading_time_minutes']) . ' ' . c($ar, 'card_read_time_suffix') : c($ar, 'card_no_read_time') ?></div>
             <h3><?= public_e($post['title']) ?></h3>
             <p><?= public_e($post['excerpt']) ?></p>
-            <div class="post-byline">Reviewed by <?= public_e($post['reviewer_name'] !== '' ? $post['reviewer_name'] : 'NMC medical team') ?><?= $reviewed !== '' ? ' · Reviewed ' . public_e($reviewed) : '' ?></div>
-            <span class="link-cta inline">Read article <?= $arrow ?></span>
+            <div class="post-byline"><?= c($ar, 'card_reviewed_by') ?> <?= $post['reviewer_name'] !== '' ? public_e($post['reviewer_name']) : c($ar, 'card_default_reviewer') ?><?= $reviewed !== '' ? ' · ' . c($ar, 'card_reviewed_date') . ' ' . public_e($reviewed) : '' ?></div>
+            <span class="link-cta inline"><?= c($ar, 'card_link_label') ?> <?= $arrow ?></span>
           </div>
         </a>
 <?php endforeach; ?>
@@ -359,14 +364,14 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
             <span class="icon-badge md"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#286963" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-10 6L2 7"></path></svg></span>
             <div>
               <div class="branch-name"><?= c($v, 'email_label') ?></div>
-              <div class="branch-text"><a href="mailto:<?= c($v, 'email') ?>"><?= c($v, 'email') ?></a></div>
+              <div class="branch-text"><a href="mailto:<?= public_e($email) ?>"><?= public_e($email) ?></a></div>
             </div>
           </div>
           <div class="branch">
             <span class="icon-badge md is-warm"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#124E4A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15 14"></polyline></svg></span>
             <div>
               <div class="branch-name"><?= c($v, 'hours_label') ?></div>
-              <div class="branch-text"><?= nl2br(c($v, 'hours_text'), false) ?></div>
+              <div class="branch-text"><?= implode('<br>', array_map('public_e', $hoursLines)) ?></div>
             </div>
           </div>
         </div>
