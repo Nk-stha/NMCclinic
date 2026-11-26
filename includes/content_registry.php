@@ -79,7 +79,6 @@ function content_registry(): array
             ], 'items' => null],
             'info_strip' => ['label' => 'Info strip', 'fields' => [
                 'status_label' => ['type' => 'text', 'label' => 'Status label', 'max' => 40, 'required' => true, 'default' => 'Butwal clinic today'],
-                'status_fallback' => ['type' => 'text', 'label' => 'Hours text (shown until the live open/closed status loads)', 'max' => 80, 'required' => true, 'default' => 'Sun-Fri 8 AM-8 PM, Sat 9 AM-2 PM'],
                 'emergency_label' => ['type' => 'text', 'label' => 'Phone label', 'max' => 40, 'required' => true, 'default' => 'Emergency line'],
             ], 'items' => null],
             'services' => ['label' => 'Services (cards come from Specialties)', 'fields' => [

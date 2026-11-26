@@ -15,6 +15,8 @@ $serviceOptions = site_form_options()['specialties'];
 $settings = $ct['settings']['settings'];
 $email = (string) ($settings['email'] ?? '') !== '' ? (string) $settings['email'] : 'info@nmcbutwal.com.np';
 $hoursLines = $settings !== null ? hours_lines($ct['settings']['hours']) : [];
+// Shown until script.js computes the live open/closed status.
+$statusHours = $hoursLines ? implode(', ', $hoursLines) : 'Sun-Fri 8 AM-8 PM, Sat 9 AM-2 PM';
 $hoursLines = $hoursLines ?: ['Sun-Fri: 8:00 AM - 8:00 PM', 'Saturday: 9:00 AM - 2:00 PM'];
 
 $hero = $p['hero'];
@@ -67,7 +69,7 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
     <div class="info-strip">
       <div class="info-item" role="status">
         <span class="status-dot" data-open-dot></span>
-        <span><span class="info-k"><?= c($p['info_strip'], 'status_label') ?></span><span class="info-v" data-open-status><?= c($p['info_strip'], 'status_fallback') ?></span></span>
+        <span><span class="info-k"><?= c($p['info_strip'], 'status_label') ?></span><span class="info-v" data-open-status><?= public_e($statusHours) ?></span></span>
       </div>
       <a class="info-item is-emergency" href="<?= public_e($ct['phone_href']) ?>" data-phone-href>
         <span class="icon-badge"><?= $phoneSvg('currentColor') ?></span>
