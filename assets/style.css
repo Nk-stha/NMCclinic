@@ -205,7 +205,8 @@ h1, h2 { font-family: var(--font-display); letter-spacing: -.025em; }
 /* ---------- 5. Hero / page banner ---------------------------------------- */
 .hero, .banner {
   position: relative; overflow: hidden;
-  background: var(--hero-dark) url('../uploads/backgound.webp') center / cover no-repeat;
+  /* --hero-bg: set inline by the home page from its CMS hero image. */
+  background: var(--hero-dark) var(--hero-bg, url('../uploads/backgound.webp')) center / cover no-repeat;
 }
 .hero-veil, .banner-veil { position: absolute; inset: 0; pointer-events: none; }
 .hero-veil {
@@ -602,6 +603,8 @@ h1, h2 { font-family: var(--font-display); letter-spacing: -.025em; }
 .listing { padding-top: 56px; padding-bottom: 40px; }
 .listing.tight { padding-top: 44px; }
 .listing-note { text-align: center; font-size: 14px; color: var(--muted); margin: 36px 0 0; }
+.empty-state { text-align: center; color: var(--muted); margin: 36px 0 0; }
+.empty-state p { margin: 0; }
 .optional { font-weight: 400; color: var(--muted); }
 .icon-badge.md { width: 46px; height: 46px; border-radius: var(--radius-lg); margin-bottom: 16px; }
 .icon-badge.is-warm { background: var(--teal-050); color: var(--teal-600); }

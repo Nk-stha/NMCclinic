@@ -68,6 +68,126 @@ function content_registry(): array
                 'float_label' => ['type' => 'text', 'label' => 'Floating WhatsApp button text', 'max' => 30, 'required' => true, 'default' => 'WhatsApp us'],
             ], 'items' => null],
         ]],
+        'home' => ['label' => 'Home', 'sections' => [
+            'hero' => ['label' => 'Hero', 'fields' => [
+                'eyebrow' => ['type' => 'text', 'label' => 'Pill text', 'max' => 60, 'required' => false, 'default' => 'Butwal and Bhairahawa'],
+                'heading' => ['type' => 'heading', 'label' => 'Heading (wrap words in *stars* to highlight)', 'max' => 90, 'required' => true, 'default' => 'Specialists, lab tests and physio in *one visit*'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => 'See an experienced doctor, finish your tests on site, and leave knowing your next step.'],
+                'primary_cta_label' => ['type' => 'text', 'label' => 'Button label', 'max' => 30, 'required' => true, 'default' => 'Book a visit'],
+                'primary_cta_url' => ['type' => 'url', 'label' => 'Button link', 'max' => 200, 'required' => true, 'default' => '#appointment'],
+                'primary_media_id' => ['type' => 'image', 'label' => 'Background image', 'max' => 0, 'required' => false, 'default' => ['src' => 'uploads/backgound.webp', 'alt' => '']],
+            ], 'items' => null],
+            'info_strip' => ['label' => 'Info strip', 'fields' => [
+                'status_label' => ['type' => 'text', 'label' => 'Status label', 'max' => 40, 'required' => true, 'default' => 'Butwal clinic today'],
+                'status_fallback' => ['type' => 'text', 'label' => 'Hours text (shown until the live open/closed status loads)', 'max' => 80, 'required' => true, 'default' => 'Sun-Fri 8 AM-8 PM, Sat 9 AM-2 PM'],
+                'emergency_label' => ['type' => 'text', 'label' => 'Phone label', 'max' => 40, 'required' => true, 'default' => 'Emergency line'],
+            ], 'items' => null],
+            'services' => ['label' => 'Services (cards come from Specialties)', 'fields' => [
+                'heading' => ['type' => 'heading', 'label' => 'Heading', 'max' => 90, 'required' => true, 'default' => 'Care for the health needs that matter most'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => 'From your first consultation to diagnosis and recovery, in one clinic at Traffic Chowk.'],
+                'empty_message' => ['type' => 'textarea', 'label' => 'Message when no specialties are published', 'max' => 200, 'required' => true, 'default' => 'Our services are being updated. Please call us to ask about a specialty.'],
+            ], 'items' => null],
+            'about' => ['label' => 'About', 'fields' => [
+                'primary_media_id' => ['type' => 'image', 'label' => 'Photo', 'max' => 0, 'required' => false, 'default' => ['src' => 'uploads/team-BJF-74gA.jpg', 'alt' => 'The NMC clinic team, doctors, nurses, and staff at the Butwal clinic']],
+                'stat_value' => ['type' => 'text', 'label' => 'Badge number', 'max' => 10, 'required' => true, 'default' => '6'],
+                'stat_label' => ['type' => 'textarea', 'label' => 'Badge text (new line = line break)', 'max' => 60, 'required' => true, 'default' => "specialties in\none clinic"],
+                'heading' => ['type' => 'heading', 'label' => 'Heading', 'max' => 90, 'required' => true, 'default' => 'Care that starts with listening'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => 'Specialist care, testing and recovery in one place, with a team that listens and explains your next step.'],
+                'primary_cta_label' => ['type' => 'text', 'label' => 'Link label', 'max' => 40, 'required' => true, 'default' => 'More about NMC'],
+                'primary_cta_url' => ['type' => 'url', 'label' => 'Link', 'max' => 200, 'required' => true, 'default' => 'about'],
+            ], 'items' => null],
+            'diagnostics' => ['label' => 'Diagnostics', 'fields' => [
+                'heading' => ['type' => 'heading', 'label' => 'Heading', 'max' => 90, 'required' => true, 'default' => 'Faster answers. Clearer next steps.'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => 'Most tests happen here, so you are not travelling between labs while you wait for answers.'],
+                'primary_cta_label' => ['type' => 'text', 'label' => 'Button label', 'max' => 40, 'required' => true, 'default' => 'See diagnostic services'],
+                'primary_cta_url' => ['type' => 'url', 'label' => 'Button link', 'max' => 200, 'required' => true, 'default' => 'specialties#diagnostics'],
+            ], 'items' => [
+                'item_type' => 'step', 'label' => 'Steps', 'min' => 1, 'max' => 6,
+                'fields' => [
+                    'icon_key' => ['type' => 'icon', 'label' => 'Icon', 'max' => 0, 'required' => false, 'default' => ''],
+                    'title' => ['type' => 'text', 'label' => 'Title', 'max' => 60, 'required' => true, 'default' => 'Step'],
+                    'body' => ['type' => 'text', 'label' => 'Text', 'max' => 200, 'required' => false, 'default' => ''],
+                ],
+                'default' => [
+                    ['icon_key' => 'sample', 'title' => 'Sample taken here', 'body' => 'Samples are collected at the clinic, with no second trip to another lab.'],
+                    ['icon_key' => 'activity', 'title' => 'Tested in-house', 'body' => 'Our laboratory and imaging team run routine and specialist tests on site.'],
+                    ['icon_key' => 'report', 'title' => 'Report ready', 'body' => 'Reception tells you when to expect your report before you leave.'],
+                    ['icon_key' => 'review', 'title' => 'Reviewed with your doctor', 'body' => 'Go through the results with the right doctor and agree on the next step.'],
+                ],
+            ]],
+            'doctors' => ['label' => 'Doctors (cards come from Doctors)', 'fields' => [
+                'heading' => ['type' => 'heading', 'label' => 'Heading', 'max' => 90, 'required' => true, 'default' => 'Meet the doctors behind your care'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => "See each doctor's specialty and clinic days, then book the one who fits."],
+                'primary_cta_label' => ['type' => 'text', 'label' => 'Link label', 'max' => 40, 'required' => true, 'default' => 'See all doctors'],
+                'primary_cta_url' => ['type' => 'url', 'label' => 'Link', 'max' => 200, 'required' => true, 'default' => 'doctors'],
+                'empty_message' => ['type' => 'textarea', 'label' => 'Message when no doctors are published', 'max' => 200, 'required' => true, 'default' => 'Our doctor profiles are being updated. Please call us to book.'],
+            ], 'items' => null],
+            'why_choose' => ['label' => 'Why choose us', 'fields' => [
+                'heading' => ['type' => 'heading', 'label' => 'Heading', 'max' => 90, 'required' => true, 'default' => 'Why patients choose NMC'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => 'Specialists, tests and follow-up in one place, with a team that explains things plainly.'],
+            ], 'items' => [
+                'item_type' => 'reason', 'label' => 'Reasons', 'min' => 1, 'max' => 6,
+                'fields' => [
+                    'icon_key' => ['type' => 'icon', 'label' => 'Icon', 'max' => 0, 'required' => false, 'default' => ''],
+                    'title' => ['type' => 'text', 'label' => 'Title', 'max' => 60, 'required' => true, 'default' => 'Reason'],
+                    'body' => ['type' => 'text', 'label' => 'Text', 'max' => 200, 'required' => false, 'default' => ''],
+                ],
+                'default' => [
+                    ['icon_key' => 'award', 'title' => 'Experienced specialists', 'body' => 'Consult qualified doctors across the specialties families need most.'],
+                    ['icon_key' => 'building', 'title' => 'Diagnostics under one roof', 'body' => 'Consultation and the tests you need, in the same building on the same day.'],
+                    ['icon_key' => 'compass', 'title' => 'Clear guidance at every step', 'body' => 'Understand your condition, your results and your options before you go home.'],
+                    ['icon_key' => 'team', 'title' => 'Respectful, coordinated care', 'body' => 'Doctors, lab and reception work together, so you do not repeat your story.'],
+                ],
+            ]],
+            'appointment' => ['label' => 'Appointment form (services come from Specialties)', 'fields' => [
+                'eyebrow' => ['type' => 'text', 'label' => 'Eyebrow', 'max' => 40, 'required' => false, 'default' => 'Appointments'],
+                'heading' => ['type' => 'heading', 'label' => 'Heading', 'max' => 90, 'required' => true, 'default' => 'Book your visit'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => 'Choose a service and a day that suits you. Our reception team will call to confirm the time.'],
+                'help_title' => ['type' => 'text', 'label' => 'Help box title', 'max' => 60, 'required' => true, 'default' => 'Not sure which department?'],
+                'help_text' => ['type' => 'text', 'label' => 'Help box text (the phone number follows it)', 'max' => 60, 'required' => true, 'default' => 'Call reception at'],
+                'consent_text' => ['type' => 'text', 'label' => 'Consent checkbox text', 'max' => 200, 'required' => true, 'default' => 'I agree to be contacted by NMC about this appointment request.'],
+                'submit_label' => ['type' => 'text', 'label' => 'Submit button label', 'max' => 40, 'required' => true, 'default' => 'Request appointment'],
+                'success_message' => ['type' => 'text', 'label' => 'Message after sending', 'max' => 200, 'required' => true, 'default' => 'Request received. Our reception team will call you to confirm the time.'],
+                'form_note' => ['type' => 'text', 'label' => 'Note under the form', 'max' => 250, 'required' => false, 'default' => 'This request does not confirm your appointment. Our reception team will call you to confirm the date and time.'],
+            ], 'items' => null],
+            'before_visit' => ['label' => 'Before you come in', 'fields' => [
+                'heading' => ['type' => 'heading', 'label' => 'Heading', 'max' => 90, 'required' => true, 'default' => 'Before you come in'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => 'Four things that make the visit quicker for you and for the doctor.'],
+                'primary_cta_label' => ['type' => 'text', 'label' => 'Link label', 'max' => 40, 'required' => true, 'default' => 'Read the full patient guide'],
+                'primary_cta_url' => ['type' => 'url', 'label' => 'Link', 'max' => 200, 'required' => true, 'default' => 'contact'],
+            ], 'items' => [
+                'item_type' => 'tip', 'label' => 'Tips', 'min' => 1, 'max' => 6,
+                'fields' => [
+                    'icon_key' => ['type' => 'icon', 'label' => 'Icon', 'max' => 0, 'required' => false, 'default' => ''],
+                    'title' => ['type' => 'text', 'label' => 'Title', 'max' => 60, 'required' => true, 'default' => 'Tip'],
+                    'body' => ['type' => 'text', 'label' => 'Text', 'max' => 200, 'required' => false, 'default' => ''],
+                ],
+                'default' => [
+                    ['icon_key' => 'clipboard', 'title' => 'What to bring', 'body' => 'A valid ID, previous reports, prescriptions and a list of the medicines you take.'],
+                    ['icon_key' => 'clock', 'title' => 'Opening hours', 'body' => 'Check the schedule before travelling, especially around public holidays.'],
+                    ['icon_key' => 'preparation', 'title' => 'Test preparation', 'body' => 'Some tests need fasting or other preparation. Call us if you are unsure.'],
+                    ['icon_key' => 'payment', 'title' => 'Reports and payment', 'body' => 'Ask reception when your report will be ready and which payment methods we accept.'],
+                ],
+            ]],
+            'articles' => ['label' => 'Health articles (latest 3 blog posts)', 'fields' => [
+                'heading' => ['type' => 'heading', 'label' => 'Heading', 'max' => 90, 'required' => true, 'default' => 'Clear information for better health decisions'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => 'Practical guides, reviewed by our doctors, on common conditions, tests and treatments.'],
+                'primary_cta_label' => ['type' => 'text', 'label' => 'Button label', 'max' => 40, 'required' => true, 'default' => 'All health guides'],
+                'primary_cta_url' => ['type' => 'url', 'label' => 'Button link', 'max' => 200, 'required' => true, 'default' => 'blog'],
+                'empty_message' => ['type' => 'textarea', 'label' => 'Message when no posts are published', 'max' => 200, 'required' => true, 'default' => 'New health guides are on the way. Please check back soon.'],
+            ], 'items' => null],
+            'visit' => ['label' => 'Visit us (branches come from Branches)', 'fields' => [
+                'eyebrow' => ['type' => 'text', 'label' => 'Eyebrow', 'max' => 40, 'required' => false, 'default' => 'Visit us'],
+                'heading' => ['type' => 'heading', 'label' => 'Heading', 'max' => 90, 'required' => true, 'default' => 'Find a branch near you'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => 'Choose a branch to see it on the map. Call ahead, or walk in during opening hours.'],
+                'email_label' => ['type' => 'text', 'label' => 'Email label', 'max' => 40, 'required' => true, 'default' => 'Email us'],
+                'email' => ['type' => 'text', 'label' => 'Email address', 'max' => 120, 'required' => true, 'default' => 'info@nmcbutwal.com.np'],
+                'hours_label' => ['type' => 'text', 'label' => 'Hours label', 'max' => 40, 'required' => true, 'default' => 'Opening hours'],
+                'hours_text' => ['type' => 'textarea', 'label' => 'Hours text (new line = line break)', 'max' => 200, 'required' => true, 'default' => "Sun-Fri: 8:00 AM - 8:00 PM\nSaturday: 9:00 AM - 2:00 PM"],
+                'directions_label' => ['type' => 'text', 'label' => 'Directions button label', 'max' => 40, 'required' => true, 'default' => 'Get directions'],
+                'empty_message' => ['type' => 'textarea', 'label' => 'Message when no branches are listed', 'max' => 200, 'required' => true, 'default' => 'Branch details are being updated. Please call us for directions.'],
+            ], 'items' => null],
+        ]],
     ];
 }
 
