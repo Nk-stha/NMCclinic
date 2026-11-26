@@ -7,6 +7,8 @@ depend on anything in this folder, and `tests/` is blocked over HTTP by `.htacce
 
 ```sh
 docker compose up -d                    # from the repo root: site on http://localhost:8082
+# Dev DB only: load the dummy doctors/posts/settings the specs and visual baselines expect.
+docker compose exec -T db sh -c 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' < tests/fixtures/sample-data.sql
 cd tests/e2e
 npm ci
 npx playwright install chromium
@@ -34,14 +36,15 @@ and cleanup run against one DB while the tests edit another.
 - `public-pages`: all 8 public URLs. Each must return the right status, show an `h1`, log no console errors and have no failed same-origin requests. Also checks the skip link.
 - `cms-editing`: edits footer text, one field per page, and the nav item list (add, move, remove), then resets each one. Security checks: script tags render as text, a `javascript:` URL is rejected, a tampered CSRF token is rejected. A required field left empty shows an inline error.
 - `forms-and-interactions`: the appointment and contact forms, the doctor and blog filter tabs, the branch picker, the mobile nav, and the CMS phone menu.
-- `responsive`: 9 viewports from 320 to 1440px, on the 8 public pages and 2 CMS pages. Checks overflow, the nav and mobile-bar breakpoints (read from `assets/style.css`), form controls inside the viewport, 44px touch targets, and 16px inputs under 768px. Full-page screenshots go to `screenshots/` (gitignored) and are attached to the report.
+- `responsive`: 9 viewports from 320 to 1440px, on the 8 public pages and 4 CMS pages (Page Content index and home, Settings, Dashboard). Checks overflow, the nav and mobile-bar breakpoints (read from `assets/style.css`), form controls inside the viewport, 44px touch targets, and 16px inputs under 768px. Full-page screenshots go to `screenshots/` (gitignored) and are attached to the report.
 - `worst-case`: saves max-length values through the CMS (Devanagari hero heading, unbroken nav label, unbroken doctor card button), checks overflow at 320, 390 and 768px, then resets.
 
 ## What it touches, and cleanup
 
 Tests run with one worker, because they share the dev DB.
 
-- **globalSetup** first removes leftovers: `E2E …` form rows, the seeded `e2e-suite-*` blog rows,
+- **globalSetup** first removes leftovers: `E2E …` form rows that also carry the suite's marker
+  phone `+977 9800000000` (contact rows also the email `e2e-suite@example.test`), the seeded `e2e-suite-*` blog rows,
   and any `e2e_tmp_*` tables. It then copies `page_sections`, `section_items` and the admin
   `last_login_at`/`updated_at` columns into `e2e_tmp_*` tables. One atomic `RENAME TABLE` turns
   those into `e2e_bak_*`. Only after that does setup do anything destructive: it empties
@@ -49,8 +52,8 @@ Tests run with one worker, because they share the dev DB.
   `e2e-suite-category` with one published post, `e2e-suite-post`, so the blog filter test has a
   card to hide.
 - During the run, tests save and reset CMS sections (each in `try/finally`), and submit forms
-  named `E2E Appointment` and `E2E Contact`.
-- **globalTeardown** deletes the `E2E …` form rows and the two `e2e-suite-*` blog rows. It then
+  named `E2E Appointment` and `E2E Contact`, with the marker phone (and email on the contact form).
+- **globalTeardown** deletes the marked `E2E …` form rows and the two `e2e-suite-*` blog rows. It then
   checks that the full `e2e_bak_*` set (3 tables) exists. If the set is incomplete, it stops with
   an error and restores nothing. Otherwise it runs `db/restore.sql`, which:
   1. Fails before touching any data unless all 3 backup tables exist.

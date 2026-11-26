@@ -11,6 +11,8 @@ const VIEWPORTS = [
 const CMS_PAGES = [
   { name: 'cms-content', path: '/cms/content.php' },
   { name: 'cms-content-home', path: '/cms/content.php?page=home' },
+  { name: 'cms-settings', path: '/cms/settings.php' },
+  { name: 'cms-dashboard', path: '/cms/dashboard.php' },
 ];
 
 const { navMax, barMax } = siteBreakpoints();

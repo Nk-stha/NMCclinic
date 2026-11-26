@@ -1,11 +1,15 @@
 import { test, expect, type Page } from '@playwright/test';
 import { AUTH_FILE } from './helpers';
 
+// Marker values db/cleanup.sql matches on (with the "E2E " name prefix), so cleanup never hits real rows.
+const E2E_PHONE = '+977 9800000000';
+const E2E_EMAIL = 'e2e-suite@example.test';
+
 test('appointment form shows the success panel', async ({ page }) => {
   await page.goto('/');
   const form = page.locator('form[data-success="appointment-ok"]');
   await form.locator('#f-name').fill('E2E Appointment');
-  await form.locator('#f-phone').fill('+977 9800000000');
+  await form.locator('#f-phone').fill(E2E_PHONE);
   await form.locator('#f-time').selectOption({ index: 1 });
   await form.getByRole('checkbox').check();
   await form.getByRole('button', { name: 'Request appointment' }).click();
@@ -18,7 +22,8 @@ test('contact form shows the success panel', async ({ page }) => {
   await page.goto('/contact');
   const form = page.locator('form[data-success="contact-ok"]');
   await form.locator('#c-name').fill('E2E Contact');
-  await form.locator('#c-phone').fill('+977 9800000000');
+  await form.locator('#c-phone').fill(E2E_PHONE);
+  await form.locator('#c-email').fill(E2E_EMAIL);
   await form.locator('#c-msg').fill('Sent by the e2e suite.');
   await form.getByRole('checkbox').check();
   await form.getByRole('button', { name: 'Send message' }).click();
