@@ -67,7 +67,14 @@ for (const [width, height] of VIEWPORTS) {
             return r.width > 1 && r.height > 1 && getComputedStyle(el).visibility !== 'hidden';
           };
           const describe = (el: Element) => `${el.tagName.toLowerCase()}#${el.id}.${el.className}`;
-          const controls = [...document.querySelectorAll('form :is(input, select, textarea, button), form a.btn')].filter(shown);
+          // Controls inside a sideways-scrolling box (the CMS hours table's .table-wrap) are reached by scrolling it.
+          const inScroller = (el: Element) => {
+            for (let p = el.parentElement; p; p = p.parentElement) {
+              if (/(auto|scroll)/.test(getComputedStyle(p).overflowX) && p.scrollWidth > p.clientWidth) return true;
+            }
+            return false;
+          };
+          const controls = [...document.querySelectorAll('form :is(input, select, textarea, button), form a.btn')].filter((el) => shown(el) && !inScroller(el));
           const outside = controls
             .filter((el) => { const r = el.getBoundingClientRect(); return r.left < -0.5 || r.right > vw + 0.5; })
             .map(describe);
