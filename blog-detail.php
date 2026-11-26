@@ -21,13 +21,15 @@ if ($post === null) {
 
 $relatedPosts = public_blog_related_posts((int) $post['id'], $post['category_id'] !== null ? (int) $post['category_id'] : null);
 $baseUrl = public_base_url();
+$p = page_content('blog_detail');
+[$b, $dc, $sb, $rl] = [$p['banner'], $p['disclaimer'], $p['sidebar'], $p['related']];
 $canonical = $baseUrl . '/blog/' . rawurlencode((string) $post['slug']);
 $title = (string) $post['title'];
 $description = (string) $post['excerpt'];
-$category = (string) ($post['category_name'] ?? 'Health Guides');
-$reviewer = (string) ($post['reviewer_name'] ?: 'NMC medical team');
+$category = (string) ($post['category_name'] ?? $b['default_category']);
+$reviewer = (string) ($post['reviewer_name'] ?: $b['default_reviewer']);
 $reviewedAt = public_blog_month($post['reviewed_at'] ?: $post['published_at']);
-$readTime = $post['reading_time_minutes'] !== null ? (int) $post['reading_time_minutes'] . ' min read' : 'Health guide';
+$readTime = $post['reading_time_minutes'] !== null ? (int) $post['reading_time_minutes'] . ' ' . $b['read_time_suffix'] : $b['no_read_time'];
 $imageUrl = $post['image_path'] ? $baseUrl . '/' . ltrim((string) $post['image_path'], '/') : null;
 $bodyHtml = trim((string) ($post['body_html_sanitized'] ?? ''));
 if ($bodyHtml === '') {
@@ -84,17 +86,17 @@ $schema = public_blog_schema($post, $canonical, $imageUrl);
     <div class="banner-veil is-strong"></div>
     <div class="banner-in narrow">
       <div class="crumb">
-        <a href="<?= public_e($baseUrl) ?>/">Home</a>
+        <a href="<?= public_e($baseUrl) ?>/"><?= c($b, 'crumb_home') ?></a>
         <span class="sep">/</span>
-        <a href="<?= public_e($baseUrl) ?>/blog">Blog</a>
+        <a href="<?= public_e($baseUrl) ?>/blog"><?= c($b, 'crumb_blog') ?></a>
         <span class="sep">/</span>
         <span class="here"><?= public_e($category) ?></span>
       </div>
       <span class="tag-chip"><?= public_e($category) ?></span>
       <h1><?= public_e($title) ?></h1>
       <div class="article-meta">
-        <span>Reviewed by <?= public_e($reviewer) ?></span>
-        <?php if ($reviewedAt !== ''): ?><span>Reviewed <?= public_e($reviewedAt) ?></span><?php endif; ?>
+        <span><?= c($b, 'reviewed_by') ?> <?= public_e($reviewer) ?></span>
+        <?php if ($reviewedAt !== ''): ?><span><?= c($b, 'reviewed_date') ?> <?= public_e($reviewedAt) ?></span><?php endif; ?>
         <span><?= public_e($readTime) ?></span>
       </div>
     </div>
@@ -105,7 +107,7 @@ $schema = public_blog_schema($post, $canonical, $imageUrl);
       <?php if ($imageUrl): ?>
         <img src="<?= public_e($imageUrl) ?>" alt="<?= public_e((string) ($post['image_alt'] ?: $title)) ?>">
       <?php else: ?>
-        <span>article image</span>
+        <span><?= c($b, 'image_placeholder') ?></span>
       <?php endif; ?>
     </div>
   </div>
@@ -116,7 +118,7 @@ $schema = public_blog_schema($post, $canonical, $imageUrl);
 
       <div class="notice notice-warn disclaimer">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#124E4A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-        <p>This article is general health information and does not replace professional medical advice. Please speak with a qualified doctor about your own symptoms and care.</p>
+        <?= c_text($dc, 'body') ?>
       </div>
     </article>
 
@@ -126,15 +128,15 @@ $schema = public_blog_schema($post, $canonical, $imageUrl);
           <span class="reviewer-avatar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
           <div>
             <div class="reviewer-name"><?= public_e($reviewer) ?></div>
-            <div class="reviewer-role">Reviewed for accuracy</div>
+            <div class="reviewer-role"><?= c($sb, 'reviewer_role') ?></div>
           </div>
         </div>
-        <p>Our health guides are written in plain language and reviewed by NMC clinicians before publishing.</p>
+        <?= c_text($sb, 'reviewer_note') ?>
       </div>
       <div class="side-card">
-        <h3>Have a concern?</h3>
-        <p>Book a consultation and talk it through with one of our doctors.</p>
-        <a class="btn btn-primary btn-block" href="<?= public_e($baseUrl) ?>/#appointment">Book a visit</a>
+        <h3><?= c($sb, 'cta_heading') ?></h3>
+        <?= c_text($sb, 'cta_body') ?>
+        <a class="btn btn-primary btn-block" href="<?= c_href($sb['cta_url']) ?>"><?= c($sb, 'cta_label') ?></a>
       </div>
     </aside>
   </section>
@@ -143,8 +145,8 @@ $schema = public_blog_schema($post, $canonical, $imageUrl);
   <section class="band-light">
     <div class="wrap section-sm">
       <div class="center head-block">
-        <span class="eyebrow">Keep reading</span>
-        <h2 class="section-title">Related articles</h2>
+        <span class="eyebrow"><?= c($rl, 'eyebrow') ?></span>
+        <h2 class="section-title"><?= c_heading($rl, 'heading', 'accent') ?></h2>
       </div>
       <div class="grid grid-300 fill-300">
         <?php foreach ($relatedPosts as $related): ?>
@@ -153,14 +155,14 @@ $schema = public_blog_schema($post, $canonical, $imageUrl);
               <?php if (!empty($related['image_path'])): ?>
                 <img src="<?= public_e($baseUrl . '/' . ltrim((string) $related['image_path'], '/')) ?>" alt="<?= public_e((string) ($related['image_alt'] ?: $related['title'])) ?>" loading="lazy">
               <?php else: ?>
-                <span class="ph-label">article image</span>
+                <span class="ph-label"><?= c($b, 'image_placeholder') ?></span>
               <?php endif; ?>
-              <span class="doc-tag"><?= public_e((string) ($related['category_name'] ?? 'Health Guides')) ?></span>
+              <span class="doc-tag"><?= public_e((string) ($related['category_name'] ?? $b['default_category'])) ?></span>
             </div>
             <div class="post-body">
               <h3><?= public_e((string) $related['title']) ?></h3>
               <p><?= public_e((string) $related['excerpt']) ?></p>
-              <span class="link-cta inline">Read article</span>
+              <span class="link-cta inline"><?= c($rl, 'card_link_label') ?></span>
             </div>
           </a>
         <?php endforeach; ?>

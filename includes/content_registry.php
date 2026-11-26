@@ -376,6 +376,35 @@ function content_registry(): array
                 'success_message' => ['type' => 'text', 'label' => 'Message after subscribing', 'max' => 200, 'required' => true, 'default' => "You're subscribed. Thank you."],
             ], 'items' => null],
         ]],
+        'blog_detail' => ['label' => 'Blog article template (shared text; the article itself is edited under Blog posts)', 'sections' => [
+            'banner' => ['label' => 'Article header', 'fields' => [
+                'crumb_home' => ['type' => 'text', 'label' => 'Breadcrumb: home', 'max' => 30, 'required' => true, 'default' => 'Home'],
+                'crumb_blog' => ['type' => 'text', 'label' => 'Breadcrumb: blog', 'max' => 30, 'required' => true, 'default' => 'Blog'],
+                'default_category' => ['type' => 'text', 'label' => 'Category when the article has none', 'max' => 40, 'required' => true, 'default' => 'Health Guides'],
+                'reviewed_by' => ['type' => 'text', 'label' => 'Reviewer prefix', 'max' => 30, 'required' => true, 'default' => 'Reviewed by'],
+                'default_reviewer' => ['type' => 'text', 'label' => 'Reviewer when none is set', 'max' => 60, 'required' => true, 'default' => 'NMC medical team'],
+                'reviewed_date' => ['type' => 'text', 'label' => 'Review date prefix', 'max' => 30, 'required' => true, 'default' => 'Reviewed'],
+                'read_time_suffix' => ['type' => 'text', 'label' => 'Reading time suffix (after the minutes)', 'max' => 20, 'required' => true, 'default' => 'min read'],
+                'no_read_time' => ['type' => 'text', 'label' => 'Text when reading time is unknown', 'max' => 30, 'required' => true, 'default' => 'Health guide'],
+                'image_placeholder' => ['type' => 'text', 'label' => 'Label when the article has no image', 'max' => 40, 'required' => true, 'default' => 'article image'],
+            ], 'items' => null],
+            'disclaimer' => ['label' => 'Disclaimer under the article', 'fields' => [
+                'body' => ['type' => 'textarea', 'label' => 'Disclaimer', 'max' => 300, 'required' => true, 'default' => 'This article is general health information and does not replace professional medical advice. Please speak with a qualified doctor about your own symptoms and care.'],
+            ], 'items' => null],
+            'sidebar' => ['label' => 'Sidebar', 'fields' => [
+                'reviewer_role' => ['type' => 'text', 'label' => 'Reviewer role line', 'max' => 60, 'required' => true, 'default' => 'Reviewed for accuracy'],
+                'reviewer_note' => ['type' => 'textarea', 'label' => 'Reviewer note', 'max' => 250, 'required' => true, 'default' => 'Our health guides are written in plain language and reviewed by NMC clinicians before publishing.'],
+                'cta_heading' => ['type' => 'text', 'label' => 'Call-to-action heading', 'max' => 60, 'required' => true, 'default' => 'Have a concern?'],
+                'cta_body' => ['type' => 'textarea', 'label' => 'Call-to-action text', 'max' => 250, 'required' => true, 'default' => 'Book a consultation and talk it through with one of our doctors.'],
+                'cta_label' => ['type' => 'text', 'label' => 'Button label', 'max' => 30, 'required' => true, 'default' => 'Book a visit'],
+                'cta_url' => ['type' => 'url', 'label' => 'Button link', 'max' => 200, 'required' => true, 'default' => 'home#appointment'],
+            ], 'items' => null],
+            'related' => ['label' => 'Related articles (the whole block is hidden when there are none)', 'fields' => [
+                'eyebrow' => ['type' => 'text', 'label' => 'Eyebrow', 'max' => 40, 'required' => false, 'default' => 'Keep reading'],
+                'heading' => ['type' => 'heading', 'label' => 'Heading', 'max' => 90, 'required' => true, 'default' => 'Related articles'],
+                'card_link_label' => ['type' => 'text', 'label' => 'Card link label', 'max' => 30, 'required' => true, 'default' => 'Read article'],
+            ], 'items' => null],
+        ]],
     ];
 }
 
