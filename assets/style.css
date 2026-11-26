@@ -140,9 +140,10 @@ h1, h2 { font-family: var(--font-display); letter-spacing: -.025em; }
 .brand-name { font-weight: 800; font-size: 20px; letter-spacing: -.02em; color: var(--hdr-brand); transition: color .25s ease; }
 .brand-sub { font-weight: 500; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--hdr-brand-sub); transition: color .25s ease; }
 
-.nav-main { display: flex; align-items: center; gap: 6px; margin-left: 12px; }
+/* min-width + wrap: long or many CMS menu labels wrap instead of pushing the header actions off-screen. */
+.nav-main { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-left: 12px; min-width: 0; }
 .nav-main a {
-  font-weight: 500; font-size: 15px; color: var(--hdr-nav);
+  font-weight: 500; font-size: 15px; color: var(--hdr-nav); overflow-wrap: anywhere;
   padding: 8px 12px; border-radius: var(--radius);
   transition: background .15s, color .25s ease;
 }
@@ -896,6 +897,9 @@ h1, h2 { font-family: var(--font-display); letter-spacing: -.025em; }
 .head-stack .section-lead { margin-top: 14px; }
 .head-row { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 36px; }
 .head-row .head-stack, .head-row .tabs { margin-bottom: 0; }
+.head-row > * { min-width: 0; }
+/* CMS-editable labels can be one long unbroken word. */
+.link-cta, .doc-view, .doc-view-solid, .doc-reg { overflow-wrap: anywhere; }
 
 /* hero */
 .hero h1 { line-height: 1.1; }
