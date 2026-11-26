@@ -296,6 +296,28 @@ function content_registry(): array
                 'call_label' => ['type' => 'text', 'label' => 'Call button text (the phone number from Settings follows it)', 'max' => 30, 'required' => true, 'default' => 'Call'],
             ], 'items' => null],
         ]],
+        'specialties' => ['label' => 'Specialties', 'sections' => [
+            'banner' => ['label' => 'Banner', 'fields' => [
+                'crumb_home' => ['type' => 'text', 'label' => 'Breadcrumb home label', 'max' => 30, 'required' => true, 'default' => 'Home'],
+                'crumb_here' => ['type' => 'text', 'label' => 'Breadcrumb current page label', 'max' => 30, 'required' => true, 'default' => 'Specialties'],
+                'eyebrow' => ['type' => 'text', 'label' => 'Pill text', 'max' => 60, 'required' => false, 'default' => 'Our specialties'],
+                'heading' => ['type' => 'heading', 'label' => 'Heading (wrap words in *stars* to highlight)', 'max' => 90, 'required' => true, 'default' => 'Care for the health needs *that matter most*'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => 'From your first consultation to diagnosis and recovery, our services are designed to make healthcare easier to access, all in one trusted clinic in Butwal.'],
+            ], 'items' => null],
+            'list' => ['label' => 'Specialty list (titles, text and points come from Specialties)', 'fields' => [
+                'photo_label' => ['type' => 'text', 'label' => 'Photo placeholder suffix (shown after the specialty name when it has no image)', 'max' => 30, 'required' => true, 'default' => 'photo'],
+                'book_label' => ['type' => 'text', 'label' => 'Book button label', 'max' => 40, 'required' => true, 'default' => 'Book this service'],
+                'book_url' => ['type' => 'url', 'label' => 'Book button link', 'max' => 200, 'required' => true, 'default' => 'home#appointment'],
+                'empty_message' => ['type' => 'textarea', 'label' => 'Message when no specialties are published', 'max' => 200, 'required' => true, 'default' => 'Our services are being updated. Please call us to ask about a specialty.'],
+            ], 'items' => null],
+            'cta_band' => ['label' => 'Call to action', 'fields' => [
+                'heading' => ['type' => 'heading', 'label' => 'Heading', 'max' => 90, 'required' => true, 'default' => 'Not sure which service you need?'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => "Call our reception team and we'll help you choose the right department and book a convenient time."],
+                'primary_cta_label' => ['type' => 'text', 'label' => 'Button label', 'max' => 30, 'required' => true, 'default' => 'Book a visit'],
+                'primary_cta_url' => ['type' => 'url', 'label' => 'Button link', 'max' => 200, 'required' => true, 'default' => 'home#appointment'],
+                'call_label' => ['type' => 'text', 'label' => 'Call button text (the phone number from Settings follows it)', 'max' => 30, 'required' => true, 'default' => 'Call'],
+            ], 'items' => null],
+        ]],
     ];
 }
 
