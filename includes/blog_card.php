@@ -15,7 +15,7 @@ function render_blog_card(array $post, array $labels, bool $featured = false): v
     $h = $featured ? 'h2' : 'h3';
     $placeholder = $featured ? 'card_featured_placeholder' : 'card_image_placeholder';
     ?>
-        <a class="<?= $featured ? 'featured' : 'post-card' ?>" href="<?= public_e(content_safe_url($post['url'])) ?>" data-category="<?= public_e($post['category']) ?>">
+        <a class="<?= $featured ? 'featured' : 'post-card' ?>" href="<?= c_href($post['url']) ?>" data-category="<?= public_e($post['category']) ?>">
           <div class="<?= $featured ? 'featured-photo' : 'post-photo' ?>"><?php if ($post['image_path']): ?><img src="<?= public_e(content_safe_url($post['image_path'])) ?>" alt="<?= public_e($post['image_alt']) ?>" loading="lazy"><?php else: ?><span class="ph-label"><?= c($labels, $placeholder) ?></span><?php endif; ?><span class="doc-tag"><?= $featured ? c($labels, 'card_featured_prefix') . ' ' : '' ?><?= public_e($post['category']) ?></span></div>
           <div class="<?= $featured ? 'featured-body' : 'post-body' ?>">
             <div class="post-meta"><?= $post['reading_time_minutes'] ? public_e((string) $post['reading_time_minutes']) . ' ' . c($labels, 'card_read_time_suffix') : c($labels, 'card_no_read_time') ?></div>

@@ -33,7 +33,7 @@ $specialties = site_distinct($doctors, 'specialty');
     <div class="banner-veil"></div>
     <div class="banner-in">
       <div class="crumb">
-        <a href="home"><?= c($b, 'crumb_home') ?></a>
+        <a href="<?= c_href('home') ?>"><?= c($b, 'crumb_home') ?></a>
         <span class="sep">/</span>
         <span class="here"><?= c($b, 'crumb_here') ?></span>
       </div>

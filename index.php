@@ -89,7 +89,7 @@ $phoneSvg = static fn (string $stroke): string => '<svg width="22" height="22" v
           <span class="icon-badge"><?= content_icons()['generic'] ?></span>
           <h3><?= public_e($s['title']) ?></h3>
           <p><?= public_e($s['short_description']) ?></p>
-          <a class="link-cta inline" href="specialties#<?= public_e(rawurlencode($s['slug'])) ?>"><?= c($p['services'], 'card_link_label') ?> <?= $arrow ?></a>
+          <a class="link-cta inline" href="<?= c_href('specialties#' . rawurlencode($s['slug'])) ?>"><?= c($p['services'], 'card_link_label') ?> <?= $arrow ?></a>
         </article>
 <?php endforeach; ?>
     </div>

@@ -32,7 +32,7 @@ $arrow = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="cu
     <div class="banner-veil"></div>
     <div class="banner-in">
       <div class="crumb">
-        <a href="home"><?= c($b, 'crumb_home') ?></a>
+        <a href="<?= c_href('home') ?>"><?= c($b, 'crumb_home') ?></a>
         <span class="sep">/</span>
         <span class="here"><?= c($b, 'crumb_here') ?></span>
       </div>
