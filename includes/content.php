@@ -195,6 +195,11 @@ function content_abs_url(string $url): string
         return $url;
     }
 
+    // 'home' is the site root; linking to /home would add a 301 hop.
+    if (preg_match('/^home(#.*)?$/', $url, $m)) {
+        return public_base_url() . '/' . ($m[1] ?? '');
+    }
+
     return public_base_url() . '/' . $url;
 }
 

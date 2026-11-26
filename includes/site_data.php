@@ -16,7 +16,23 @@ function site_data_ok(): bool
     return empty($GLOBALS['site_data_failed']);
 }
 
-function site_settings(): array
+/** Per-request cache (failures included, so a dead DB is tried once). Pass true to clear it, for CLI checks. */
+function site_settings(bool $reset = false): array
+{
+    static $cache = null;
+    if ($reset) {
+        $cache = null;
+    }
+
+    return $cache ??= site_settings_load();
+}
+
+function site_settings_reset_cache(): void
+{
+    site_settings(true);
+}
+
+function site_settings_load(): array
 {
     $response = ['settings' => null, 'hours' => [], 'hours_summary' => '', 'socials' => []];
 

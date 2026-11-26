@@ -127,7 +127,7 @@ check('registry_defaults_complete', $ok);
 $_SERVER['HTTP_HOST'] = 'example.test';
 $base = public_base_url();
 check('abs_url_prefixes_relative_only',
-    content_abs_url('about') === $base . '/about' && content_abs_url('specialties#kidney') === $base . '/specialties#kidney'
+    content_abs_url('about') === $base . '/about' && content_abs_url('home') === $base . '/' && content_abs_url('home#appointment') === $base . '/#appointment' && content_abs_url('homepage') === $base . '/homepage' && content_abs_url('specialties#kidney') === $base . '/specialties#kidney'
     && content_abs_url('#x') === '#x' && content_abs_url('https://a.b/c') === 'https://a.b/c' && content_abs_url('tel:+977') === 'tel:+977'
     && content_abs_url('mailto:a@b.c') === 'mailto:a@b.c' && content_abs_url('/x') === '/x' && c_href('javascript:alert(1)') === '#'
     && c_href('a?x=1&y=2') === public_e($base . '/a?x=1&y=2'));
