@@ -351,6 +351,31 @@ function site_form_options(): array
     return $response;
 }
 
+/** Contact page emergency block and response-time note (CMS > Contact); [] when there is no row or the DB is down. */
+function site_contact_page(): array
+{
+    static $cache = null;
+    if ($cache !== null) {
+        return $cache;
+    }
+
+    try {
+        $row = db()->query(
+            'SELECT cp.*
+             FROM contact_page cp
+             INNER JOIN pages p ON p.id = cp.page_id
+             WHERE p.deleted_at IS NULL
+             ORDER BY p.status = "published" DESC, cp.id ASC
+             LIMIT 1'
+        )->fetch();
+
+        return $cache = $row ?: [];
+    } catch (Throwable $exception) {
+        site_data_fail($exception);
+        return $cache = [];
+    }
+}
+
 // Sorted unique names, as the doctors and blog endpoints list them next to their rows.
 function site_distinct(array $rows, string $key): array
 {

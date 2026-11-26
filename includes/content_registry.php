@@ -405,6 +405,75 @@ function content_registry(): array
                 'card_link_label' => ['type' => 'text', 'label' => 'Card link label', 'max' => 30, 'required' => true, 'default' => 'Read article'],
             ], 'items' => null],
         ]],
+        'contact' => ['label' => 'Contact', 'sections' => [
+            'banner' => ['label' => 'Banner', 'fields' => [
+                'crumb_home' => ['type' => 'text', 'label' => 'Breadcrumb home label', 'max' => 30, 'required' => true, 'default' => 'Home'],
+                'crumb_here' => ['type' => 'text', 'label' => 'Breadcrumb current page label', 'max' => 30, 'required' => true, 'default' => 'Contact'],
+                'eyebrow' => ['type' => 'text', 'label' => 'Pill text', 'max' => 60, 'required' => false, 'default' => 'Visit NMC'],
+                'heading' => ['type' => 'heading', 'label' => 'Heading (wrap words in *stars* to highlight)', 'max' => 90, 'required' => true, 'default' => 'Find us and *plan your visit*'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => 'Check our location, opening hours, and contact details, or send us a message and our reception team will get back to you.'],
+            ], 'items' => null],
+            'info_cards' => ['label' => 'Contact detail cards (phone, email, address and hours come from Settings and Branches)', 'fields' => [
+                'section_label' => ['type' => 'text', 'label' => 'Accessible label for the cards', 'max' => 60, 'required' => true, 'default' => 'Contact details'],
+                'phone_title' => ['type' => 'text', 'label' => 'Phone card title', 'max' => 40, 'required' => true, 'default' => 'Phone'],
+                'email_title' => ['type' => 'text', 'label' => 'Email card title', 'max' => 40, 'required' => true, 'default' => 'Email'],
+                'hours_title' => ['type' => 'text', 'label' => 'Opening hours card title', 'max' => 40, 'required' => true, 'default' => 'Opening hours'],
+            ], 'items' => null],
+            'form' => ['label' => 'Message form (subjects come from Contact settings)', 'fields' => [
+                'eyebrow' => ['type' => 'text', 'label' => 'Eyebrow', 'max' => 40, 'required' => false, 'default' => 'Send a message'],
+                'heading' => ['type' => 'heading', 'label' => 'Heading', 'max' => 90, 'required' => true, 'default' => 'We\'d love to hear from you'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => 'Have a question or want to book a visit? Fill in the form and our reception team will get back to you.'],
+                'name_label' => ['type' => 'text', 'label' => 'Name label', 'max' => 40, 'required' => true, 'default' => 'Full name'],
+                'name_placeholder' => ['type' => 'text', 'label' => 'Name placeholder', 'max' => 60, 'required' => true, 'default' => 'Your name'],
+                'phone_label' => ['type' => 'text', 'label' => 'Phone label', 'max' => 40, 'required' => true, 'default' => 'Phone number'],
+                'phone_placeholder' => ['type' => 'text', 'label' => 'Phone placeholder', 'max' => 60, 'required' => true, 'default' => '+977 …'],
+                'email_label' => ['type' => 'text', 'label' => 'Email label', 'max' => 40, 'required' => true, 'default' => 'Email'],
+                'optional_label' => ['type' => 'text', 'label' => 'Optional marker', 'max' => 20, 'required' => true, 'default' => '(optional)'],
+                'email_placeholder' => ['type' => 'text', 'label' => 'Email placeholder', 'max' => 60, 'required' => true, 'default' => 'you@example.com'],
+                'subject_label' => ['type' => 'text', 'label' => 'Subject label', 'max' => 40, 'required' => true, 'default' => 'Subject'],
+                'subject_placeholder' => ['type' => 'text', 'label' => 'Subject first option', 'max' => 40, 'required' => true, 'default' => 'Select a topic'],
+                'message_label' => ['type' => 'text', 'label' => 'Message label', 'max' => 40, 'required' => true, 'default' => 'Message'],
+                'message_placeholder' => ['type' => 'text', 'label' => 'Message placeholder', 'max' => 80, 'required' => true, 'default' => 'How can we help?'],
+                'consent_text' => ['type' => 'text', 'label' => 'Consent checkbox text', 'max' => 200, 'required' => true, 'default' => 'I agree to be contacted by NMC regarding my enquiry.'],
+                'submit_label' => ['type' => 'text', 'label' => 'Submit button label', 'max' => 40, 'required' => true, 'default' => 'Send message'],
+                'success_message' => ['type' => 'text', 'label' => 'Message after sending', 'max' => 200, 'required' => true, 'default' => 'Message received. Our reception team will get back to you soon.'],
+            ], 'items' => null],
+            'branches' => ['label' => 'Branch picker and map (branches come from Branches)', 'fields' => [
+                'heading' => ['type' => 'text', 'label' => 'Heading', 'max' => 60, 'required' => true, 'default' => 'Choose a branch'],
+                'list_label' => ['type' => 'text', 'label' => 'Branch list accessible label', 'max' => 60, 'required' => true, 'default' => 'Clinic branches'],
+                'directions_label' => ['type' => 'text', 'label' => 'Directions button label', 'max' => 40, 'required' => true, 'default' => 'Get directions'],
+                'empty_message' => ['type' => 'textarea', 'label' => 'Message when no branches are listed', 'max' => 200, 'required' => true, 'default' => 'Branch details are being updated. Please call us for directions.'],
+            ], 'items' => null],
+            'talk' => ['label' => '"Prefer to talk?" card (numbers come from Settings)', 'fields' => [
+                'heading' => ['type' => 'text', 'label' => 'Heading', 'max' => 60, 'required' => true, 'default' => 'Prefer to talk?'],
+                'call_label' => ['type' => 'text', 'label' => 'Call row label', 'max' => 40, 'required' => true, 'default' => 'Call reception'],
+                'whatsapp_label' => ['type' => 'text', 'label' => 'WhatsApp row label', 'max' => 40, 'required' => true, 'default' => 'WhatsApp us'],
+                'whatsapp_text' => ['type' => 'text', 'label' => 'WhatsApp row text', 'max' => 60, 'required' => true, 'default' => 'Chat with our team'],
+            ], 'items' => null],
+        ]],
+        '404' => ['label' => 'Page not found (404)', 'sections' => [
+            'banner' => ['label' => 'Banner', 'fields' => [
+                'eyebrow' => ['type' => 'text', 'label' => 'Pill text', 'max' => 60, 'required' => false, 'default' => 'Error 404'],
+                'heading' => ['type' => 'heading', 'label' => 'Heading', 'max' => 90, 'required' => true, 'default' => 'We could not find that page'],
+                'subheading' => ['type' => 'text', 'label' => 'Lead text', 'max' => 250, 'required' => false, 'default' => 'The link may be old or mistyped. These pages will get you where you need to go.'],
+                'primary_cta_label' => ['type' => 'text', 'label' => 'Button label', 'max' => 40, 'required' => true, 'default' => 'Go to the homepage'],
+                'primary_cta_url' => ['type' => 'url', 'label' => 'Button link', 'max' => 200, 'required' => true, 'default' => 'home'],
+            ], 'items' => null],
+            'links' => ['label' => 'Helpful links', 'fields' => [], 'items' => [
+                'item_type' => 'link', 'label' => 'Links', 'min' => 1, 'max' => 8,
+                'fields' => [
+                    'title' => ['type' => 'text', 'label' => 'Title', 'max' => 40, 'required' => true, 'default' => 'Link'],
+                    'body' => ['type' => 'text', 'label' => 'Text', 'max' => 120, 'required' => false, 'default' => ''],
+                    'link_url' => ['type' => 'url', 'label' => 'Link', 'max' => 200, 'required' => true, 'default' => 'home'],
+                ],
+                'default' => [
+                    ['title' => 'Specialties', 'body' => 'Consultation, diagnostics, physiotherapy and more.', 'link_url' => 'specialties'],
+                    ['title' => 'Doctors', 'body' => 'See our specialists and their clinic days.', 'link_url' => 'doctors'],
+                    ['title' => 'Health guides', 'body' => 'Practical articles reviewed by our doctors.', 'link_url' => 'blog'],
+                    ['title' => 'Contact', 'body' => 'Branches, opening hours and directions.', 'link_url' => 'contact'],
+                ],
+            ]],
+        ]],
     ];
 }
 

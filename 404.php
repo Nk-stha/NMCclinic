@@ -2,9 +2,12 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/includes/public_seo.php';
+require_once __DIR__ . '/includes/content.php';
 
 http_response_code(404);
 $base = public_base_url();
+$p = page_content('404');
+$b = $p['banner'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -28,20 +31,19 @@ $base = public_base_url();
         <img src="<?= public_e($base) ?>/uploads/logo.jpeg" alt="NMC clinic logo" width="48" height="48">
         <span class="brand-text"><span class="brand-name">NMC</span><span class="brand-sub">Clinic</span></span>
       </a>
-      <span class="pill"><span class="dot"></span>Error 404</span>
-      <h1>We could not find that page</h1>
-      <p class="lead">The link may be old or mistyped. These pages will get you where you need to go.</p>
+      <span class="pill"><span class="dot"></span><?= c($b, 'eyebrow') ?></span>
+      <h1><?= c_heading($b, 'heading') ?></h1>
+      <p class="lead"><?= c($b, 'subheading') ?></p>
       <div class="hero-actions">
-        <a class="btn btn-yellow btn-hero" href="<?= public_e($base) ?>/">Go to the homepage</a>
+        <a class="btn btn-yellow btn-hero" href="<?= c_href((string) $b['primary_cta_url']) ?>"><?= c($b, 'primary_cta_label') ?></a>
       </div>
     </div>
   </section>
   <section class="wrap section">
     <div class="grid grid-240 gap-16">
-      <a class="card card-hover" href="<?= public_e($base) ?>/specialties"><h3>Specialties</h3><p>Consultation, diagnostics, physiotherapy and more.</p></a>
-      <a class="card card-hover" href="<?= public_e($base) ?>/doctors"><h3>Doctors</h3><p>See our specialists and their clinic days.</p></a>
-      <a class="card card-hover" href="<?= public_e($base) ?>/blog"><h3>Health guides</h3><p>Practical articles reviewed by our doctors.</p></a>
-      <a class="card card-hover" href="<?= public_e($base) ?>/contact"><h3>Contact</h3><p>Branches, opening hours and directions.</p></a>
+<?php foreach ($p['links']['items'] as $item): ?>
+      <a class="card card-hover" href="<?= c_href((string) $item['link_url']) ?>"><h3><?= c($item, 'title') ?></h3><p><?= c($item, 'body') ?></p></a>
+<?php endforeach; ?>
     </div>
   </section>
 </main>
