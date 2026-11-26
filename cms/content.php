@@ -8,7 +8,9 @@ require_once __DIR__ . '/includes/content_form.php';
 $admin = require_admin();
 $registry = content_registry();
 
-$slug = (string) ($_POST['page'] ?? $_GET['page'] ?? '');
+// Request values can be arrays (?page[]=x); anything but a string counts as missing.
+$str = static fn (mixed $v): string => is_string($v) ? $v : '';
+$slug = $str($_POST['page'] ?? $_GET['page'] ?? '');
 if ($slug !== '' && !isset($registry[$slug])) {
     http_response_code(404);
     exit('Page not found.');
@@ -20,7 +22,7 @@ $toast = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $spec = $registry[$slug] ?? null;
-    $key = (string) ($_POST['section'] ?? '');
+    $key = $str($_POST['section'] ?? '');
     if ($spec === null || !isset($spec['sections'][$key])) {
         http_response_code(400);
         exit('Unknown section.');
@@ -64,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 foreach (['saved' => ' saved.', 'reset' => ' reset to default.'] as $param => $suffix) {
-    $k = (string) ($_GET[$param] ?? '');
+    $k = $str($_GET[$param] ?? '');
     if ($slug !== '' && $toast === null && isset($registry[$slug]['sections'][$k])) {
         $toast = ['success', $registry[$slug]['sections'][$k]['label'] . $suffix];
     }
