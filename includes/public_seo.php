@@ -461,7 +461,7 @@ function public_sitemap_urls(): array
         $stmt = db()->query(
             'SELECT page_type, updated_at
              FROM pages
-             WHERE deleted_at IS NULL AND status = "published"'
+             WHERE deleted_at IS NULL AND status = "published" AND page_type <> "generic"'
         );
         foreach ($stmt->fetchAll() as $row) {
             $route = public_route_for_page_type((string) $row['page_type']);

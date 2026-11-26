@@ -29,7 +29,7 @@ function seo_target_options(): array
         'page' => db()->query(
             'SELECT id, slug AS label, status
              FROM pages
-             WHERE deleted_at IS NULL
+             WHERE deleted_at IS NULL AND page_type <> "generic"
              ORDER BY page_type ASC, slug ASC'
         )->fetchAll(),
         'doctor' => db()->query(

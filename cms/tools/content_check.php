@@ -1,0 +1,114 @@
+<?php
+declare(strict_types=1);
+
+// CLI-only checks for includes/content*.php. Run: php cms/tools/content_check.php
+if (PHP_SAPI !== 'cli') {
+    http_response_code(404);
+    exit;
+}
+
+require_once __DIR__ . '/../../includes/content.php';
+
+$failures = 0;
+function check(string $name, bool $ok): void
+{
+    global $failures;
+    if (!$ok) {
+        $failures++;
+    }
+    echo ($ok ? 'PASS ' : 'FAIL ') . $name . PHP_EOL;
+}
+
+// db_down runs first: db() caches its PDO only on success, and this must hit a dead host before any other db() call.
+putenv('NMC_DB_HOST=nonexistent.invalid');
+$errLog = ini_set('error_log', '/dev/null');
+$globalSpec = content_page_spec('global');
+check('db_down_returns_defaults', page_content('global')['footer']['about'] === $globalSpec['sections']['footer']['fields']['about']['default']);
+ini_set('error_log', (string) $errLog);
+
+$spec = ['label' => 'T', 'sections' => ['s' => [
+    'label' => 'S',
+    'fields' => [
+        'heading' => ['type' => 'heading', 'label' => 'H', 'max' => 50, 'required' => true, 'default' => 'Def *h*'],
+        'eyebrow' => ['type' => 'text', 'label' => 'E', 'max' => 50, 'required' => false, 'default' => 'Eb'],
+        'tagline' => ['type' => 'text', 'label' => 'T', 'max' => 50, 'required' => false, 'default' => 'Tg'],
+        'primary_media_id' => ['type' => 'image', 'label' => 'I', 'max' => 0, 'required' => false, 'default' => ['src' => 'a.jpg', 'alt' => 'Default alt']],
+    ],
+    'items' => ['item_type' => 'card', 'label' => 'Cards', 'min' => 0, 'max' => 5,
+        'fields' => ['title' => ['type' => 'text', 'label' => 'T', 'max' => 50, 'required' => true, 'default' => 'IT']],
+        'default' => [['title' => 'D1'], ['title' => 'D2']]],
+]]];
+$defaults = ['s' => ['heading' => 'Def *h*', 'eyebrow' => 'Eb', 'tagline' => 'Tg', 'primary_media_id' => ['src' => 'a.jpg', 'alt' => 'Default alt'], 'items' => [['title' => 'D1'], ['title' => 'D2']]]];
+
+check('escapes_html_text', c(['x' => '<script>a</script>'], 'x') === '&lt;script&gt;a&lt;/script&gt;');
+check('escapes_html_heading_accent',
+    c_heading(['h' => '<b>Hi</b> *one visit*'], 'h') === '&lt;b&gt;Hi&lt;/b&gt; <em>one visit</em>'
+    && str_contains(c_heading(['h' => '<b>Hi</b> *one visit*'], 'h', 'accent'), '<span class="accent">one visit</span>'));
+check('paragraphs', content_paragraphs("a\nb\n\n<c>") === "<p>a<br>b</p><p>&lt;c&gt;</p>");
+$bad = true;
+foreach (['javascript:alert(1)', '  JaVaScRiPt:alert(1)', 'data:text/html,x', '//evil.com', 'vbscript:x'] as $u) {
+    $bad = $bad && content_safe_url($u) === '#';
+}
+check('url_blocks_scripts', $bad);
+$good = true;
+foreach (['https://x.com/a', 'tel:+97771000000', 'mailto:a@b.c', '#appointment', 'contact', 'specialties#kidney'] as $u) {
+    $good = $good && content_safe_url($u) === $u;
+}
+check('url_allows_safe', $good);
+check('c_url_escapes', c_url(['u' => 'a?x=1&y="2"'], 'u') === 'a?x=1&amp;y=&quot;2&quot;');
+check('c_icon_unknown_empty', c_icon(['i' => 'nope'], 'i') === '');
+
+check('merge_no_rows_uses_defaults', content_merge($spec, [], []) === $defaults);
+$m = content_merge($spec, ['s' => ['id' => 1, 'heading' => '', 'eyebrow' => '', 'settings_json' => null]], []);
+check('required_empty_uses_default', $m['s']['heading'] === 'Def *h*' && $m['s']['eyebrow'] === '');
+$m = content_merge($spec, ['s' => ['id' => 1, 'heading' => 'X', 'settings_json' => '{"tagline":"Hello"}']], []);
+check('settings_json_field', $m['s']['tagline'] === 'Hello');
+check('saved_empty_items_stay_empty', $m['s']['items'] === []);
+$m = content_merge($spec, ['s' => ['id' => 1, 'heading' => 'X']], [1 => [['title' => ''], ['title' => 'Saved']]]);
+check('saved_items_required_default', $m['s']['items'] === [['title' => 'IT'], ['title' => 'Saved']]);
+
+$r = content_resolve_images($spec, ['s' => ['primary_media_id' => 99] + $defaults['s']], [5 => ['file_path' => 'uploads/x.jpg', 'alt_text' => 'X alt']]);
+$r2 = content_resolve_images($spec, ['s' => ['primary_media_id' => 5] + $defaults['s']], [5 => ['file_path' => 'uploads/x.jpg', 'alt_text' => '']]);
+$r3 = content_resolve_images($spec, ['s' => ['primary_media_id' => 5] + $defaults['s']], [5 => ['file_path' => 'uploads/x.jpg', 'alt_text' => 'X alt']]);
+check('image_falls_back_when_media_missing',
+    $r['s']['primary_media_id'] === ['src' => 'a.jpg', 'alt' => 'Default alt']
+    && $r3['s']['primary_media_id'] === ['src' => 'uploads/x.jpg', 'alt' => 'X alt']
+    && $r2['s']['primary_media_id'] === ['src' => 'uploads/x.jpg', 'alt' => 'Default alt']);
+
+$ok = true;
+$check = static function (array $fields) use (&$ok): void {
+    foreach ($fields as $f) {
+        if (!array_key_exists('default', $f)) { $ok = false; continue; }
+        if ($f['type'] === 'image') {
+            $ok = $ok && is_array($f['default']) && isset($f['default']['src'], $f['default']['alt']);
+            continue;
+        }
+        if (!is_string($f['default'])) { $ok = false; continue; }
+        if (!empty($f['required']) && $f['default'] === '') { $ok = false; }
+        if ($f['type'] !== 'icon' && $f['max'] > 0 && mb_strlen($f['default']) > $f['max']) { $ok = false; }
+    }
+};
+foreach (content_registry() as $page) {
+    foreach ($page['sections'] as $s) {
+        $check($s['fields']);
+        foreach (($s['items']['default'] ?? []) as $row) {
+            foreach ($row as $name => $v) {
+                $f = $s['items']['fields'][$name] ?? null;
+                if ($f === null || !is_string($v) && $f['type'] !== 'image') { $ok = false; }
+                elseif (is_string($v) && $f['max'] > 0 && mb_strlen($v) > $f['max']) { $ok = false; }
+            }
+        }
+        if (isset($s['items'])) {
+            $check($s['items']['fields']);
+            foreach (array_keys($s['items']['fields']) as $n) {
+                $ok = $ok && in_array($n, CONTENT_ITEM_COLUMNS, true);
+            }
+        }
+    }
+}
+check('registry_defaults_complete', $ok);
+
+$seo = (string) file_get_contents(__DIR__ . '/../../includes/public_seo.php') . (string) file_get_contents(__DIR__ . '/../includes/seo_form.php');
+check('sitemap_excludes_generic', substr_count($seo, "page_type <> \"generic\"") >= 2);
+
+exit($failures ? 1 : 0);
