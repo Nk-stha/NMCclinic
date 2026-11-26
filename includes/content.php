@@ -188,7 +188,7 @@ function content_safe_url(string $url): string
     return '#';
 }
 
-/** Prefix a relative URL with the site base so pages at /blog/{slug} resolve it; #, scheme:, // and / URLs stay as is. */
+/** Prefix a relative URL with the site base path (no host) so pages at /blog/{slug} resolve it; #, scheme:, // and / URLs stay as is. */
 function content_abs_url(string $url): string
 {
     if ($url === '' || preg_match('/^(#|\/|[a-z][a-z0-9+.-]*:)/i', $url)) {
@@ -197,10 +197,10 @@ function content_abs_url(string $url): string
 
     // 'home' is the site root; linking to /home would add a 301 hop.
     if (preg_match('/^home(#.*)?$/', $url, $m)) {
-        return public_base_url() . '/' . ($m[1] ?? '');
+        return public_base_path() . '/' . ($m[1] ?? '');
     }
 
-    return public_base_url() . '/' . $url;
+    return public_base_path() . '/' . $url;
 }
 
 function content_paragraphs(string $text): string
@@ -232,11 +232,6 @@ function c_heading(array $values, string $field, string $accent = 'em'): string
 function c_text(array $values, string $field): string
 {
     return content_paragraphs((string) ($values[$field] ?? ''));
-}
-
-function c_url(array $values, string $field): string
-{
-    return public_e(content_safe_url((string) ($values[$field] ?? '')));
 }
 
 /** Escaped, safe, base-prefixed URL for output in href/src. */

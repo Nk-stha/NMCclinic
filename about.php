@@ -61,7 +61,7 @@ $ct = site_contact_defaults();
 <?php else: ?>
       <div class="empty-state"><?= c_text($in, 'empty_message') ?></div>
 <?php endif; ?>
-      <a class="btn btn-primary" href="<?= c_url($in, 'primary_cta_url') ?>"><?= c($in, 'primary_cta_label') ?></a>
+      <a class="btn btn-primary" href="<?= c_href((string) $in['primary_cta_url']) ?>"><?= c($in, 'primary_cta_label') ?></a>
     </div>
   </section>
 
@@ -133,7 +133,7 @@ $ct = site_contact_defaults();
       <h2 class="section-title sm"><?= c_heading($cta, 'heading') ?></h2>
       <p class="section-lead"><?= c($cta, 'subheading') ?></p>
       <div class="cta-row">
-        <a class="btn btn-primary btn-lg" href="<?= c_url($cta, 'primary_cta_url') ?>"><?= c($cta, 'primary_cta_label') ?></a>
+        <a class="btn btn-primary btn-lg" href="<?= c_href((string) $cta['primary_cta_url']) ?>"><?= c($cta, 'primary_cta_label') ?></a>
         <a class="btn btn-light btn-lg" href="<?= public_e($ct['phone_href']) ?>"><?= c($cta, 'call_label') ?> <?= public_e($ct['phone']) ?></a>
       </div>
     </div>

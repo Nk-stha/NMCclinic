@@ -11,6 +11,7 @@ function public_e(string $value): string
     return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
+/** Absolute site URL (scheme + host + path). Use for canonical, OG, JSON-LD and the sitemap only. */
 function public_base_url(): string
 {
     env_load();
@@ -22,13 +23,26 @@ function public_base_url(): string
     $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || ((int) ($_SERVER['SERVER_PORT'] ?? 80) === 443);
     $scheme = $https ? 'https' : 'http';
     $host = (string) ($_SERVER['HTTP_HOST'] ?? 'localhost');
+
+    return $scheme . '://' . $host . public_base_path();
+}
+
+/** Site path without host and without trailing slash: '' in Docker, '/NMCclinic' under XAMPP. Use for in-page links. */
+function public_base_path(): string
+{
+    env_load();
+    $envUrl = trim((string) getenv('SITE_URL'));
+    if ($envUrl !== '') {
+        return rtrim((string) parse_url($envUrl, PHP_URL_PATH), '/');
+    }
+
     $scriptDir = str_replace('\\', '/', dirname((string) ($_SERVER['SCRIPT_NAME'] ?? '')));
     $basePath = ($scriptDir === '/' || $scriptDir === '.' || $scriptDir === '') ? '' : rtrim($scriptDir, '/');
     if (substr($basePath, -4) === '/cms') {
         $basePath = substr($basePath, 0, -4);
     }
 
-    return $scheme . '://' . $host . $basePath;
+    return $basePath;
 }
 
 function public_page_file_map(): array
@@ -201,7 +215,7 @@ function public_render_seo_meta(array $seo, string $ogType = 'website'): void
 /** Favicons, theme colour and the hero background preload (the largest image above the fold). */
 function public_render_head_assets(bool $preloadHero = true): void
 {
-    $base = public_e(public_base_url());
+    $base = public_e(public_base_path());
     ?>
 <link rel="icon" href="<?= $base ?>/uploads/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="<?= $base ?>/uploads/apple-touch-icon.png">

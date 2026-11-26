@@ -56,7 +56,7 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
         <h1><?= c_heading($hero, 'heading', 'em') ?></h1>
         <p class="lead"><?= c($hero, 'subheading') ?></p>
         <div class="hero-actions">
-          <a class="btn btn-yellow btn-hero" href="<?= c_url($hero, 'primary_cta_url') ?>"><?= c($hero, 'primary_cta_label') ?></a>
+          <a class="btn btn-yellow btn-hero" href="<?= c_href((string) $hero['primary_cta_url']) ?>"><?= c($hero, 'primary_cta_label') ?></a>
         </div>
       </div>
     </div>
@@ -114,7 +114,7 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
       <div class="split-body">
         <h2 class="section-title"><?= c_heading($p['about'], 'heading') ?></h2>
         <p class="section-lead"><?= c($p['about'], 'subheading') ?></p>
-        <a class="link-cta inline" href="<?= c_url($p['about'], 'primary_cta_url') ?>"><?= c($p['about'], 'primary_cta_label') ?> <?= $arrow ?></a>
+        <a class="link-cta inline" href="<?= c_href((string) $p['about']['primary_cta_url']) ?>"><?= c($p['about'], 'primary_cta_label') ?> <?= $arrow ?></a>
       </div>
     </div>
   </section>
@@ -135,7 +135,7 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
         </li>
 <?php endforeach; ?>
       </ol>
-      <a class="btn btn-outline" href="<?= c_url($p['diagnostics'], 'primary_cta_url') ?>"><?= c($p['diagnostics'], 'primary_cta_label') ?></a>
+      <a class="btn btn-outline" href="<?= c_href((string) $p['diagnostics']['primary_cta_url']) ?>"><?= c($p['diagnostics'], 'primary_cta_label') ?></a>
     </div>
   </section>
 
@@ -146,7 +146,7 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
         <h2 class="section-title"><?= c_heading($p['doctors'], 'heading') ?></h2>
         <p class="section-lead"><?= c($p['doctors'], 'subheading') ?></p>
       </div>
-      <a class="link-cta inline" href="<?= c_url($p['doctors'], 'primary_cta_url') ?>"><?= c($p['doctors'], 'primary_cta_label') ?> <?= $arrow ?></a>
+      <a class="link-cta inline" href="<?= c_href((string) $p['doctors']['primary_cta_url']) ?>"><?= c($p['doctors'], 'primary_cta_label') ?> <?= $arrow ?></a>
     </div>
 <?php if ($doctors): ?>
     <div class="grid grid-260 gap-22 doc-grid-home">
@@ -257,7 +257,7 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
           <h2 class="section-title"><?= c_heading($p['before_visit'], 'heading') ?></h2>
           <p class="section-lead"><?= c($p['before_visit'], 'subheading') ?></p>
         </div>
-        <a class="link-cta inline" href="<?= c_url($p['before_visit'], 'primary_cta_url') ?>"><?= c($p['before_visit'], 'primary_cta_label') ?> <?= $arrow ?></a>
+        <a class="link-cta inline" href="<?= c_href((string) $p['before_visit']['primary_cta_url']) ?>"><?= c($p['before_visit'], 'primary_cta_label') ?> <?= $arrow ?></a>
       </div>
       <div class="checklist" data-reveal>
 <?php foreach ($p['before_visit']['items'] as $item): ?>
@@ -290,7 +290,7 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
     <div class="empty-state"><?= c_text($p['articles'], 'empty_message') ?></div>
 <?php endif; ?>
     <div class="section-foot">
-      <a class="btn btn-outline" href="<?= c_url($p['articles'], 'primary_cta_url') ?>"><?= c($p['articles'], 'primary_cta_label') ?> <?= $arrow ?></a>
+      <a class="btn btn-outline" href="<?= c_href((string) $p['articles']['primary_cta_url']) ?>"><?= c($p['articles'], 'primary_cta_label') ?> <?= $arrow ?></a>
     </div>
   </section>
 

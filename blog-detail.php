@@ -21,6 +21,7 @@ if ($post === null) {
 
 $relatedPosts = public_blog_related_posts((int) $post['id'], $post['category_id'] !== null ? (int) $post['category_id'] : null);
 $baseUrl = public_base_url();
+$basePath = public_base_path();
 $p = page_content('blog_detail');
 [$b, $dc, $sb, $rl] = [$p['banner'], $p['disclaimer'], $p['sidebar'], $p['related']];
 $canonical = $baseUrl . '/blog/' . rawurlencode((string) $post['slug']);
@@ -74,7 +75,7 @@ $schema = public_blog_schema($post, $canonical, $imageUrl);
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400..800;1,500..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= public_e($baseUrl) ?>/assets/style.css?v=20261126b">
+<link rel="stylesheet" href="<?= public_e($basePath) ?>/assets/style.css?v=20261126b">
 </head>
 <body>
 <a class="skip-link" href="#top"><?= c(page_content('global')['header'], 'skip_label') ?></a>
@@ -86,9 +87,9 @@ $schema = public_blog_schema($post, $canonical, $imageUrl);
     <div class="banner-veil is-strong"></div>
     <div class="banner-in narrow">
       <div class="crumb">
-        <a href="<?= public_e($baseUrl) ?>/"><?= c($b, 'crumb_home') ?></a>
+        <a href="<?= public_e($basePath) ?>/"><?= c($b, 'crumb_home') ?></a>
         <span class="sep">/</span>
-        <a href="<?= public_e($baseUrl) ?>/blog"><?= c($b, 'crumb_blog') ?></a>
+        <a href="<?= public_e($basePath) ?>/blog"><?= c($b, 'crumb_blog') ?></a>
         <span class="sep">/</span>
         <span class="here"><?= public_e($category) ?></span>
       </div>
@@ -150,10 +151,10 @@ $schema = public_blog_schema($post, $canonical, $imageUrl);
       </div>
       <div class="grid grid-300 fill-300">
         <?php foreach ($relatedPosts as $related): ?>
-          <a class="post-card" href="<?= public_e($baseUrl) ?>/blog/<?= public_e((string) $related['slug']) ?>">
+          <a class="post-card" href="<?= public_e($basePath) ?>/blog/<?= public_e((string) $related['slug']) ?>">
             <div class="post-photo">
               <?php if (!empty($related['image_path'])): ?>
-                <img src="<?= public_e($baseUrl . '/' . ltrim((string) $related['image_path'], '/')) ?>" alt="<?= public_e((string) ($related['image_alt'] ?: $related['title'])) ?>" loading="lazy">
+                <img src="<?= public_e($basePath . '/' . ltrim((string) $related['image_path'], '/')) ?>" alt="<?= public_e((string) ($related['image_alt'] ?: $related['title'])) ?>" loading="lazy">
               <?php else: ?>
                 <span class="ph-label"><?= c($b, 'image_placeholder') ?></span>
               <?php endif; ?>
@@ -174,7 +175,7 @@ $schema = public_blog_schema($post, $canonical, $imageUrl);
   <?php site_footer(true); ?>
 
 </div>
-<script src="<?= public_e($baseUrl) ?>/assets/script.js?v=20261126"></script>
+<script src="<?= public_e($basePath) ?>/assets/script.js?v=20261126"></script>
 </body>
 </html>
 <?php

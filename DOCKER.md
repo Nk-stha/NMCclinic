@@ -48,3 +48,5 @@ passwords in an existing database.
 Set `PORT` and `PHPMYADMIN_PORT` in `.env` to change ports. Set `COMPOSE_SITE_URL`
 if using a hostname other than localhost. The defaults do not conflict with
 the `lubricant` stack on ports 8080 and 8081.
+
+In production, `COMPOSE_SITE_URL` (or `SITE_URL`) must be the real public URL. Page links use only its path, but canonical, Open Graph, JSON-LD and the sitemap use the full URL.

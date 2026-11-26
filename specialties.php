@@ -81,7 +81,7 @@ $arrow = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="cu
 <?php endforeach; ?>
           </ul>
 <?php endif; ?>
-          <a class="link-cta inline" href="<?= c_url($l, 'book_url') ?>"><?= c($l, 'book_label') ?> <?= $arrow ?></a>
+          <a class="link-cta inline" href="<?= c_href((string) $l['book_url']) ?>"><?= c($l, 'book_label') ?> <?= $arrow ?></a>
         </div>
       </div>
 <?php endforeach; ?>
@@ -99,7 +99,7 @@ $arrow = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="cu
       <h2 class="section-title sm"><?= c_heading($cta, 'heading') ?></h2>
       <p class="section-lead"><?= c($cta, 'subheading') ?></p>
       <div class="cta-row">
-        <a class="btn btn-primary btn-lg" href="<?= c_url($cta, 'primary_cta_url') ?>"><?= c($cta, 'primary_cta_label') ?></a>
+        <a class="btn btn-primary btn-lg" href="<?= c_href((string) $cta['primary_cta_url']) ?>"><?= c($cta, 'primary_cta_label') ?></a>
         <a class="btn btn-light btn-lg" href="<?= public_e($ct['phone_href']) ?>"><?= c($cta, 'call_label') ?> <?= public_e($ct['phone']) ?></a>
       </div>
     </div>

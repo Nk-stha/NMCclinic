@@ -39,6 +39,10 @@ function content_validate_field(array $f, mixed $raw): array
     if (($f['max'] ?? 0) > 0 && mb_strlen($v) > $f['max']) {
         return [$v, 'Must be ' . $f['max'] . ' characters or fewer.'];
     }
+    // A leading / skips the site base path, so it breaks under a subfolder install (XAMPP).
+    if ($type === 'url' && str_starts_with($v, '/') && !str_starts_with($v, '//')) {
+        return [$v, 'Use a page name (e.g. contact), not /contact.'];
+    }
     if ($type === 'url' && content_safe_url($v) !== $v) {
         return [$v, 'Use a page name (e.g. contact), #section, https://…, tel: or mailto:.'];
     }

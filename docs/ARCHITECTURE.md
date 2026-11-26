@@ -66,6 +66,7 @@ No Tailwind, no component library, no `DESIGN.md`.
 - One PHP file per endpoint/page; shared logic in `includes/` (public) and `cms/includes/` (admin).
 - All SQL through `db()` with prepared statements.
 - Output escaping: `e()` (CMS), `public_e()` (public).
+- Links: in-page links use `public_base_path()` (path only, via `c_href`). Canonical, OG, JSON-LD and the sitemap use absolute `public_base_url()`, so `SITE_URL` must be the real public URL in production.
 - CMS writes: `require_admin()` + `csrf_is_valid()`.
 - Soft delete via `deleted_at`; public queries filter `deleted_at IS NULL AND status='published' AND is_visible=1`.
 

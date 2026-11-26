@@ -72,7 +72,7 @@ foreach (["/\\evil.com", "\\\\evil.com", "/\t/evil.com", "java\nscript:alert(1)"
     $bs = $bs && content_safe_url($u) === '#';
 }
 check('url_blocks_backslash_and_control', $bs && content_safe_url('specialties#kidney') === 'specialties#kidney');
-check('c_url_escapes', c_url(['u' => 'a?x=1&y="2"'], 'u') === 'a?x=1&amp;y=&quot;2&quot;');
+check('c_href_escapes', c_href('#a?x=1&y="2"') === '#a?x=1&amp;y=&quot;2&quot;');
 check('c_icon_unknown_empty', c_icon(['i' => 'nope'], 'i') === '');
 
 check('merge_no_rows_uses_defaults', content_merge($spec, [], []) === $defaults);
@@ -160,12 +160,25 @@ check('jsonld_escapes_script_close', stripos(public_json_ld($breakout), '</scrip
     && public_json_ld_override('not json') === '' && json_decode(public_json_ld($breakout), true) === $breakout);
 
 $_SERVER['HTTP_HOST'] = 'example.test';
-$base = public_base_url();
-check('abs_url_prefixes_relative_only',
-    content_abs_url('about') === $base . '/about' && content_abs_url('home') === $base . '/' && content_abs_url('home#appointment') === $base . '/#appointment' && content_abs_url('homepage') === $base . '/homepage' && content_abs_url('specialties#kidney') === $base . '/specialties#kidney'
-    && content_abs_url('#x') === '#x' && content_abs_url('https://a.b/c') === 'https://a.b/c' && content_abs_url('tel:+977') === 'tel:+977'
-    && content_abs_url('mailto:a@b.c') === 'mailto:a@b.c' && content_abs_url('/x') === '/x' && c_href('javascript:alert(1)') === '#'
-    && c_href('a?x=1&y=2') === public_e($base . '/a?x=1&y=2'));
+// R17: in-page links carry the base path only (no scheme/host), so a wrong SITE_URL host cannot break navigation.
+$absOk = static function (string $base): bool {
+    return content_abs_url('about') === $base . '/about' && content_abs_url('home') === $base . '/' && content_abs_url('home#appointment') === $base . '/#appointment' && content_abs_url('homepage') === $base . '/homepage' && content_abs_url('specialties#kidney') === $base . '/specialties#kidney'
+        && content_abs_url('#x') === '#x' && content_abs_url('https://a.b/c') === 'https://a.b/c' && content_abs_url('tel:+977') === 'tel:+977'
+        && content_abs_url('mailto:a@b.c') === 'mailto:a@b.c' && content_abs_url('/x') === '/x' && c_href('javascript:alert(1)') === '#'
+        && c_href('a?x=1&y=2') === public_e($base . '/a?x=1&y=2') && c_href('home') === public_e($base . '/');
+};
+$siteUrl = getenv('SITE_URL');
+putenv('SITE_URL=https://wrong-host.example/NMCclinic/');
+$withPath = $absOk('/NMCclinic') && public_base_url() === 'https://wrong-host.example/NMCclinic';
+putenv('SITE_URL=http://localhost:8082');
+$noPath = $absOk('');
+putenv('SITE_URL');
+$_SERVER['SCRIPT_NAME'] = '/NMCclinic/cms/content.php';
+$fromScript = $absOk('/NMCclinic') && public_base_url() === 'http://example.test/NMCclinic';
+$_SERVER['SCRIPT_NAME'] = '/blog-detail.php';
+$fromScript = $fromScript && $absOk('');
+putenv($siteUrl === false ? 'SITE_URL' : 'SITE_URL=' . $siteUrl);
+check('abs_url_prefixes_relative_only', $withPath && $noPath && $fromScript);
 
 $headerOk = false;
 if (function_exists('site_header')) {
@@ -192,6 +205,7 @@ $goodItems = [['title' => 'a']];
 $val = static fn (array $f, ?array $items = null): array => content_validate_section($vs, ['fields' => $f + ['heading' => 'ok'], 'items' => $items ?? $goodItems]);
 check('validate_required', isset($val(['heading' => '  '])['errors']['heading']) && $val([])['errors'] === []);
 check('validate_counts_multibyte', !isset($val(['heading' => str_repeat('क', 10)])['errors']['heading']) && isset($val(['heading' => str_repeat('क', 11)])['errors']['heading']));
+check('validate_rejects_leading_slash', ($val(['cta' => '/contact'])['errors']['cta'] ?? '') === 'Use a page name (e.g. contact), not /contact.' && isset($val(['cta' => '//evil.com'])['errors']['cta']) && !isset($val(['cta' => 'contact#form'])['errors']['cta']));
 check('validate_rejects_bad_url', isset($val(['cta' => 'javascript:x'])['errors']['cta']) && !isset($val(['cta' => 'contact'])['errors']['cta']) && !isset($val(['cta' => ''])['errors']['cta']));
 check('validate_items_bounds', isset($val([], [])['errors']['items']) && isset($val([], [['title' => 'a'], ['title' => 'a'], ['title' => 'a'], ['title' => 'a']])['errors']['items']) && !isset($val([], $goodItems)['errors']['items']));
 check('validate_item_field_path', isset($val([], [['title' => 'a'], ['title' => 'b'], ['title' => '']])['errors']['items.2.title']));

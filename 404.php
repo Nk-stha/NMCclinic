@@ -5,7 +5,7 @@ require_once __DIR__ . '/includes/public_seo.php';
 require_once __DIR__ . '/includes/content.php';
 
 http_response_code(404);
-$base = public_base_url();
+$base = public_base_path();
 $p = page_content('404');
 $b = $p['banner'];
 $h = page_content('global')['header'];
