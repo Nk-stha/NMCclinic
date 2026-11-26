@@ -95,8 +95,17 @@ a{text-decoration:none;color:inherit}.cms-shell{display:flex;min-height:100vh}.s
 .status.published,.status.accepting{background:#e8f6f5;color:var(--success)}.status.draft,.status.review{background:#fff3cf;color:#7a5900}.status.archived,.status.hidden{background:var(--surface-low);color:var(--muted)}.status.unavailable{background:var(--danger-bg);color:var(--danger)}
 /* Visible keyboard focus: the fields above drop the outline and their 10% ring is too faint to see. */
 .input:focus-visible,.textarea:focus-visible,.select:focus-visible,.search input:focus-visible{outline:2px solid var(--primary);outline-offset:1px}
+/* Phone shell: compact topbar + collapsible sidebar. Desktop (>760px) hides the new controls and is unchanged. */
+@media(min-width:761px) and (max-width:1100px){.sticky-actions{margin:30px -24px -28px;padding:18px 24px}.admin>div:first-child{display:none}}
+.menu-btn,.top-brand,.side-search{display:none}.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.grid>*{min-width:0}
+@media(max-width:760px){.topbar{height:60px;flex-direction:row;align-items:center;gap:8px;padding:0 12px}.topbar>.search,.admin>div:first-child{display:none}.admin{margin-left:auto}
+.menu-btn{display:grid;place-items:center;width:44px;height:44px;flex:0 0 44px;border:0;border-radius:8px;background:transparent;color:var(--primary);cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}.menu-btn:active{background:var(--surface-mid)}.menu-btn:focus-visible,.top-brand:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.top-brand{display:flex;align-items:center;gap:8px;min-width:0;color:var(--primary);font:800 18px "Public Sans",Arial,sans-serif;white-space:nowrap}.top-brand img{width:32px;height:32px;border-radius:8px;object-fit:contain;border:1px solid var(--border);background:var(--surface)}
+.cms-js .sidebar{display:none;position:fixed;inset:60px 0 0 0;width:auto;padding:16px;overflow-y:auto;overscroll-behavior:contain;border-right:0;border-top:1px solid var(--border);z-index:30}.cms-js .sidebar.open{display:flex}.cms-js .sidebar .brand{display:none}.cms-js .sidebar .nav{flex:none;overflow:visible}.cms-js.menu-open body{overflow:hidden}
+.cms-js .side-search{display:block;width:100%;margin:0 0 12px}.side-search input{background:var(--surface);font-size:16px}.nav a,.side-footer a{min-height:44px}
+.table-wrap table{min-width:720px}.table-wrap td:first-child{min-width:180px}.table-wrap{background:linear-gradient(to right,var(--surface) 30%,transparent) left/40px 100% no-repeat local,linear-gradient(to left,var(--surface) 30%,transparent) right/40px 100% no-repeat local,radial-gradient(farthest-side at 0 50%,rgba(19,106,106,.18),transparent) left/14px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,rgba(19,106,106,.18),transparent) right/14px 100% no-repeat scroll,var(--surface)}}
 /* Page Content editor (cms/content.php), scoped to .content-editor. Colours are the :root tokens; radii (8/10/12px) and type sizes reuse the literals the rest of the CMS already uses, since no radius/spacing tokens exist. */
-.content-editor{-webkit-tap-highlight-color:transparent}.content-editor .field{align-content:start}.content-editor [hidden]{display:none!important}.content-editor .sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.content-editor{-webkit-tap-highlight-color:transparent}.content-editor .field{align-content:start}.content-editor [hidden]{display:none!important}
 .content-editor .input,.content-editor .textarea,.content-editor .select{font-size:16px;min-height:44px}.content-editor button,.content-editor a,.content-editor summary{touch-action:manipulation}.content-editor button,.content-editor summary{-webkit-user-select:none;user-select:none}.content-editor :is(a,button):focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 .content-editor .secondary-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px}.content-editor .secondary-btn .material-symbols-outlined{font-size:20px}
 .content-pages th[scope=row]{background:none;color:var(--text);font:700 15px "Public Sans",Arial,sans-serif;text-transform:none;letter-spacing:0}.content-pages td:last-child{text-align:right}.content-pages time{font-variant-numeric:tabular-nums}.content-pages .status{text-transform:none}.content-pages tbody tr:last-child>*{border-bottom:0}
@@ -121,13 +130,13 @@ a{text-decoration:none;color:inherit}.cms-shell{display:flex;min-height:100vh}.s
 @keyframes content-toast-in{from{opacity:0;transform:translateY(-8px)}}
 @media(hover:hover) and (pointer:fine){.content-panel-head:hover,.content-editor .secondary-btn:not(:disabled):hover{background:var(--surface-low)}.content-editor .primary-btn:hover{background:var(--primary2)}.content-icon-btn:not(:disabled):hover{background:var(--surface-mid)}.content-icon-btn.content-remove:not(:disabled):hover,.content-reset:hover{background:var(--danger-bg)}.content-view:hover{color:var(--primary2)}}
 @media(prefers-reduced-motion:reduce){.content-chevron,.content-icon-btn{transition:none}.content-editor .toast{animation:none}}
-@media(max-width:760px){html:has(.content-editor){scroll-padding:150px 0 132px}.content-panel-head{padding:14px 12px 14px 16px}.content-panel-name{font-size:18px}.content-section{padding:18px 16px}.content-actions{margin:24px -16px -18px;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}.content-editor .content-save{flex:1 1 100%;width:100%}.content-actions{gap:4px 8px}.content-reset{padding:0 12px}.content-reset .material-symbols-outlined{display:none}.content-editor .toast{top:12px;left:16px;right:16px;max-width:none}.content-editor .page-head .secondary-btn{align-self:stretch}}
+@media(max-width:760px){html:has(.content-editor){scroll-padding:76px 0 84px}.content-panel-head{padding:14px 12px 14px 16px}.content-panel-name{font-size:18px}.content-section{padding:18px 16px}.content-actions{margin:24px -16px -18px;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}.content-actions{flex-wrap:nowrap;gap:8px}.content-editor .content-save{flex:1;min-width:0;width:auto}.content-view,.content-reset{flex:0 0 44px;justify-content:center;width:44px;height:44px;margin:0;padding:0;border:1px solid currentColor;border-radius:8px}.content-actions .content-label{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}.content-editor .toast{top:12px;left:16px;right:16px;max-width:none}.content-editor .page-head .secondary-btn{align-self:stretch}}
 @media(max-width:600px){.content-pages table,.content-pages tbody{display:block}.content-pages thead{display:none}.content-pages tr{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 12px;padding:14px 16px;border-bottom:1px solid rgba(190,201,200,.35)}.content-pages tbody tr:last-child{border-bottom:0}.content-pages tr>*{padding:0;border:0}.content-pages td:nth-child(2){grid-row:2;color:var(--outline);font-size:14px}.content-pages td:last-child{grid-row:1/3;grid-column:2}}
 </style>
 </head>
 <body>
 <div class="cms-shell">
-  <aside class="sidebar">
+  <aside class="sidebar" id="cms-sidebar">
     <a class="brand" href="dashboard.php" aria-label="NMC Clinic CMS dashboard">
       <img src="../uploads/logo.jpeg" alt="NMC Clinic logo">
       <span><span class="brand-title">NMC Clinic</span><span class="brand-sub">CMS</span></span>
@@ -143,6 +152,10 @@ a{text-decoration:none;color:inherit}.cms-shell{display:flex;min-height:100vh}.s
     <div class="side-action">
       <a class="primary-btn" href="doctors.php"><span class="material-symbols-outlined" aria-hidden="true">add</span>Add Doctor</a>
     </div>
+    <div class="search side-search">
+      <span class="material-symbols-outlined" aria-hidden="true">search</span>
+      <input type="search" placeholder="Search doctors, specialties, posts…" aria-label="Search CMS">
+    </div>
     <div class="side-footer">
       <a href="settings.php"><span class="material-symbols-outlined" aria-hidden="true">contact_support</span>Support</a>
       <a class="logout" href="logout.php"><span class="material-symbols-outlined" aria-hidden="true">logout</span>Log Out</a>
@@ -150,6 +163,8 @@ a{text-decoration:none;color:inherit}.cms-shell{display:flex;min-height:100vh}.s
   </aside>
   <main class="main">
     <header class="topbar">
+      <button type="button" class="menu-btn" aria-controls="cms-sidebar" aria-expanded="false"><span class="material-symbols-outlined" aria-hidden="true">menu</span><span class="sr-only">Menu</span></button>
+      <a class="top-brand" href="dashboard.php"><img src="../uploads/logo.jpeg" alt="" width="32" height="32"><span>NMC Clinic</span></a>
       <div class="search">
         <span class="material-symbols-outlined" aria-hidden="true">search</span>
         <input type="search" placeholder="Search doctors, specialties, posts…" aria-label="Search CMS">
@@ -162,6 +177,26 @@ a{text-decoration:none;color:inherit}.cms-shell{display:flex;min-height:100vh}.s
         <div class="avatar" aria-hidden="true"><?= e(cms_initials((string) $admin['full_name'])) ?></div>
       </div>
     </header>
+    <script>
+    // Phone menu (CSS only collapses the sidebar once this has run, so the nav stays reachable without JS).
+    (function () {
+      var root = document.documentElement, btn = document.querySelector('.menu-btn'), nav = document.getElementById('cms-sidebar');
+      root.classList.add('cms-js');
+      function set(open, focusBtn) {
+        nav.classList.toggle('open', open);
+        root.classList.toggle('menu-open', open);
+        btn.setAttribute('aria-expanded', String(open));
+        btn.querySelector('.material-symbols-outlined').textContent = open ? 'close' : 'menu';
+        // The sidebar sits before the topbar in the DOM, so move focus into it on open.
+        if (open) nav.querySelector('.nav a').focus();
+        else if (focusBtn) btn.focus();
+      }
+      btn.addEventListener('click', function () { set(!nav.classList.contains('open'), false); });
+      document.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Escape' && nav.classList.contains('open')) set(false, true);
+      });
+    })();
+    </script>
     <?php
 }
 

@@ -112,7 +112,8 @@ cms_header('Page Content', $admin, 'content');
           <?php foreach ($registry as $pageSlug => $pageSpec): $u = $updated[$pageSlug] ?? null; ?>
             <tr>
               <th scope="row"><?= e($pageSpec['label']) ?></th>
-              <td><?php if ($u): ?><time datetime="<?= e(str_replace(' ', 'T', (string) $u)) ?>"><?= e(date('j M Y, H:i', strtotime((string) $u) ?: 0)) ?></time><?php else: ?><span class="status archived">Using defaults</span><?php endif; ?></td>
+              <td><?php $ts = $u ? strtotime((string) $u) : false; ?>
+                <?php if ($ts !== false): ?><time datetime="<?= e(date('c', $ts)) ?>"><?= e(date('j M Y, H:i', $ts)) ?></time><?php elseif ($u): ?><?= e((string) $u) ?><?php else: ?><span class="status archived">Using defaults</span><?php endif; ?></td>
               <td><a class="secondary-btn" href="content.php?page=<?= e(rawurlencode((string) $pageSlug)) ?>">Edit<span class="sr-only"> <?= e($pageSpec['label']) ?></span></a></td>
             </tr>
           <?php endforeach; ?>
@@ -130,7 +131,8 @@ cms_header('Page Content', $admin, 'content');
         error_log('content load: ' . $exception->getMessage());
         $stored = content_merge($spec, [], []);
         $mediaOptions = [];
-        echo '<div class="toast error" role="status">Stored content could not be loaded; showing defaults.</div>';
+        echo '<div class="toast error" role="alert"><span class="material-symbols-outlined" aria-hidden="true">error</span><span>Stored content could not be loaded; showing defaults.</span>'
+            . '<button type="button" class="content-toast-close" aria-label="Dismiss message"><span class="material-symbols-outlined" aria-hidden="true">close</span></button></div>';
     }
     // Open the section just posted, saved or reset; otherwise the first one.
     $openKey = $_POST['section'] ?? $_GET['saved'] ?? $_GET['reset'] ?? array_key_first($spec['sections']);

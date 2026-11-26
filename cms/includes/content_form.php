@@ -319,8 +319,8 @@ function content_render_section(string $slug, string $key, array $section, array
         <?php endif; ?>
         <div class="content-actions">
           <button class="primary-btn content-save" type="submit">Save <?= e($section['label']) ?></button>
-          <?php if ($viewUrl !== ''): ?><a class="content-view" href="<?= e($viewUrl) ?>" target="_blank" rel="noopener">View on site<span class="material-symbols-outlined" aria-hidden="true">open_in_new</span><span class="sr-only"> (opens in a new tab)</span></a><?php endif; ?>
-          <button class="content-reset" type="submit" name="action" value="reset" formnovalidate onclick="return confirm('Reset this section to its default content? Your edits will be lost.')"><span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>Reset to default</button>
+          <?php if ($viewUrl !== ''): ?><a class="content-view" href="<?= e($viewUrl) ?>" target="_blank" rel="noopener"><span class="content-label">View on site</span><span class="material-symbols-outlined" aria-hidden="true">open_in_new</span><span class="sr-only"> (opens in a new tab)</span></a><?php endif; ?>
+          <button class="content-reset" type="submit" name="action" value="reset" formnovalidate onclick="return confirm('Reset this section to its default content? Your edits will be lost.')"><span class="material-symbols-outlined" aria-hidden="true">restart_alt</span><span class="content-label">Reset to default</span></button>
         </div>
       </form>
     </details>
