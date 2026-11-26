@@ -65,6 +65,7 @@ function cms_header(string $title, array $admin, string $active = 'dashboard'): 
     $nav = [
         'dashboard' => ['Dashboard', 'dashboard.php', 'dashboard'],
         'settings' => ['Global Settings', 'settings.php', 'settings'],
+        'content' => ['Page Content', 'content.php', 'article'],
         'specialties' => ['Specialties', 'specialties.php', 'category'],
         'doctors' => ['Doctors', 'doctors.php', 'medical_services'],
         'blog' => ['Blog', 'blog.php', 'edit_note'],

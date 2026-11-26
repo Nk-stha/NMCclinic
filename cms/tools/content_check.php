@@ -144,4 +144,24 @@ check('header_marks_active', $headerOk);
 $seo = (string) file_get_contents(__DIR__ . '/../../includes/public_seo.php') . (string) file_get_contents(__DIR__ . '/../includes/seo_form.php');
 check('sitemap_excludes_generic', substr_count($seo, "page_type <> \"generic\"") >= 2);
 
+// content_validate_section (cms/includes/content_form.php)
+require_once __DIR__ . '/../includes/content_form.php';
+$vs = $spec['sections']['s'];
+$vs['fields']['heading']['max'] = 10;
+$vs['fields']['cta'] = ['type' => 'url', 'label' => 'U', 'max' => 50, 'required' => false, 'default' => ''];
+$vs['fields']['ic'] = ['type' => 'icon', 'label' => 'I', 'max' => 0, 'required' => false, 'default' => ''];
+$vs['items']['min'] = 1;
+$vs['items']['max'] = 3;
+$vs['items']['fields']['title']['required'] = true;
+$goodItems = [['title' => 'a']];
+$val = static fn (array $f, ?array $items = null): array => content_validate_section($vs, ['fields' => $f + ['heading' => 'ok'], 'items' => $items ?? $goodItems]);
+check('validate_required', isset($val(['heading' => '  '])['errors']['heading']) && $val([])['errors'] === []);
+check('validate_counts_multibyte', !isset($val(['heading' => str_repeat('क', 10)])['errors']['heading']) && isset($val(['heading' => str_repeat('क', 11)])['errors']['heading']));
+check('validate_rejects_bad_url', isset($val(['cta' => 'javascript:x'])['errors']['cta']) && !isset($val(['cta' => 'contact'])['errors']['cta']) && !isset($val(['cta' => ''])['errors']['cta']));
+check('validate_items_bounds', isset($val([], [])['errors']['items']) && isset($val([], [['title' => 'a'], ['title' => 'a'], ['title' => 'a'], ['title' => 'a']])['errors']['items']) && !isset($val([], $goodItems)['errors']['items']));
+check('validate_item_field_path', isset($val([], [['title' => 'a'], ['title' => 'b'], ['title' => '']])['errors']['items.2.title']));
+check('validate_icon_whitelist', isset($val(['ic' => 'nope'])['errors']['ic']) && !isset($val(['ic' => 'kidney'])['errors']['ic']) && !isset($val(['ic' => ''])['errors']['ic']));
+check('validate_image_and_normalise', isset($val(['primary_media_id' => 'abc'])['errors']['primary_media_id']) && isset($val(['primary_media_id' => '0'])['errors']['primary_media_id'])
+    && $val(['primary_media_id' => '7'])['values']['primary_media_id'] === '7' && $val(['heading' => " a\r\nb "])['values']['heading'] === "a\nb");
+
 exit($failures ? 1 : 0);
