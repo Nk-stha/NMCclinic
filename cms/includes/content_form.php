@@ -450,9 +450,10 @@ document.querySelectorAll('.content-section').forEach(function (form) {
   form.addEventListener('submit', function () { dirty.delete(form); });
 });
 window.addEventListener('beforeunload', function (ev) { if (dirty.size) { ev.preventDefault(); ev.returnValue = ''; } });
-// After a failed save, put focus on the first invalid field.
+// After a failed save, put focus on the first invalid field. Wait for load: the #section-… fragment
+// scroll runs after this script and would blur a field focused now.
 var firstBad = document.querySelector('.content-editor [aria-invalid="true"]');
-if (firstBad) firstBad.focus();
+if (firstBad) window.addEventListener('load', function () { firstBad.focus(); });
 document.querySelectorAll('.content-toast-close').forEach(function (btn) {
   btn.addEventListener('click', function () { btn.closest('.toast').remove(); });
 });
