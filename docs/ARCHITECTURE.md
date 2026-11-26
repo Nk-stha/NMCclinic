@@ -56,7 +56,7 @@ No Tailwind, no component library, no `DESIGN.md`.
 1. Server-render the list pages (doctors, specialties, blog index) the way `blog-detail.php` already does. Today crawlers see fallback/placeholder content; JS swaps it later. Keep `script.js` for filters only.
 2. `support.js` (66 KB, generated "dc-runtime") is not referenced anywhere. Delete it.
 3. Newsletter form in `blog.php` has no `action` and no backend. Add `submit-newsletter.php` (see §3.3) or remove the form.
-4. `NMCclinic.zip` (13 MB) and the two `pasted-*.png/webp` screenshots sit in the web root. The zip is blocked by `.htaccess` and `.dockerignore`, but the screenshots ship in the Docker image and are publicly served. Move them out of the repo.
+4. `NMCclinic.zip` (13 MB) sits in the web root. It is blocked by `.htaccess` and `.dockerignore`. The two `pasted-*` screenshots were removed from the repo; `.htaccess` and `.dockerignore` also keep dev output (`graphify-out`, `.superpowers`, `.playwright-cli`, `tests`, `docs`) out of the web root and the image.
 
 ---
 

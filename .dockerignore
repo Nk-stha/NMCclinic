@@ -11,3 +11,11 @@ plan
 Dockerfile
 docker-compose.yml
 DOCKER.md
+graphify-out
+.superpowers
+.playwright-cli
+tests
+docs
+docker-compose.override.yml
+pasted-*.webp
+pasted-*.png
