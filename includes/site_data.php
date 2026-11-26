@@ -2,39 +2,25 @@
 declare(strict_types=1);
 
 // Shared DB reads for the JSON endpoints and server-rendered pages.
-// Each reader logs and returns its empty shape on failure; site_data_ok() tells endpoints whether any read failed.
+// Each reader logs and returns its empty shape on failure.
 require_once __DIR__ . '/../cms/config/database.php';
 
 function site_data_fail(Throwable $exception): void
 {
     error_log('site_data: ' . $exception->getMessage());
-    $GLOBALS['site_data_failed'] = true;
 }
 
-function site_data_ok(): bool
-{
-    return empty($GLOBALS['site_data_failed']);
-}
-
-/** Per-request cache (failures included, so a dead DB is tried once). Pass true to clear it, for CLI checks. */
-function site_settings(bool $reset = false): array
+/** Per-request cache (failures included, so a dead DB is tried once). */
+function site_settings(): array
 {
     static $cache = null;
-    if ($reset) {
-        $cache = null;
-    }
 
     return $cache ??= site_settings_load();
 }
 
-function site_settings_reset_cache(): void
-{
-    site_settings(true);
-}
-
 function site_settings_load(): array
 {
-    $response = ['settings' => null, 'hours' => [], 'hours_summary' => '', 'socials' => []];
+    $response = ['settings' => null, 'hours' => []];
 
     try {
         $stmt = db()->query('SELECT * FROM business_contact_settings ORDER BY id ASC LIMIT 1');
@@ -84,24 +70,9 @@ function site_settings_load(): array
                 'is_closed' => (int) $hour['is_closed'] === 1,
             ];
         }
-        $response['hours_summary'] = hours_summary($response['hours']);
-
-        $stmt = db()->query(
-            'SELECT platform, label, url
-             FROM social_links
-             WHERE is_visible = 1 AND url <> ""
-             ORDER BY sort_order ASC, platform ASC'
-        );
-        foreach ($stmt->fetchAll() as $social) {
-            $response['socials'][] = [
-                'platform' => (string) $social['platform'],
-                'label' => (string) $social['label'],
-                'url' => (string) $social['url'],
-            ];
-        }
     } catch (Throwable $exception) {
         site_data_fail($exception);
-        return ['settings' => null, 'hours' => [], 'hours_summary' => '', 'socials' => []];
+        return ['settings' => null, 'hours' => []];
     }
 
     return $response;
@@ -437,27 +408,6 @@ function day_label(int $day): string
     $days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
     return $days[$day] ?? '';
-}
-
-function hours_summary(array $hours): string
-{
-    $visible = array_values(array_filter($hours, static function (array $hour): bool {
-        return !$hour['is_closed'] && ($hour['label'] !== '' || ($hour['opens_at'] !== '' && $hour['closes_at'] !== ''));
-    }));
-
-    if ($visible === []) {
-        return '';
-    }
-
-    $first = $visible[0];
-    $last = $visible[count($visible) - 1];
-    $time = $first['label'] !== '' ? $first['label'] : time_label($first['opens_at']) . '-' . time_label($first['closes_at']);
-
-    if (count($visible) === 1) {
-        return short_day($first['day']) . ' ' . $time;
-    }
-
-    return short_day($first['day']) . '-' . short_day($last['day']) . ' ' . $time;
 }
 
 /** Opening hours as display lines, consecutive days with the same hours merged: "Sun-Fri: 8:00 AM - 8:00 PM", "Saturday: 9:00 AM - 2:00 PM". */

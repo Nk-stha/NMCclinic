@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/includes/public_seo.php';
 require_once __DIR__ . '/includes/site_footer.php';
+require_once __DIR__ . '/includes/branch_list.php';
 require_once __DIR__ . '/includes/doctor_card.php';
 require_once __DIR__ . '/includes/blog_card.php';
 
@@ -15,7 +16,7 @@ $branches = site_branches();
 $serviceOptions = site_form_options_filled()['specialties'];
 // Contact details are edited in CMS > Settings; the shipped values are only a fallback.
 $settings = $ct['settings']['settings'];
-$email = (string) ($settings['email'] ?? '') !== '' ? (string) $settings['email'] : 'info@nmcbutwal.com.np';
+$email = $ct['email'];
 $hoursLines = $settings !== null ? hours_lines($ct['settings']['hours']) : [];
 // Shown until script.js computes the live open/closed status.
 $statusHours = $hoursLines ? implode(', ', $hoursLines) : 'Sun-Fri 8 AM-8 PM, Sat 9 AM-2 PM';
@@ -28,7 +29,6 @@ $heroBg = preg_match('#^[\w/.:%~-]+$#', $heroBg) ? $heroBg : content_abs_url('up
 $aboutImg = c_img($p['about'], 'primary_media_id');
 $arrow = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
 $phoneSvg = static fn (string $stroke): string => '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="' . $stroke . '" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>';
-$branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !== '' ? $b['lat'] . ',' . $b['lng'] : $b['address'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -69,9 +69,9 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
         <span class="status-dot" data-open-dot></span>
         <span><span class="info-k"><?= c($p['info_strip'], 'status_label') ?></span><span class="info-v" data-open-status data-hours='<?= public_e((string) json_encode(site_settings()['hours'])) ?>'><?= public_e($statusHours) ?></span></span>
       </div>
-      <a class="info-item is-emergency" href="<?= public_e($ct['phone_href']) ?>" data-phone-href>
+      <a class="info-item is-emergency" href="<?= public_e($ct['phone_href']) ?>">
         <span class="icon-badge"><?= $phoneSvg('currentColor') ?></span>
-        <span><span class="info-k"><?= c($p['info_strip'], 'emergency_label') ?></span><span class="info-v" data-phone><?= public_e($ct['phone']) ?></span></span>
+        <span><span class="info-k"><?= c($p['info_strip'], 'emergency_label') ?></span><span class="info-v"><?= public_e($ct['phone']) ?></span></span>
       </a>
     </div>
   </section>
@@ -305,26 +305,7 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
     <div class="contact-split">
       <div class="contact-form-col">
 <?php if ($branches): ?>
-        <div class="branch-list" data-branch-list aria-label="Clinic branches">
-<?php foreach ($branches as $i => $b): $on = $i === 0; ?>
-          <div class="branch-item<?= $on ? ' is-active' : '' ?>">
-            <button type="button" class="branch-select" aria-pressed="<?= $on ? 'true' : 'false' ?>"
-                    data-branch-name="<?= public_e($b['name']) ?>" data-branch-address="<?= public_e($b['address']) ?>"
-                    data-branch-lat="<?= public_e($b['lat']) ?>" data-branch-lng="<?= public_e($b['lng']) ?>" data-branch-zoom="<?= (int) ($b['zoom'] ?: 15) ?>"
-                    data-branch-phone="<?= public_e($b['phone']) ?>" data-branch-phone-href="<?= public_e($b['phone_href']) ?>">
-              <span class="icon-badge md"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>
-              <span class="branch-body">
-                <span class="branch-head"><span class="branch-name"><?= public_e($b['name']) ?></span><?php if ($b['tag'] !== ''): ?><span class="branch-tag<?= $b['is_primary'] ? '' : ' is-soft' ?>"><?= public_e($b['tag']) ?></span><?php endif; ?></span>
-                <span class="branch-text"><?= public_e($b['address']) ?></span>
-                <span class="branch-cta" data-branch-cta><?= c($v, $on ? 'map_showing_label' : 'map_show_label') ?></span>
-              </span>
-            </button>
-<?php if (($b['phone'] !== '' && $b['phone_href'] !== '') || $b['hours'] !== ''): ?>
-            <div class="branch-meta"><?php if ($b['phone'] !== '' && $b['phone_href'] !== ''): ?><a href="<?= public_e($b['phone_href']) ?>"><?= public_e($b['phone']) ?></a><?php endif; ?><?php if ($b['hours'] !== ''): ?><span><?= public_e($b['hours']) ?></span><?php endif; ?></div>
-<?php endif; ?>
-          </div>
-<?php endforeach; ?>
-        </div>
+<?php render_branch_list($branches, $v, 'Clinic branches'); ?>
 <?php else: ?>
         <div class="empty-state"><?= c_text($v, 'empty_message') ?></div>
 <?php endif; ?>
@@ -345,7 +326,7 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
           </div>
         </div>
       </div>
-<?php if ($first): $q = rawurlencode($branchQuery($first)); ?>
+<?php if ($first): $q = rawurlencode(site_branch_query($first)); ?>
       <div class="contact-side">
         <p class="map-caption" data-branch-caption aria-live="polite"><?= c($v, 'map_caption_prefix') ?> <?= public_e($first['name']) ?></p>
         <div class="map-frame">

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/includes/public_seo.php';
 require_once __DIR__ . '/includes/site_footer.php';
+require_once __DIR__ . '/includes/branch_list.php';
 
 $p = page_content('contact');
 [$b, $ic, $f, $br, $tk] = [$p['banner'], $p['info_cards'], $p['form'], $p['branches'], $p['talk']];
@@ -13,10 +14,10 @@ $subjects = site_form_options_filled()['subjects'];
 $page = site_contact_page();
 // Contact details are edited in CMS > Settings and Branches; the shipped values are only a fallback.
 $settings = $ct['settings']['settings'];
-$email = (string) ($settings['email'] ?? '') !== '' ? (string) $settings['email'] : 'info@nmcbutwal.com.np';
+$email = $ct['email'];
 $hoursLines = $settings !== null ? hours_lines($ct['settings']['hours']) : [];
-$hoursLines = $hoursLines ?: ['Sun-Fri: 8 AM-8 PM', 'Saturday: 9 AM-2 PM'];
-$address = (string) ($settings['address'] ?? '') !== '' ? (string) $settings['address'] : 'Traffic Chowk, Butwal, Rupandehi, Nepal';
+$hoursLines = $hoursLines ?: $ct['hours_fallback'];
+$address = $ct['address'];
 $cardName = $first['name'] ?? 'Butwal Branch';
 $cardAddress = $first['address'] ?? $address;
 $cardPhone = ($first['phone'] ?? '') !== '' && ($first['phone_href'] ?? '') !== '' ? $first : ['phone' => $ct['phone'], 'phone_href' => $ct['phone_href']];
@@ -27,7 +28,6 @@ $emShow = (int) ($page['is_visible'] ?? 1) === 1;
 $emNumber = trim((string) ($page['emergency_phone_number'] ?? ''));
 $emHref = phone_href($emNumber);
 $emLabel = trim((string) ($page['emergency_phone_label'] ?? ''));
-$branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !== '' ? $b['lat'] . ',' . $b['lng'] : $b['address'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -140,27 +140,8 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
     <div class="contact-side">
       <h3 class="side-title"><?= c($br, 'heading') ?></h3>
 <?php if ($branches): ?>
-      <div class="branch-list" data-branch-list aria-label="<?= c($br, 'list_label') ?>">
-<?php foreach ($branches as $i => $bn): $on = $i === 0; ?>
-        <div class="branch-item<?= $on ? ' is-active' : '' ?>">
-          <button type="button" class="branch-select" aria-pressed="<?= $on ? 'true' : 'false' ?>"
-                  data-branch-name="<?= public_e($bn['name']) ?>" data-branch-address="<?= public_e($bn['address']) ?>"
-                  data-branch-lat="<?= public_e($bn['lat']) ?>" data-branch-lng="<?= public_e($bn['lng']) ?>" data-branch-zoom="<?= (int) ($bn['zoom'] ?: 15) ?>"
-                  data-branch-phone="<?= public_e($bn['phone']) ?>" data-branch-phone-href="<?= public_e($bn['phone_href']) ?>">
-            <span class="icon-badge md"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>
-            <span class="branch-body">
-              <span class="branch-head"><span class="branch-name"><?= public_e($bn['name']) ?></span><?php if ($bn['tag'] !== ''): ?><span class="branch-tag<?= $bn['is_primary'] ? '' : ' is-soft' ?>"><?= public_e($bn['tag']) ?></span><?php endif; ?></span>
-              <span class="branch-text"><?= public_e($bn['address']) ?></span>
-              <span class="branch-cta" data-branch-cta><?= c($br, $on ? 'map_showing_label' : 'map_show_label') ?></span>
-            </span>
-          </button>
-<?php if (($bn['phone'] !== '' && $bn['phone_href'] !== '') || $bn['hours'] !== ''): ?>
-          <div class="branch-meta"><?php if ($bn['phone'] !== '' && $bn['phone_href'] !== ''): ?><a href="<?= public_e($bn['phone_href']) ?>"><?= public_e($bn['phone']) ?></a><?php endif; ?><?php if ($bn['hours'] !== ''): ?><span><?= public_e($bn['hours']) ?></span><?php endif; ?></div>
-<?php endif; ?>
-        </div>
-<?php endforeach; ?>
-      </div>
-<?php $q = rawurlencode($branchQuery($first)); ?>
+<?php render_branch_list($branches, $br, (string) $br['list_label']); ?>
+<?php $q = rawurlencode(site_branch_query($first)); ?>
       <p class="map-caption" data-branch-caption aria-live="polite"><?= c($br, 'map_caption_prefix') ?> <?= public_e($first['name']) ?></p>
       <div class="map-frame">
         <iframe data-branch-map title="<?= c($br, 'map_title_prefix') ?> <?= public_e($first['name']) ?>" loading="lazy"

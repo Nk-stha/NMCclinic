@@ -17,15 +17,16 @@ function site_footer(bool $details = true): void
     $ct = site_contact_defaults();
     $set = $ct['settings']['settings'] ?? null;
     $hours = $ct['settings']['hours'];
-    $address = (string) ($set['address'] ?? '') !== '' ? (string) $set['address'] : 'Traffic Chowk, Butwal, Rupandehi, Nepal';
-    $contact = ['<span>' . public_e($address) . '</span>'];
+    $contact = ['<span>' . public_e($ct['address']) . '</span>'];
     if ($details) {
-        $email = $set === null ? 'info@nmcbutwal.com.np' : (string) $set['email'];
+        $email = $set === null ? $ct['email'] : (string) $set['email'];
         if ($email !== '') {
             $contact[] = '<a href="mailto:' . public_e($email) . '">' . public_e($email) . '</a>';
         }
         if ($set === null) {
-            array_push($contact, '<span>Sun-Fri: 8 AM-8 PM</span>', '<span>Saturday: 9 AM-2 PM</span>');
+            foreach ($ct['hours_fallback'] as $line) {
+                $contact[] = '<span>' . public_e($line) . '</span>';
+            }
         } elseif ($hours) {
             $contact[] = '<span>' . public_e(site_hours_line($hours[0])) . '</span>';
             if (count($hours) > 1) {
@@ -94,8 +95,8 @@ function site_footer(bool $details = true): void
   </a>
 
   <nav class="mobile-bar" aria-label="Quick contact">
-    <a href="<?= public_e($ct['phone_href']) ?>" data-phone-href><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"></path></svg><?= c($m, 'call_label') ?></a>
-    <a href="<?= public_e($ct['whatsapp']) ?>" target="_blank" rel="noopener" data-whatsapp><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2z"></path></svg><?= c($m, 'whatsapp_label') ?></a>
+    <a href="<?= public_e($ct['phone_href']) ?>"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"></path></svg><?= c($m, 'call_label') ?></a>
+    <a href="<?= public_e($ct['whatsapp']) ?>" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2z"></path></svg><?= c($m, 'whatsapp_label') ?></a>
     <a class="is-book" href="<?= c_href((string) $m['book_url']) ?>"><?= c($m, 'book_label') ?></a>
   </nav>
 <?php

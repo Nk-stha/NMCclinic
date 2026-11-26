@@ -15,6 +15,10 @@ function site_contact_defaults(): array
         'phone' => ($m['primary_phone'] ?? '') !== '' ? $m['primary_phone'] : '+977 71-000000',
         'phone_href' => ($m['primary_phone_href'] ?? '') !== '' ? $m['primary_phone_href'] : 'tel:+97771000000',
         'whatsapp' => ($m['whatsapp_url'] ?? '') !== '' ? $m['whatsapp_url'] : 'https://wa.me/9779800000000',
+        // Shipped fallbacks; the real values are edited in CMS > Settings.
+        'email' => ($m['email'] ?? '') !== '' ? (string) $m['email'] : 'info@nmcbutwal.com.np',
+        'address' => ($m['address'] ?? '') !== '' ? (string) $m['address'] : 'Traffic Chowk, Butwal, Rupandehi, Nepal',
+        'hours_fallback' => ['Sun-Fri: 8 AM-8 PM', 'Saturday: 9 AM-2 PM'],
     ];
 }
 
