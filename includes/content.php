@@ -174,6 +174,10 @@ function page_content(string $slug): array
 function content_safe_url(string $url): string
 {
     $url = trim($url);
+    // Browsers treat backslashes as slashes and strip tabs/newlines, so these can escape to another host.
+    if (preg_match('/[\x00-\x1F\x7F\\\\]/', $url)) {
+        return '#';
+    }
     if (preg_match('/^(https?:|tel:|mailto:|#)/i', $url)) {
         return $url;
     }

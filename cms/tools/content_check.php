@@ -55,6 +55,11 @@ foreach (['https://x.com/a', 'tel:+97771000000', 'mailto:a@b.c', '#appointment',
     $good = $good && content_safe_url($u) === $u;
 }
 check('url_allows_safe', $good);
+$bs = true;
+foreach (["/\\evil.com", "\\\\evil.com", "/\t/evil.com", "java\nscript:alert(1)"] as $u) {
+    $bs = $bs && content_safe_url($u) === '#';
+}
+check('url_blocks_backslash_and_control', $bs && content_safe_url('specialties#kidney') === 'specialties#kidney');
 check('c_url_escapes', c_url(['u' => 'a?x=1&y="2"'], 'u') === 'a?x=1&amp;y=&quot;2&quot;');
 check('c_icon_unknown_empty', c_icon(['i' => 'nope'], 'i') === '');
 
