@@ -471,10 +471,13 @@ function hours_lines(array $hours): array
             continue;
         }
         $last = count($groups) - 1;
-        if ($last >= 0 && $groups[$last]['time'] === $time) {
+        // Merge only consecutive days, so Sun, Mon, Fri never collapse into "Sun-Fri".
+        $index = array_search($hour['day'], ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], true);
+        if ($last >= 0 && $groups[$last]['time'] === $time && $index !== false && $index === $groups[$last]['index'] + 1) {
             $groups[$last]['to'] = $hour['day'];
+            $groups[$last]['index'] = $index;
         } else {
-            $groups[] = ['from' => $hour['day'], 'to' => $hour['day'], 'time' => $time];
+            $groups[] = ['from' => $hour['day'], 'to' => $hour['day'], 'time' => $time, 'index' => $index];
         }
     }
 

@@ -74,10 +74,10 @@ $schema = public_blog_schema($post, $canonical, $imageUrl);
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400..800;1,500..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= public_e($baseUrl) ?>/assets/style.css?v=20261011">
+<link rel="stylesheet" href="<?= public_e($baseUrl) ?>/assets/style.css?v=20261126">
 </head>
 <body>
-<a class="skip-link" href="#top">Skip to content</a>
+<a class="skip-link" href="#top"><?= c(page_content('global')['header'], 'skip_label') ?></a>
 <div class="page">
 
   <?php site_header('blog'); ?>
@@ -174,7 +174,7 @@ $schema = public_blog_schema($post, $canonical, $imageUrl);
   <?php site_footer(true); ?>
 
 </div>
-<script src="<?= public_e($baseUrl) ?>/assets/script.js?v=20261011"></script>
+<script src="<?= public_e($baseUrl) ?>/assets/script.js?v=20261126"></script>
 </body>
 </html>
 <?php

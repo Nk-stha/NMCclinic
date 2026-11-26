@@ -39,3 +39,11 @@ function content_icons(): array
         'generic' => '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"></path><path d="M5 12h14"></path><circle cx="12" cy="12" r="8"></circle></svg>',
     ];
 }
+
+// Icon by specialty slug: own key, then known aliases, else generic.
+function spec_icon(string $slug): string
+{
+    $icons = content_icons();
+    $alias = ['nephrology' => 'kidney', 'obstetrics-gynecology' => 'women', 'laboratory-services' => 'laboratory'];
+    return $icons[$slug] ?? $icons[$alias[$slug] ?? 'generic'] ?? $icons['generic'];
+}

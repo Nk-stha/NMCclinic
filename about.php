@@ -17,10 +17,10 @@ $ct = site_contact_defaults();
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400..800;1,500..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=20261011">
+<link rel="stylesheet" href="assets/style.css?v=20261126">
 </head>
 <body>
-<a class="skip-link" href="#top">Skip to content</a>
+<a class="skip-link" href="#top"><?= c(page_content('global')['header'], 'skip_label') ?></a>
 <div class="page">
 
   <?php site_header('about'); ?>
@@ -142,6 +142,6 @@ $ct = site_contact_defaults();
   <?php site_footer(true); ?>
 
 </div>
-<script src="assets/script.js?v=20261011"></script>
+<script src="assets/script.js?v=20261126"></script>
 </body>
 </html>

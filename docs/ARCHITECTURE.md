@@ -13,23 +13,20 @@ Plain PHP 8.2 + MySQL 8.4 site. No framework, no build step, no Composer/npm.
 flowchart LR
   B[Browser] -->|clean URLs| A[Apache + .htaccess]
   A --> P[Public pages *.php<br/>server-rendered shell + SEO head]
-  A --> J[JSON endpoints *-data.php]
   A --> F[Form endpoints submit-*.php]
   A --> C[CMS /cms/*.php<br/>session + CSRF]
   P -->|includes/public_seo.php| DB[(MySQL)]
-  J -->|cms/config/database.php db()| DB
+  P -->|includes/site_data.php + content.php| DB
   F -->|includes/public_forms.php| DB
   C -->|cms/includes/*_form.php| DB
   C --> U[/uploads/media/]
-  P -.->|assets/script.js fetch| J
 ```
 
 | Layer | Files | Role |
 |---|---|---|
 | Routing | `.htaccess` | Clean URLs (`/about`, `/blog/{slug}`), 301 from `*.html/*.php`, blocks `*.sql *.zip *.md`, `migrations/`, `plan/`, dotfiles, 404 fallback |
 | DB access | `cms/config/database.php` | `db()` singleton PDO, reads `.env` / env vars, `ERRMODE_EXCEPTION`, native prepares. Most-connected node in the graph (54 edges) |
-| Public pages | `index.php about.php specialties.php doctors.php blog.php blog-detail.php contact.php 404.php` | Static HTML markup + `public_render_page_head()` (SEO meta, JSON-LD `MedicalClinic`) |
-| Public JSON API | `site-settings-data.php branches-data.php specialties-data.php doctors-data.php blog-data.php form-options.php` | Read-only, published rows only |
+| Public pages | `index.php about.php specialties.php doctors.php blog.php blog-detail.php contact.php 404.php` | Server-rendered from `includes/site_data.php` (published rows) and `includes/content.php` (CMS-editable copy, `includes/content_registry.php`) + `public_render_page_head()` (SEO meta, JSON-LD `MedicalClinic`) |
 | Public forms | `submit-appointment.php submit-contact.php` + `includes/public_forms.php` | Validate, session rate limit, consent, IP hash, insert |
 | SEO | `includes/public_seo.php robots.php sitemap.php` | Meta, canonical, OG, schema, sitemap from DB |
 | CMS | `cms/*.php`, `cms/includes/*` | Admin CRUD: doctors, specialties, blog, categories, branches, media, SEO, contact, settings, submissions |
@@ -40,23 +37,14 @@ flowchart LR
 ## 2. Frontend design
 
 ### 2.1 Rendering model
-Hybrid: each page is a server-rendered PHP shell with hard-coded fallback content. On load, `assets/script.js` fetches JSON and swaps in CMS data. Without JS or DB, the page still shows the fallback.
+Server-rendered: each page renders its lists (from `includes/site_data.php`) and its copy (from `page_content()`, editable in CMS > Content, registry defaults as fallback) in PHP. `assets/script.js` only adds behaviour (menu, filters, form submit, branch picker, open status, reveal, year); it fetches no content.
 
-| Route | File | Data fetched by JS |
-|---|---|---|
-| `/` | `index.php` | site-settings, branches, specialties, doctors, blog, form-options |
-| `/about` | `about.php` | site-settings |
-| `/specialties` | `specialties.php` | specialties-data |
-| `/doctors` | `doctors.php` | doctors-data (filter by specialty) |
-| `/blog` | `blog.php` | blog-data (filter by category) |
-| `/blog/{slug}` | `blog-detail.php` | none — fully server-rendered (best for SEO) |
-| `/contact` | `contact.php` | site-settings, branches, form-options |
 
 ### 2.2 JS markup contracts (`assets/script.js`)
 - `[data-filter-group] / [data-filter-target] / [data-category]` — tab filters.
 - `form[data-success]` — AJAX submit to `action`, JSON `{ok, message}`.
 - `[data-branch-picker]` with `[data-branch-list] iframe[data-branch-map] [data-branch-directions]` — branch map.
-- `[data-phone] [data-phone-href] [data-whatsapp] [data-open-status] [data-year]` — global settings.
+- `[data-open-status][data-hours]` (hours JSON from Settings) and `[data-year]`.
 - `[data-reveal]` — staggered fade-in, skipped under `prefers-reduced-motion`.
 
 ### 2.3 Design tokens (`assets/style.css :root`)
@@ -85,12 +73,6 @@ No Tailwind, no component library, no `DESIGN.md`.
 
 | Method | Path | Auth | Tables |
 |---|---|---|---|
-| GET | `/site-settings-data.php` | public | business_contact_settings, opening_hours, social_links |
-| GET | `/branches-data.php` | public | clinic_branches |
-| GET | `/specialties-data.php` | public | specialties, specialty_points, media_assets |
-| GET | `/doctors-data.php` | public | doctors, doctor_qualifications, doctor_schedules, specialties, media_assets |
-| GET | `/blog-data.php` | public | blog_posts, blog_categories, media_assets |
-| GET | `/form-options.php` | public | specialties, contact_subjects |
 | POST | `/submit-appointment.php` | public, rate-limited | appointment_requests |
 | POST | `/submit-contact.php` | public, rate-limited | contact_inquiries |
 | GET | `/sitemap.xml`, `/robots.txt` | public | pages, doctors, blog_posts, seo_metadata |

@@ -25,6 +25,8 @@ $emTitle = trim((string) ($page['emergency_title'] ?? '')) !== '' ? (string) $pa
 $emText = trim((string) ($page['emergency_description'] ?? '')) !== '' ? (string) $page['emergency_description'] : 'This form is not monitored around the clock. For urgent or life-threatening symptoms, contact the nearest emergency service or hospital immediately.';
 $emShow = (int) ($page['is_visible'] ?? 1) === 1;
 $emNumber = trim((string) ($page['emergency_phone_number'] ?? ''));
+$emHref = phone_href($emNumber);
+$emLabel = trim((string) ($page['emergency_phone_label'] ?? ''));
 $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !== '' ? $b['lat'] . ',' . $b['lng'] : $b['address'];
 ?>
 <!DOCTYPE html>
@@ -36,10 +38,10 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400..800;1,500..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=20261011">
+<link rel="stylesheet" href="assets/style.css?v=20261126">
 </head>
 <body>
-<a class="skip-link" href="#top">Skip to content</a>
+<a class="skip-link" href="#top"><?= c(page_content('global')['header'], 'skip_label') ?></a>
 <div class="page">
 
   <?php site_header('contact'); ?>
@@ -88,7 +90,7 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
   </section>
 
   <!-- ============ FORM + MAP ============ -->
-  <section class="wrap contact-split" id="contact-form" data-branch-picker>
+  <section class="wrap contact-split" id="contact-form" data-branch-picker data-label-show="<?= c($br, 'map_show_label') ?>" data-label-showing="<?= c($br, 'map_showing_label') ?>" data-caption-prefix="<?= c($br, 'map_caption_prefix') ?>" data-title-prefix="<?= c($br, 'map_title_prefix') ?>">
     <div class="contact-form-col">
       <span class="eyebrow"><?= c($f, 'eyebrow') ?></span>
       <h2 class="section-title contact"><?= c_heading($f, 'heading') ?></h2>
@@ -149,7 +151,7 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
             <span class="branch-body">
               <span class="branch-head"><span class="branch-name"><?= public_e($bn['name']) ?></span><?php if ($bn['tag'] !== ''): ?><span class="branch-tag<?= $bn['is_primary'] ? '' : ' is-soft' ?>"><?= public_e($bn['tag']) ?></span><?php endif; ?></span>
               <span class="branch-text"><?= public_e($bn['address']) ?></span>
-              <span class="branch-cta" data-branch-cta><?= $on ? 'Showing on map' : 'Show on map' ?></span>
+              <span class="branch-cta" data-branch-cta><?= c($br, $on ? 'map_showing_label' : 'map_show_label') ?></span>
             </span>
           </button>
 <?php if (($bn['phone'] !== '' && $bn['phone_href'] !== '') || $bn['hours'] !== ''): ?>
@@ -159,9 +161,9 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
 <?php endforeach; ?>
       </div>
 <?php $q = rawurlencode($branchQuery($first)); ?>
-      <p class="map-caption" data-branch-caption aria-live="polite">Showing <?= public_e($first['name']) ?></p>
+      <p class="map-caption" data-branch-caption aria-live="polite"><?= c($br, 'map_caption_prefix') ?> <?= public_e($first['name']) ?></p>
       <div class="map-frame">
-        <iframe data-branch-map title="Map of NMC <?= public_e($first['name']) ?>" loading="lazy"
+        <iframe data-branch-map title="<?= c($br, 'map_title_prefix') ?> <?= public_e($first['name']) ?>" loading="lazy"
                 src="<?= public_e('https://www.google.com/maps?q=' . $q . '&z=' . ($first['zoom'] ?: 15) . '&output=embed') ?>"></iframe>
       </div>
       <a class="btn btn-outline btn-block" data-branch-directions href="<?= public_e('https://www.google.com/maps/dir/?api=1&destination=' . $q) ?>" target="_blank" rel="noopener">
@@ -194,7 +196,7 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
           <div class="emergency-title"><?= public_e($emTitle) ?></div>
           <p><?= public_e($emText) ?></p>
 <?php if ($emNumber !== ''): ?>
-          <p><?= public_e(trim((string) ($page['emergency_phone_label'] ?? ''))) ?> <a href="<?= public_e(phone_href($emNumber)) ?>"><?= public_e($emNumber) ?></a></p>
+          <p><?= $emLabel !== '' ? public_e($emLabel) . ' ' : '' ?><?php if ($emHref !== ''): ?><a href="<?= public_e($emHref) ?>"><?= public_e($emNumber) ?></a><?php else: ?><?= public_e($emNumber) ?><?php endif; ?></p>
 <?php endif; ?>
         </div>
       </div>
@@ -205,6 +207,6 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
   <?php site_footer(false); ?>
 
 </div>
-<script src="assets/script.js?v=20261011"></script>
+<script src="assets/script.js?v=20261126"></script>
 </body>
 </html>

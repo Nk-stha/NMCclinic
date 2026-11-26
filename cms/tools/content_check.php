@@ -149,7 +149,9 @@ if ($tooLong) {
 check('registry_max_fits_columns', $tooLong === []);
 
 $h = static fn (string $d, string $o, string $c, bool $x = false, string $l = ''): array => ['day' => $d, 'opens_at' => $o, 'closes_at' => $c, 'label' => $l, 'is_closed' => $x];
-check('hours_lines_groups_days', hours_lines([$h('Sunday', '08:00', '20:00'), $h('Monday', '08:00', '20:00'), $h('Friday', '08:00', '20:00'), $h('Saturday', '09:00', '14:00')]) === ['Sun-Fri: 8:00 AM - 8:00 PM', 'Saturday: 9:00 AM - 2:00 PM']
+$week = array_map(static fn (string $d): array => $h($d, '08:00', '20:00'), ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
+check('hours_lines_groups_days', hours_lines([...$week, $h('Saturday', '09:00', '14:00')]) === ['Sun-Fri: 8:00 AM - 8:00 PM', 'Saturday: 9:00 AM - 2:00 PM']
+    && hours_lines([$h('Sunday', '08:00', '20:00'), $h('Monday', '08:00', '20:00'), $h('Friday', '08:00', '20:00'), $h('Saturday', '09:00', '14:00')]) === ['Sun-Mon: 8:00 AM - 8:00 PM', 'Friday: 8:00 AM - 8:00 PM', 'Saturday: 9:00 AM - 2:00 PM']
     && hours_lines([$h('Sunday', '', '', true), $h('Monday', '', '', false, 'By appointment'), $h('Tuesday', '', '')]) === ['Sunday: Closed', 'Monday: By appointment']);
 
 $_SERVER['HTTP_HOST'] = 'example.test';

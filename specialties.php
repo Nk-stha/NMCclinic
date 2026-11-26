@@ -9,14 +9,6 @@ $ct = site_contact_defaults();
 [$b, $l, $cta] = [$p['banner'], $p['list'], $p['cta_band']];
 $specialties = site_specialties();
 $arrow = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
-
-// Icon by specialty slug: own key, then known aliases, else generic.
-function spec_icon(string $slug): string
-{
-    $icons = content_icons();
-    $alias = ['nephrology' => 'kidney', 'obstetrics-gynecology' => 'women', 'laboratory-services' => 'laboratory'];
-    return $icons[$slug] ?? $icons[$alias[$slug] ?? 'generic'] ?? $icons['generic'];
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -27,10 +19,10 @@ function spec_icon(string $slug): string
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400..800;1,500..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=20261011">
+<link rel="stylesheet" href="assets/style.css?v=20261126">
 </head>
 <body>
-<a class="skip-link" href="#top">Skip to content</a>
+<a class="skip-link" href="#top"><?= c(page_content('global')['header'], 'skip_label') ?></a>
 <div class="page">
 
   <?php site_header('specialties'); ?>
@@ -116,6 +108,6 @@ function spec_icon(string $slug): string
   <?php site_footer(true); ?>
 
 </div>
-<script src="assets/script.js?v=20261011"></script>
+<script src="assets/script.js?v=20261126"></script>
 </body>
 </html>

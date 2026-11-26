@@ -39,10 +39,10 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400..800;1,500..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=20261011">
+<link rel="stylesheet" href="assets/style.css?v=20261126">
 </head>
 <body>
-<a class="skip-link" href="#top">Skip to content</a>
+<a class="skip-link" href="#top"><?= c(page_content('global')['header'], 'skip_label') ?></a>
 <div class="page">
 
   <?php site_header('home'); ?>
@@ -67,7 +67,7 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
     <div class="info-strip">
       <div class="info-item" role="status">
         <span class="status-dot" data-open-dot></span>
-        <span><span class="info-k"><?= c($p['info_strip'], 'status_label') ?></span><span class="info-v" data-open-status><?= public_e($statusHours) ?></span></span>
+        <span><span class="info-k"><?= c($p['info_strip'], 'status_label') ?></span><span class="info-v" data-open-status data-hours='<?= public_e((string) json_encode(site_settings()['hours'])) ?>'><?= public_e($statusHours) ?></span></span>
       </div>
       <a class="info-item is-emergency" href="<?= public_e($ct['phone_href']) ?>" data-phone-href>
         <span class="icon-badge"><?= $phoneSvg('currentColor') ?></span>
@@ -296,7 +296,7 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
 
   <!-- ============ LOCATION & CONTACT ============ -->
 <?php $v = $p['visit']; $first = $branches[0] ?? null; ?>
-  <section class="wrap home-pad-88" id="contact" data-branch-picker>
+  <section class="wrap home-pad-88" id="contact" data-branch-picker data-label-show="<?= c($v, 'map_show_label') ?>" data-label-showing="<?= c($v, 'map_showing_label') ?>" data-caption-prefix="<?= c($v, 'map_caption_prefix') ?>" data-title-prefix="<?= c($v, 'map_title_prefix') ?>">
     <div class="head-stack">
       <span class="eyebrow"><?= c($v, 'eyebrow') ?></span>
       <h2 class="section-title"><?= c_heading($v, 'heading') ?></h2>
@@ -316,7 +316,7 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
               <span class="branch-body">
                 <span class="branch-head"><span class="branch-name"><?= public_e($b['name']) ?></span><?php if ($b['tag'] !== ''): ?><span class="branch-tag<?= $b['is_primary'] ? '' : ' is-soft' ?>"><?= public_e($b['tag']) ?></span><?php endif; ?></span>
                 <span class="branch-text"><?= public_e($b['address']) ?></span>
-                <span class="branch-cta" data-branch-cta><?= $on ? 'Showing on map' : 'Show on map' ?></span>
+                <span class="branch-cta" data-branch-cta><?= c($v, $on ? 'map_showing_label' : 'map_show_label') ?></span>
               </span>
             </button>
 <?php if (($b['phone'] !== '' && $b['phone_href'] !== '') || $b['hours'] !== ''): ?>
@@ -347,9 +347,9 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
       </div>
 <?php if ($first): $q = rawurlencode($branchQuery($first)); ?>
       <div class="contact-side">
-        <p class="map-caption" data-branch-caption aria-live="polite">Showing <?= public_e($first['name']) ?></p>
+        <p class="map-caption" data-branch-caption aria-live="polite"><?= c($v, 'map_caption_prefix') ?> <?= public_e($first['name']) ?></p>
         <div class="map-frame">
-          <iframe data-branch-map title="Map of NMC <?= public_e($first['name']) ?>" loading="lazy"
+          <iframe data-branch-map title="<?= c($v, 'map_title_prefix') ?> <?= public_e($first['name']) ?>" loading="lazy"
                   src="<?= public_e('https://www.google.com/maps?q=' . $q . '&z=' . ($first['zoom'] ?: 15) . '&output=embed') ?>"></iframe>
         </div>
         <a class="btn btn-outline btn-block" data-branch-directions href="<?= public_e('https://www.google.com/maps/dir/?api=1&destination=' . $q) ?>" target="_blank" rel="noopener">
@@ -364,6 +364,6 @@ $branchQuery = static fn (array $b): string => $b['lat'] !== '' && $b['lng'] !==
   <?php site_footer(false); ?>
 
 </div>
-<script src="assets/script.js?v=20261011"></script>
+<script src="assets/script.js?v=20261126"></script>
 </body>
 </html>
