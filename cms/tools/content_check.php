@@ -24,6 +24,8 @@ putenv('NMC_DB_HOST=nonexistent.invalid');
 $errLog = ini_set('error_log', '/dev/null');
 $globalSpec = content_page_spec('global');
 check('db_down_returns_defaults', page_content('global')['footer']['about'] === $globalSpec['sections']['footer']['fields']['about']['default']);
+require_once __DIR__ . '/../../includes/site_data.php';
+check('site_data_db_down_shapes', site_doctors() === [] && site_settings()['settings'] === null && site_branches() === [] && site_form_options() === ['specialties' => [], 'subjects' => []] && !site_data_ok());
 ini_set('error_log', (string) $errLog);
 
 $spec = ['label' => 'T', 'sections' => ['s' => [
