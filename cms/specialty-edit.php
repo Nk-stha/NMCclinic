@@ -34,24 +34,36 @@ try {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $specialty = array_merge($specialty, specialty_from_post());
-    $points = specialty_points_from_post();
-
     if (!csrf_is_valid($_POST['csrf_token'] ?? null)) {
         $errors[] = 'Invalid request. Please reload the page and try again.';
+    } elseif (($_POST['action'] ?? '') === 'delete') {
+        try {
+            $stmt = db()->prepare('UPDATE specialties SET deleted_at = NOW() WHERE id = :id AND deleted_at IS NULL');
+            $stmt->execute([':id' => (int) $id]);
+            $_SESSION['specialty_toast'] = ['type' => 'success', 'message' => 'Specialty removed from the website.'];
+            header('Location: specialties.php');
+            exit;
+        } catch (Throwable $exception) {
+            $errors[] = 'Unable to remove specialty. Please try again.';
+        }
     }
 
-    try {
-        $errors = array_merge($errors, specialty_validate($specialty, $points, (int) $id));
+    if ($errors === [] && ($_POST['action'] ?? '') !== 'delete') {
+        $specialty = array_merge($specialty, specialty_from_post());
+        $points = specialty_points_from_post();
 
-        if ($errors === []) {
-            specialty_save($specialty, $points, (int) $id);
-            $_SESSION['specialty_toast'] = ['type' => 'success', 'message' => 'Specialty updated successfully.'];
-            header('Location: specialty-edit.php?id=' . $id);
-            exit;
+        try {
+            $errors = array_merge($errors, specialty_validate($specialty, $points, (int) $id));
+
+            if ($errors === []) {
+                specialty_save($specialty, $points, (int) $id);
+                $_SESSION['specialty_toast'] = ['type' => 'success', 'message' => 'Specialty updated successfully.'];
+                header('Location: specialty-edit.php?id=' . $id);
+                exit;
+            }
+        } catch (Throwable $exception) {
+            $errors[] = 'Unable to save specialty. Please confirm the database schema is available and try again.';
         }
-    } catch (Throwable $exception) {
-        $errors[] = 'Unable to save specialty. Please confirm the database schema is available and try again.';
     }
 }
 
@@ -63,7 +75,14 @@ cms_header('Edit Specialty', $admin, 'specialties');
       <h1>Edit Specialty</h1>
       <p>Update clinical details, media selection, visibility, and highlights.</p>
     </div>
-    <a class="secondary-btn" href="specialties.php">Back to List</a>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <form method="post" action="specialty-edit.php?id=<?= (int) $id ?>" onsubmit="return confirm('Remove this specialty from the website?');">
+        <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+        <input type="hidden" name="action" value="delete">
+        <button class="secondary-btn" type="submit" style="border-color:var(--danger);color:var(--danger)">Remove Specialty</button>
+      </form>
+      <a class="secondary-btn" href="specialties.php">Back to List</a>
+    </div>
   </div>
 
   <?php if ($toast): ?>

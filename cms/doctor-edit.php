@@ -36,25 +36,37 @@ try {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $doctor = array_merge($doctor, doctor_from_post());
-    $qualifications = doctor_qualifications_from_post();
-    $schedules = doctor_schedules_from_post();
-
     if (!csrf_is_valid($_POST['csrf_token'] ?? null)) {
         $errors[] = 'Invalid request. Please reload the page and try again.';
+    } elseif (($_POST['action'] ?? '') === 'delete') {
+        try {
+            $stmt = db()->prepare('UPDATE doctors SET deleted_at = NOW() WHERE id = :id AND deleted_at IS NULL');
+            $stmt->execute([':id' => (int) $id]);
+            $_SESSION['doctor_toast'] = ['type' => 'success', 'message' => 'Doctor profile removed from the website.'];
+            header('Location: doctors.php');
+            exit;
+        } catch (Throwable $exception) {
+            $errors[] = 'Unable to remove doctor profile. Please try again.';
+        }
     }
 
-    try {
-        $errors = array_merge($errors, doctor_validate($doctor, $qualifications, $schedules, (int) $id));
+    if ($errors === [] && ($_POST['action'] ?? '') !== 'delete') {
+        $doctor = array_merge($doctor, doctor_from_post());
+        $qualifications = doctor_qualifications_from_post();
+        $schedules = doctor_schedules_from_post();
 
-        if ($errors === []) {
-            doctor_save($doctor, $qualifications, $schedules, (int) $id);
-            $_SESSION['doctor_toast'] = ['type' => 'success', 'message' => 'Doctor profile updated successfully.'];
-            header('Location: doctor-edit.php?id=' . $id);
-            exit;
+        try {
+            $errors = array_merge($errors, doctor_validate($doctor, $qualifications, $schedules, (int) $id));
+
+            if ($errors === []) {
+                doctor_save($doctor, $qualifications, $schedules, (int) $id);
+                $_SESSION['doctor_toast'] = ['type' => 'success', 'message' => 'Doctor profile updated successfully.'];
+                header('Location: doctor-edit.php?id=' . $id);
+                exit;
+            }
+        } catch (Throwable $exception) {
+            $errors[] = 'Unable to save doctor profile. Please confirm the database schema is available and try again.';
         }
-    } catch (Throwable $exception) {
-        $errors[] = 'Unable to save doctor profile. Please confirm the database schema is available and try again.';
     }
 }
 
@@ -66,7 +78,14 @@ cms_header('Edit Doctor', $admin, 'doctors');
       <h1>Edit Doctor</h1>
       <p>Update profile details, specialty assignment, photo, qualifications, and schedule.</p>
     </div>
-    <a class="secondary-btn" href="doctors.php">Back to List</a>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <form method="post" action="doctor-edit.php?id=<?= (int) $id ?>" onsubmit="return confirm('Remove this doctor profile from the website?');">
+        <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+        <input type="hidden" name="action" value="delete">
+        <button class="secondary-btn" type="submit" style="border-color:var(--danger);color:var(--danger)">Remove Doctor</button>
+      </form>
+      <a class="secondary-btn" href="doctors.php">Back to List</a>
+    </div>
   </div>
 
   <?php if ($toast): ?>

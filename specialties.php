@@ -19,7 +19,7 @@ $arrow = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="cu
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400..800;1,500..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=20261126b">
+<link rel="stylesheet" href="assets/style.css?v=20261127b">
 </head>
 <body>
 <a class="skip-link" href="#top"><?= c(page_content('global')['header'], 'skip_label') ?></a>

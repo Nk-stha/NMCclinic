@@ -44,7 +44,7 @@ function site_header(string $active): void
   <header class="site-header">
     <div class="header-bar">
       <a class="brand" href="<?= c_href('home') ?>"<?= $active === 'home' ? ' aria-current="page"' : '' ?>>
-        <img src="<?= c_href((string) ($h['logo']['src'] ?? '')) ?>" alt="<?= $logo['alt'] ?>" width="48" height="48">
+        <img src="<?= c_href((string) ($h['logo']['src'] ?? '')) ?>" alt="<?= $logo['alt'] ?>" width="40" height="40">
         <span class="brand-text">
           <span class="brand-name"><?= c($h, 'brand_name') ?></span>
           <span class="brand-sub"><?= c($h, 'brand_sub') ?></span>

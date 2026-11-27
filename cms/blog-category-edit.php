@@ -31,20 +31,33 @@ try {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $category = array_merge($category, blog_category_from_post());
     if (!csrf_is_valid($_POST['csrf_token'] ?? null)) {
         $errors[] = 'Invalid request. Please reload the page and try again.';
-    }
-    try {
-        $errors = array_merge($errors, blog_category_validate($category, (int) $id));
-        if ($errors === []) {
-            blog_category_save($category, (int) $id);
-            $_SESSION['blog_category_toast'] = ['type' => 'success', 'message' => 'Blog category updated successfully.'];
-            header('Location: blog-category-edit.php?id=' . $id);
+    } elseif (($_POST['action'] ?? '') === 'delete') {
+        try {
+            $stmt = db()->prepare('UPDATE blog_categories SET deleted_at = NOW() WHERE id = :id AND deleted_at IS NULL');
+            $stmt->execute([':id' => (int) $id]);
+            $_SESSION['blog_category_toast'] = ['type' => 'success', 'message' => 'Blog category removed from the website.'];
+            header('Location: blog-categories.php');
             exit;
+        } catch (Throwable $exception) {
+            $errors[] = 'Unable to remove blog category. Please try again.';
         }
-    } catch (Throwable $exception) {
-        $errors[] = 'Unable to save blog category. Please confirm the database schema is available and try again.';
+    }
+
+    if ($errors === [] && ($_POST['action'] ?? '') !== 'delete') {
+        $category = array_merge($category, blog_category_from_post());
+        try {
+            $errors = array_merge($errors, blog_category_validate($category, (int) $id));
+            if ($errors === []) {
+                blog_category_save($category, (int) $id);
+                $_SESSION['blog_category_toast'] = ['type' => 'success', 'message' => 'Blog category updated successfully.'];
+                header('Location: blog-category-edit.php?id=' . $id);
+                exit;
+            }
+        } catch (Throwable $exception) {
+            $errors[] = 'Unable to save blog category. Please confirm the database schema is available and try again.';
+        }
     }
 }
 
@@ -56,7 +69,14 @@ cms_header('Edit Blog Category', $admin, 'blog_categories');
       <h1>Edit Blog Category</h1>
       <p>Update category name, slug, description, visibility, and sort order.</p>
     </div>
-    <a class="secondary-btn" href="blog-categories.php">Back to List</a>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <form method="post" action="blog-category-edit.php?id=<?= (int) $id ?>" onsubmit="return confirm('Remove this blog category from the website?');">
+        <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+        <input type="hidden" name="action" value="delete">
+        <button class="secondary-btn" type="submit" style="border-color:var(--danger);color:var(--danger)">Remove Category</button>
+      </form>
+      <a class="secondary-btn" href="blog-categories.php">Back to List</a>
+    </div>
   </div>
   <?php if ($toast): ?><div class="toast <?= e((string) $toast['type']) ?>" role="status"><?= e((string) $toast['message']) ?></div><?php endif; ?>
   <?php blog_category_render_form($category, 'blog-category-edit.php?id=' . (int) $id, 'edit', $errors); ?>
