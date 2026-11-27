@@ -40,6 +40,7 @@ try {
         'caption' => trim((string) ($_POST['caption'] ?? '')),
         'focal_point_x' => '',
         'focal_point_y' => '',
+        'is_public' => 1,
     ];
 
     if ($metadata['alt_text'] === '') {

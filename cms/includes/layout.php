@@ -307,7 +307,8 @@ function cms_footer(): void
     statusEl.style.color = 'var(--primary)';
     statusEl.textContent = 'Uploading ' + file.name + '...';
 
-    var csrfInput = document.querySelector('input[name="csrf_token"]');
+    var form = fileInput.closest('form');
+    var csrfInput = (form && form.querySelector('input[name="csrf_token"]')) || document.querySelector('input[name="csrf_token"]');
     var token = csrfInput ? csrfInput.value : '';
 
     var formData = new FormData();
