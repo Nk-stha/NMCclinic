@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/image_picker.php';
+
 require_once __DIR__ . '/../../includes/content.php';
 
 /** Message is safe to show to the admin; every other exception is logged and hidden. */
@@ -214,38 +216,22 @@ function content_render_field(array $f, string $name, mixed $value, array $media
     $wide = in_array($type, ['textarea', 'heading'], true);
     ?>
     <div class="field field-<?= e($type) ?><?= $wide ? ' full' : '' ?><?= $error ? ' has-error' : '' ?>">
-      <label for="<?= e($id) ?>"><?= e($f['label']) ?><?= !empty($f['required']) ? ' *' : '' ?></label>
       <?php if ($type === 'image'):
         $sel = is_numeric($value) ? (int) $value : 0;
-        $default = (string) ($f['default']['src'] ?? '');
-        $thumb = is_array($value) ? (string) ($value['src'] ?? '') : $default;
-        foreach ($mediaOptions as $m) {
-            if ((int) $m['id'] === $sel) {
-                $thumb = (string) $m['file_path'];
-            }
-        }
-        $custom = $sel > 0 && $thumb !== $default;
-        ?>
-        <div class="content-media">
-          <select class="select" id="<?= e($id) ?>" name="<?= e($name) ?>"<?= $aria ?>>
-            <option value="">Default image</option>
-            <?php foreach ($mediaOptions as $m): ?>
-              <option value="<?= (int) $m['id'] ?>" data-src="../<?= e((string) $m['file_path']) ?>"<?= (int) $m['id'] === $sel ? ' selected' : '' ?>><?= e('#' . $m['id'] . ' ' . basename((string) $m['file_path'])) ?></option>
-            <?php endforeach; ?>
-          </select>
-          <div class="content-thumbs">
-            <figure class="content-thumb" data-thumb="current"<?= $thumb === '' ? ' hidden' : '' ?>>
-              <img src="<?= $thumb !== '' ? '../' . e($thumb) : '' ?>" alt="" width="72" height="72" loading="lazy">
-              <figcaption><?= $custom ? 'Selected' : 'Default image' ?></figcaption>
-            </figure>
-            <?php if ($default !== ''): ?>
-              <figure class="content-thumb" data-thumb="default"<?= $custom ? '' : ' hidden' ?>>
-                <img src="../<?= e($default) ?>" alt="" width="72" height="72" loading="lazy">
-                <figcaption>Default</figcaption>
-              </figure>
-            <?php endif; ?>
-          </div>
-        </div>
+        $defaultSrc = (string) ($f['default']['src'] ?? '');
+        render_image_picker([
+            'name' => $name,
+            'value' => $sel > 0 ? $sel : null,
+            'mediaOptions' => $mediaOptions,
+            'label' => (string) $f['label'],
+            'help' => 'Upload a new image or pick from library. Leave empty to use default (' . basename($defaultSrc) . ').',
+            'id' => $id,
+        ]);
+      ?>
+      <?php else: ?>
+        <label for="<?= e($id) ?>"><?= e($f['label']) ?><?= !empty($f['required']) ? ' *' : '' ?></label>
+      <?php endif; ?>
+      <?php if ($type === 'image'): ?>
       <?php elseif ($type === 'icon'): $svg = content_icons()[(string) $value] ?? ''; ?>
         <div class="content-icon-pick">
           <span class="content-icon-preview" aria-hidden="true"><?= $svg /* trusted static SVG from content_icons() */ ?></span>

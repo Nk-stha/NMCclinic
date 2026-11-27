@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/image_picker.php';
+
 function seo_default(): array
 {
     return [
@@ -324,15 +326,15 @@ function seo_render_form(array $seo, array $targetOptions, array $mediaOptions, 
               <textarea class="textarea" id="og_description" name="og_description" rows="3" maxlength="500"><?= e((string) $seo['og_description']) ?></textarea>
             </div>
             <div class="field full">
-              <label for="og_image_id">OG Image</label>
-              <select class="select" id="og_image_id" name="og_image_id">
-                <option value="">No image selected</option>
-                <?php foreach ($mediaOptions as $media): ?>
-                  <option value="<?= e((string) $media['id']) ?>" <?= (string) $seo['og_image_id'] === (string) $media['id'] ? 'selected' : '' ?>>
-                    <?= e((string) ($media['alt_text'] ?: $media['file_path'])) ?>
-                  </option>
-                <?php endforeach; ?>
-              </select>
+              <?php
+              render_image_picker([
+                  'name' => 'og_image_id',
+                  'value' => $seo['og_image_id'] ?? null,
+                  'mediaOptions' => $mediaOptions,
+                  'label' => 'OG Image',
+                  'help' => 'Social share preview image (optimal size 1200x630px).',
+              ]);
+              ?>
             </div>
             <div class="field full">
               <label for="twitter_card">Twitter Card</label>

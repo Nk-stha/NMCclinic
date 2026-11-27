@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/image_picker.php';
+require_once __DIR__ . '/seo_metadata_form.php';
+
 function blog_default(): array
 {
     return [
@@ -353,6 +356,10 @@ function blog_render_form(array $post, array $categoryOptions, array $mediaOptio
             </div>
           </div>
         </section>
+
+        <?php
+        render_seo_form_section($post['seo'] ?? [], $mediaOptions, 'blog');
+        ?>
       </div>
 
       <aside class="grid">
@@ -373,17 +380,15 @@ function blog_render_form(array $post, array $categoryOptions, array $mediaOptio
 
         <section class="card form-card">
           <h2><span class="material-symbols-outlined">image</span>Featured Image</h2>
-          <div class="field">
-            <label for="featured_image_id">Image</label>
-            <select class="select" id="featured_image_id" name="featured_image_id">
-              <option value="">No image selected</option>
-              <?php foreach ($mediaOptions as $media): ?>
-                <option value="<?= e((string) $media['id']) ?>" <?= (string) $post['featured_image_id'] === (string) $media['id'] ? 'selected' : '' ?>>
-                  <?= e((string) ($media['alt_text'] ?: $media['file_path'])) ?>
-                </option>
-              <?php endforeach; ?>
-            </select>
-          </div>
+          <?php
+          render_image_picker([
+              'name' => 'featured_image_id',
+              'value' => $post['featured_image_id'] ?? null,
+              'mediaOptions' => $mediaOptions,
+              'label' => 'Cover Photo',
+              'help' => 'Upload a high-quality cover photo or choose an existing image.',
+          ]);
+          ?>
         </section>
 
         <section class="card form-card">

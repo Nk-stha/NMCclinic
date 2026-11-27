@@ -4,6 +4,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/layout.php';
 require_once __DIR__ . '/includes/blog_form.php';
+require_once __DIR__ . '/includes/seo_metadata_form.php';
 
 $admin = require_admin();
 $post = blog_default();
@@ -30,10 +31,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors = array_merge($errors, blog_validate($post));
 
         if ($errors === []) {
-            $id = blog_save($post);
-            $_SESSION['blog_toast'] = ['type' => 'success', 'message' => 'Blog post created successfully.'];
-            header('Location: blog-edit.php?id=' . $id);
-            exit;
+            $pdo = db();
+            $pdo->beginTransaction();
+            try {
+                $id = blog_save($post);
+                seo_save_for_target('blog_post', (int) $id, $_POST);
+                $pdo->commit();
+                $_SESSION['blog_toast'] = ['type' => 'success', 'message' => 'Blog post and SEO metadata created successfully.'];
+                header('Location: blog-edit.php?id=' . $id);
+                exit;
+            } catch (Throwable $saveException) {
+                if ($pdo->inTransaction()) {
+                    $pdo->rollBack();
+                }
+                throw $saveException;
+            }
         }
     } catch (Throwable $exception) {
         $errors[] = 'Unable to save blog post. Please confirm the database schema is available and try again.';

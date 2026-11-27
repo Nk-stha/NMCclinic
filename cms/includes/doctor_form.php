@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/image_picker.php';
+
 function doctor_default(): array
 {
     return [
@@ -484,18 +486,15 @@ function doctor_render_form(array $doctor, array $qualifications, array $schedul
       <aside class="grid">
         <section class="card form-card">
           <h2><span class="material-symbols-outlined">image</span>Photo</h2>
-          <div class="field">
-            <label for="photo_id">Doctor Photo</label>
-            <select class="select" id="photo_id" name="photo_id">
-              <option value="">No photo selected</option>
-              <?php foreach ($mediaOptions as $media): ?>
-                <option value="<?= e((string) $media['id']) ?>" <?= (string) $doctor['photo_id'] === (string) $media['id'] ? 'selected' : '' ?>>
-                  <?= e((string) ($media['alt_text'] ?: $media['file_path'])) ?>
-                </option>
-              <?php endforeach; ?>
-            </select>
-            <p class="hint">Photos come from the media library. If none exist yet, leave this empty.</p>
-          </div>
+          <?php
+          render_image_picker([
+              'name' => 'photo_id',
+              'value' => $doctor['photo_id'] ?? null,
+              'mediaOptions' => $mediaOptions,
+              'label' => 'Doctor Photo',
+              'help' => 'Upload a professional medical headshot or choose from library.',
+          ]);
+          ?>
         </section>
 
         <section class="card form-card">

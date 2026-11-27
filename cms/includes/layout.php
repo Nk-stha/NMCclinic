@@ -209,6 +209,148 @@ function cms_footer(): void
     </footer>
   </main>
 </div>
+
+<script>
+// Global Image Picker & Dynamic Upload Handler
+(function () {
+  document.addEventListener('click', function (e) {
+    var browseBtn = e.target.closest('.img-picker-browse-btn');
+    if (browseBtn) {
+      var picker = browseBtn.closest('.image-picker-field');
+      var modal = picker.querySelector('.img-picker-modal');
+      if (modal) modal.style.display = 'flex';
+      return;
+    }
+
+    var closeBtn = e.target.closest('.img-picker-modal-close');
+    if (closeBtn) {
+      var modal = closeBtn.closest('.img-picker-modal');
+      if (modal) modal.style.display = 'none';
+      return;
+    }
+
+    var clearBtn = e.target.closest('.img-picker-clear-btn');
+    if (clearBtn) {
+      var picker = clearBtn.closest('.image-picker-field');
+      picker.querySelector('.img-picker-value').value = '';
+      picker.querySelector('.img-picker-thumb').style.display = 'none';
+      picker.querySelector('.img-picker-empty-icon').style.display = 'block';
+      picker.querySelector('.img-picker-title').textContent = 'No image selected';
+      clearBtn.style.display = 'none';
+      return;
+    }
+
+    var item = e.target.closest('.img-picker-item');
+    if (item) {
+      var picker = item.closest('.image-picker-field');
+      var id = item.dataset.id;
+      var src = item.dataset.src;
+      var alt = item.dataset.alt;
+
+      picker.querySelector('.img-picker-value').value = id;
+      var thumb = picker.querySelector('.img-picker-thumb');
+      thumb.src = src;
+      thumb.style.display = 'block';
+      picker.querySelector('.img-picker-empty-icon').style.display = 'none';
+      picker.querySelector('.img-picker-title').textContent = alt || 'Selected Image';
+      var clearBtn = picker.querySelector('.img-picker-clear-btn');
+      if (clearBtn) clearBtn.style.display = 'inline-flex';
+
+      item.closest('.img-picker-modal').style.display = 'none';
+      return;
+    }
+  });
+
+  // Filter existing library items
+  document.addEventListener('input', function (e) {
+    if (e.target.classList.contains('img-picker-filter')) {
+      var q = e.target.value.toLowerCase().trim();
+      var items = e.target.closest('.img-picker-modal').querySelectorAll('.img-picker-item');
+      items.forEach(function (el) {
+        var txt = (el.dataset.alt || '').toLowerCase();
+        el.style.display = txt.indexOf(q) !== -1 ? '' : 'none';
+      });
+    }
+
+    // Live SERP Preview & Character Counters
+    if (e.target.id === 'seo_meta_title' || e.target.id === 'title') {
+      var titleInput = document.getElementById('seo_meta_title');
+      var mainTitle = document.getElementById('title');
+      var serpTitle = document.getElementById('serp-preview-title');
+      var countEl = document.getElementById('seo_title_count');
+      var val = (titleInput && titleInput.value.trim()) || (mainTitle && mainTitle.value.trim()) || 'Post Title | NMC Clinic Butwal';
+      if (serpTitle) serpTitle.textContent = val;
+      if (countEl && titleInput) countEl.textContent = titleInput.value.length + ' / 60';
+    }
+
+    if (e.target.id === 'seo_meta_description' || e.target.id === 'excerpt') {
+      var descInput = document.getElementById('seo_meta_description');
+      var excerptInput = document.getElementById('excerpt');
+      var serpDesc = document.getElementById('serp-preview-desc');
+      var countEl = document.getElementById('seo_desc_count');
+      var val = (descInput && descInput.value.trim()) || (excerptInput && excerptInput.value.trim()) || 'Summary description will appear here.';
+      if (serpDesc) serpDesc.textContent = val;
+      if (countEl && descInput) countEl.textContent = descInput.value.length + ' / 155';
+    }
+  });
+
+  // AJAX Direct Upload Handler
+  document.addEventListener('change', function (e) {
+    if (!e.target.classList.contains('img-picker-file-input')) return;
+    var fileInput = e.target;
+    var file = fileInput.files[0];
+    if (!file) return;
+
+    var picker = fileInput.closest('.image-picker-field');
+    var statusEl = picker.querySelector('.img-picker-status');
+    statusEl.style.display = 'block';
+    statusEl.style.color = 'var(--primary)';
+    statusEl.textContent = 'Uploading ' + file.name + '...';
+
+    var csrfInput = document.querySelector('input[name="csrf_token"]');
+    var token = csrfInput ? csrfInput.value : '';
+
+    var formData = new FormData();
+    formData.append('file', file);
+    formData.append('csrf_token', token);
+
+    fetch('media-upload.php', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRF-TOKEN': token
+      }
+    })
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      if (!data.success) {
+        throw new Error(data.error || 'Upload failed');
+      }
+
+      var media = data.media;
+      picker.querySelector('.img-picker-value').value = media.id;
+      var thumb = picker.querySelector('.img-picker-thumb');
+      thumb.src = '../' + media.file_path.replace(/^\/+/, '');
+      thumb.style.display = 'block';
+      picker.querySelector('.img-picker-empty-icon').style.display = 'none';
+      picker.querySelector('.img-picker-title').textContent = media.alt_text || media.file_path;
+      var clearBtn = picker.querySelector('.img-picker-clear-btn');
+      if (clearBtn) clearBtn.style.display = 'inline-flex';
+
+      statusEl.style.color = 'var(--primary2)';
+      statusEl.textContent = 'Uploaded & selected successfully!';
+      setTimeout(function () { statusEl.style.display = 'none'; }, 3000);
+    })
+    .catch(function (err) {
+      statusEl.style.color = 'var(--danger)';
+      statusEl.textContent = 'Upload error: ' + err.message;
+    })
+    .finally(function () {
+      fileInput.value = '';
+    });
+  });
+})();
+</script>
 </body>
 </html>
     <?php

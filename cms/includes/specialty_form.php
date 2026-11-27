@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/image_picker.php';
+
 function specialty_default(): array
 {
     return [
@@ -299,18 +301,15 @@ function specialty_render_form(array $specialty, array $points, array $mediaOpti
       <aside class="grid">
         <section class="card form-card">
           <h2><span class="material-symbols-outlined">image</span>Media</h2>
-          <div class="field">
-            <label for="image_id">Specialty Image</label>
-            <select class="select" id="image_id" name="image_id">
-              <option value="">No image selected</option>
-              <?php foreach ($mediaOptions as $media): ?>
-                <option value="<?= e((string) $media['id']) ?>" <?= (string) $specialty['image_id'] === (string) $media['id'] ? 'selected' : '' ?>>
-                  <?= e((string) ($media['alt_text'] ?: $media['file_path'])) ?>
-                </option>
-              <?php endforeach; ?>
-            </select>
-            <p class="hint">Images come from the media library. If none exist yet, leave this empty.</p>
-          </div>
+          <?php
+          render_image_picker([
+              'name' => 'image_id',
+              'value' => $specialty['image_id'] ?? null,
+              'mediaOptions' => $mediaOptions,
+              'label' => 'Specialty Image',
+              'help' => 'Upload a specialty illustration or choose from library.',
+          ]);
+          ?>
         </section>
 
         <section class="card form-card">
