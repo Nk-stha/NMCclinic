@@ -43,7 +43,6 @@ function content_registry(): array
                     'default' => "A community clinic in Butwal offering specialist consultation, diagnostics, physiotherapy, women's health and kidney care."],
                 'services_heading' => ['type' => 'text', 'label' => 'Services heading', 'max' => 30, 'required' => true, 'default' => 'Services'],
                 'contact_heading' => ['type' => 'text', 'label' => 'Contact heading', 'max' => 30, 'required' => true, 'default' => 'Contact'],
-                'emergency_text' => ['type' => 'text', 'label' => 'Emergency notice', 'max' => 200, 'required' => true, 'default' => 'For medical emergencies, contact the nearest emergency service or hospital immediately.'],
                 'copyright' => ['type' => 'text', 'label' => 'Copyright text (after the year)', 'max' => 120, 'required' => true, 'default' => 'NMC Clinic, Butwal. All rights reserved.'],
                 'legal_privacy_label' => ['type' => 'text', 'label' => 'Privacy link label', 'max' => 40, 'required' => true, 'default' => 'Privacy Policy'],
                 'legal_terms_label' => ['type' => 'text', 'label' => 'Terms link label', 'max' => 40, 'required' => true, 'default' => 'Terms & Conditions'],
